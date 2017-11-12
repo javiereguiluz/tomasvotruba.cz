@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Autowired controllers as services for lazy people | Tomas Votruba</title>
+    <meta charset="utf-8">
+    <meta name="robots" content="index, follow">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+
+    <link rel="alternate" type="application/rss+xml" title="Tomas Votruba Blog RSS" href="/rss.xml">
+
+    <link href="/assets/font-awesome/css/font-awesome.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/bootstrap/bootstrap.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/css/style.css?v=1.2" rel="stylesheet" type="text/css">
+
+</head>
+    <body>
+        <!-- post_id: 7 -->
+
+<div class="hidden-sm-down">
+    <nav class="navbar">
+        <div class="container-fluid">
+            <ul>
+                <li id="logo">
+                    Tomas Votruba
+                </li>
+                <li class="active">
+                    <a href="/">Blog</a>
+                </li>
+                <li>
+                    <a href="/mentoring-and-lectures/">Mentoring & Lectures</a>
+                </li>
+                <li>
+                    <a href="/talks/">Talks</a>
+                </li>
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<div class="hidden-md-up">
+    <nav class="navbar" id="mobile-menu">
+        <div class="container">
+            <a href="/" class="col-3 col-sm-3 active">
+                <em class="fa fa-book"></em>
+                <br>
+                PHP Blog
+            </a>
+            <a href="/mentoring-and-lectures/" class="col-3 col-sm-3">
+                <em class="fa fa-graduation-cap"></em>
+                <br>
+                Lectures
+            </a>
+            <a href="/about/" class="col-3 col-sm-3">
+                <em class="fa fa-id-badge"></em>
+                <br>
+                About
+            </a>
+            <a href="/contact/" class="col-3 col-sm-3">
+                <em class="fa fa-phone"></em>
+                <br>
+                Contact
+            </a>
+        </div>
+    </nav>
+</div>
+
+        <div class="mainContent">
+    <div class="container-fluid" id="post">
+        <h1>Autowired controllers as services for lazy people</h1>
+
+<ul class="list-inline">
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-clock-o fa-fw"></em>
+        <strong>4 min</strong>
+    </li>
+
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-calendar fa-fw"></em>
+        <time datetime="2016-03-Thu">Thursday, March 10, 2016</time>
+    </li>
+
+        <li class="list-inline-item mr-3">
+            <em class="fa fa-fw fa-comments"></em>
+            <a href="https://www.tomasvotruba.cz/blog/2016/03/10/autowired-controllers-as-services-for-lazy-people/#disqus_thread">X</a> comments
+        </li>
+
+        <li class="list-inline-item">
+            <em class="fa fa-fw fa-pencil"></em>
+                <a href="https://github.com/TomasVotruba/tomasvotruba.cz/edit/master/source/_posts/2016/2016-03-10-autowired-controllers-as-services-for-lazy-people.md">
+                Typo? Fix me please
+            </a>
+        </li>
+
+</ul>
+
+            <div class="card border-danger">
+                <div class="card-header text-white bg-danger border-danger">
+                    <strong>This post is deprecated since May 2017</strong>
+                </div>
+                <div class="card-body">
+                    Since <strong>Symfony 3.3</strong> you can use <a href="https://github.com/symfony/symfony/pull/21289">PSR4-based service discovery and registration</a>. 
+It does pretty much the same thing - <strong>registers autowired controllers</strong> (and more) - and it has native support in Symfony.
+<br><br>
+I recommend using it instead!
+                </div>
+            </div>
+
+            <br>
+
+
+        <div class="card">
+            <div class="card-body">
+                With new autowiring feature in Symfony 2.8+, it is now easier to manage dependencies for services. But what about for controllers? Unfortunately, there are 3 annoying steps you have to do. Today I will show you, how to reduce them to 0.
+            </div>
+        </div>
+
+        
+<h3 id="disclaimer-why-even-use-controllers-as-services"><a class="anchor" href="#disclaimer-why-even-use-controllers-as-services" aria-hidden="true"><span class="anchor-icon">#</span></a>Disclaimer: Why even use controllers as services?</h3>
+<p><strong>The goal of this article is not to discuss pro and cons of &quot;controller as service&quot; (further CAS) approach</strong>. If you
+haven't decided yet to use CAS, I recommend checking these articles:</p>
+<ul>
+<li><a href="https://knpuniversity.com/screencast/question-answer-day/controllers-services">Symfony2: Make my Controllers Services?</a> [released 2013 by KNPUniversity]</li>
+<li><a href="http://php-and-symfony.matthiasnoback.nl/2014/06/how-to-create-framework-independent-controllers">Symfony2: How to create framework independent controllers?</a> [released 2014]</li>
+<li><a href="http://richardmiller.co.uk/2011/04/15/symfony2-controller-as-service">Symfony2: Controller as Service</a> [released 2011]</li>
+</ul>
+<p><br></p>
+<p>But now, back to the topic.</p>
+<h2 id="autowire-service-easy"><a class="anchor" href="#autowire-service-easy" aria-hidden="true"><span class="anchor-icon">#</span></a>Autowire service? Easy!</h2>
+<p>With <a href="https://dunglas.fr/2015/10/new-in-symfony-2-83-0-services-autowiring/">autowire feature</a>, managing dependencies for services is now as simple as:</p>
+<pre><code class="language-yaml">services:
+    post.publisher:
+        class: PostPublisher
+        autowire: true # all you got to do is add this line</code></pre>
+<h2 id="autowire-controller-hell"><a class="anchor" href="#autowire-controller-hell" aria-hidden="true"><span class="anchor-icon">#</span></a>Autowire controller? Hell!</h2>
+<p>Managing dependencies for controllers in same way is complicated. To apply the same effect, you have to make following 3 steps:</p>
+<ol>
+<li>
+<p>Register controller manually as service to the config</p>
+<pre><code class="language-yaml"># app/config/services.yml
+services:
+    post_controller: # you have to use this name everywhere, so pick it wisely
+        class: PostController
+        autowire: true</code></pre>
+</li>
+<li>
+<p>Add <code>@Route</code> annotation with service name</p>
+<pre><code class="language-php">// src/AppBundle/Controller/PostController.php
+namespace AppBundle\Controller\PostController;
+
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+
+/**
+ * @Route(service="post_controller") # watch for typo here!
+ */
+class PostController
+{
+    public function listAction()
+    {
+    }
+}</code></pre>
+<p>or route using service name:</p>
+<pre><code class="language-yaml"># app/config/routing.yml
+post_list:
+    path: /post-list
+    defaults: 
+        _controller: post_controller:listAction
+        # and not bundle like approach
+        # _controller: AppBundle:Post:list</code></pre>
+<blockquote>
+<p>This difference is so difficult to spot, that it <a href="http://stackoverflow.com/a/27221394/1348344">created question on StackOverflow</a>.</p>
+</blockquote>
+</li>
+<li>
+<p>Finally, you have to use service name and single colon for referring:</p>
+<pre><code class="language-php">// any controller
+$this-&gt;forward('post_controller:listAction'));</code></pre>
+</li>
+</ol>
+<blockquote>
+<p>There is <a href="http://stackoverflow.com/questions/31366074/how-exactly-can-i-define-a-controller-as-service-using-annotations/31366589#31366589">nice answer on StackOverflow explaining with more details</a>.</p>
+</blockquote>
+<p>This process is exhausting already and difficult to remember. </p>
+<h3 id="did-you-make-it-here-comes-much-deeper-hell"><a class="anchor" href="#did-you-make-it-here-comes-much-deeper-hell" aria-hidden="true"><span class="anchor-icon">#</span></a>Did you make it? Here comes much deeper hell</h3>
+<p>Even if you do manage to finish these steps, <strong>these issues will appear</strong>:</p>
+<ul>
+<li>
+<p><a href="http://stackoverflow.com/questions/33857659/symfony-autowiring-services-with-the-controller">drawback</a> of FrameworkBundle, when it tries to autowire controller </p>
+<img src="http://i.stack.imgur.com/r4cBD.png">
+</li>
+<li>it's complicated to apply constructor dependency injection for extended 3rd party controllers (Sonata, FOS...), due to missing step 2 and 3 (that were mentioned above) and the &quot;bundle naming&quot; inside the bundle's code</li>
+</ul>
+<h3 id="is-there-some-way-back-from-hell-to-heaven"><a class="anchor" href="#is-there-some-way-back-from-hell-to-heaven" aria-hidden="true"><span class="anchor-icon">#</span></a>Is there some way back from hell to heaven?</h3>
+<p>Author of autowiring feature and Symfony core contributor Kévin Dunglas <a href="https://github.com/symfony/symfony/pull/16863#issuecomment-162221353">sees similar problem</a> and <a href="https://dunglas.fr/2016/01/dunglasactionbundle-symfony-controllers-redesigned/">proposes solution with ADR pattern</a>. I think it's the right direction, but it bends controllers too much.</p>
+<p>But my goal is to keep controllers the same way they are now, and just add support for...</p>
+<h2 id="autowiring-in-controllers"><a class="anchor" href="#autowiring-in-controllers" aria-hidden="true"><span class="anchor-icon">#</span></a>Autowiring in controllers</h2>
+<p>So I made <a href="https://github.com/Symplify/ControllerAutowire">Symplify\ControllerAutowire</a> bundle, that solves all problems that are mentioned above by following steps:</p>
+<ul>
+<li>find controllers in <code>/src</code> directory</li>
+<li>register them as services</li>
+<li>autowire its constructors</li>
+<li>handle routing properly for both &quot;service name&quot; and &quot;bundle name&quot; approaches</li>
+<li>and all on compile time</li>
+</ul>
+<p>Let's try it together.</p>
+<h3 id="1-install-package"><a class="anchor" href="#1-install-package" aria-hidden="true"><span class="anchor-icon">#</span></a>1. Install package</h3>
+<pre><code class="language-yaml">composer require symplify/controller-autowire</code></pre>
+<h3 id="2-register-bundle"><a class="anchor" href="#2-register-bundle" aria-hidden="true"><span class="anchor-icon">#</span></a>2. Register bundle</h3>
+<pre><code class="language-php">// app/AppKernel.php
+class AppKernel extends Kernel
+{
+    public function registerBundles()
+    {
+        $bundles = [
+            new Symplify\ControllerAutowire\SymplifyControllerAutowireBundle(),
+            // ...
+        ];
+    }
+}</code></pre>
+<h3 id="3-add-some-dependency-for-your-controller-via-constructor"><a class="anchor" href="#3-add-some-dependency-for-your-controller-via-constructor" aria-hidden="true"><span class="anchor-icon">#</span></a>3. Add some dependency for your controller via constructor</h3>
+<pre><code class="language-php">// src/AppBundle/Controller/DefaultController.php
+namespace AppBundle\Controller;
+
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\Request;
+
+class DefaultController extends Controller
+{
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    public function __construct(EventDispatcherInterface $eventDispatcher)
+    {
+        $this-&gt;eventDispatcher = $eventDispatcher;
+    }
+
+    /**
+     * @Route("/", name="homepage")
+     */
+    public function indexAction(Request $request)
+    {
+        $this-&gt;eventDispatcher-&gt;dispatch('someEvent');
+
+        return $this-&gt;render('default/index.html.twig', [
+            // ...
+        ]);
+    }
+}</code></pre>
+<p>And that's it!</p>
+<p>For further use, <strong>just check Readme for <a href="https://github.com/Symplify/ControllerAutowire">Symplify/ControllerAutowire</a>.</strong></p>
+<h2 id="best-practise-solution-proven-in-many-php-projects"><a class="anchor" href="#best-practise-solution-proven-in-many-php-projects" aria-hidden="true"><span class="anchor-icon">#</span></a>Best practise solution - proven in many PHP projects</h2>
+<p>Check them out:</p>
+<ul>
+<li><a href="nette.org">Nette</a> with <a href="https://github.com/nette/application/pull/56">presenter autowire</a>, based on <a href="https://filip-prochazka.com/blog/presentery-v-di-containeru">Filip Prochazka's extension</a></li>
+<li><a href="http://php-di.org/doc/frameworks/silex.html#controllers-as-services">PHP-DI</a></li>
+<li><a href="https://laravel.com/docs/5.0/controllers#dependency-injection-and-controllers">Laravel with constructor injection support for controllers</a></li>
+<li>and <a href="https://github.com/J7mbo/Aurex">Auryn</a> that adds this feature to Silex </li>
+</ul>
+
+        <br>
+
+
+
+<div class="hireMe card border-info">
+    <div class="card-body bg-info text-white text-center">
+        <a href="/contact">
+            Do you like what I write about? <strong>I'll do it for you!</strong>
+        </a>
+    </div>
+</div>
+
+        <br>
+
+        <h3>What do you think?</h3>
+
+<div id="disqus_thread"></div>
+
+<script type="text/javascript">
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+
+        s.src = '//' + "itsworthsharing" + '.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+    </div>
+        </div>
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+<script>
+    ga=function(){ ga.q.push(arguments) };
+    ga.q=[];
+    ga.l=+new Date;
+    ga('create', "UA-46082345-1", 'auto');
+    ga('send','pageview');
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async defer></script>
+<script>
+    !function(f,b,e,v,n,t,s){ if(f.fbq)return;n=f.fbq=function(){ n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', "201338863559186");
+    fbq('track', 'PageView');
+</script>
+    </body>
+</html>
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Autowired controllers as services for lazy people">
+    <meta property="og:description" content="With new autowiring feature in Symfony 2.8+, it is now easier to manage dependencies for services. But what about for controllers? Unfortunately, there are 3 annoying steps you have to do. Today I will show you, how to reduce them to 0.">
+    <meta property="og:url" content="https://www.tomasvotruba.cz/blog/2016/03/10/autowired-controllers-as-services-for-lazy-people">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@votrubaT">
+    <meta name="twitter:title" content="Autowired controllers as services for lazy people">
+    <meta name="twitter:description" content="With new autowiring feature in Symfony 2.8+, it is now easier to manage dependencies for services. But what about for controllers? Unfortunately, there are 3 annoying steps you have to do. Today I will show you, how to reduce them to 0.">
+
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+
+    <link href="/assets/prism/prism.css" rel="stylesheet" type="text/css">

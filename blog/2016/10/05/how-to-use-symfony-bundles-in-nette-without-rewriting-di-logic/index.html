@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>How to Use Symfony Bundles in Nette Without Rewriting DI Logic | Tomas Votruba</title>
+    <meta charset="utf-8">
+    <meta name="robots" content="index, follow">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+
+    <link rel="alternate" type="application/rss+xml" title="Tomas Votruba Blog RSS" href="/rss.xml">
+
+    <link href="/assets/font-awesome/css/font-awesome.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/bootstrap/bootstrap.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/css/style.css?v=1.2" rel="stylesheet" type="text/css">
+
+</head>
+    <body>
+        <!-- post_id: 16 -->
+
+<div class="hidden-sm-down">
+    <nav class="navbar">
+        <div class="container-fluid">
+            <ul>
+                <li id="logo">
+                    Tomas Votruba
+                </li>
+                <li class="active">
+                    <a href="/">Blog</a>
+                </li>
+                <li>
+                    <a href="/mentoring-and-lectures/">Mentoring & Lectures</a>
+                </li>
+                <li>
+                    <a href="/talks/">Talks</a>
+                </li>
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<div class="hidden-md-up">
+    <nav class="navbar" id="mobile-menu">
+        <div class="container">
+            <a href="/" class="col-3 col-sm-3 active">
+                <em class="fa fa-book"></em>
+                <br>
+                PHP Blog
+            </a>
+            <a href="/mentoring-and-lectures/" class="col-3 col-sm-3">
+                <em class="fa fa-graduation-cap"></em>
+                <br>
+                Lectures
+            </a>
+            <a href="/about/" class="col-3 col-sm-3">
+                <em class="fa fa-id-badge"></em>
+                <br>
+                About
+            </a>
+            <a href="/contact/" class="col-3 col-sm-3">
+                <em class="fa fa-phone"></em>
+                <br>
+                Contact
+            </a>
+        </div>
+    </nav>
+</div>
+
+        <div class="mainContent">
+    <div class="container-fluid" id="post">
+        <h1>How to Use Symfony Bundles in Nette Without Rewriting DI Logic</h1>
+
+<ul class="list-inline">
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-clock-o fa-fw"></em>
+        <strong>2 min</strong>
+    </li>
+
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-calendar fa-fw"></em>
+        <time datetime="2016-10-Wed">Wednesday, October 5, 2016</time>
+    </li>
+
+        <li class="list-inline-item mr-3">
+            <em class="fa fa-fw fa-comments"></em>
+            <a href="https://www.tomasvotruba.cz/blog/2016/10/05/how-to-use-symfony-bundles-in-nette-without-rewriting-di-logic/#disqus_thread">X</a> comments
+        </li>
+
+        <li class="list-inline-item">
+            <em class="fa fa-fw fa-pencil"></em>
+                <a href="https://github.com/TomasVotruba/tomasvotruba.cz/edit/master/source/_posts/2016/2016-10-05-how-to-use-symfony-bundles-in-nette-without-rewriting-di-logic.md">
+                Typo? Fix me please
+            </a>
+        </li>
+
+</ul>
+
+            <div class="card border-danger">
+                <div class="card-header text-white bg-danger border-danger">
+                    <strong>This post is deprecated since January 2017</strong>
+                </div>
+                <div class="card-body">
+                    This package was <strong>too complex and difficult to use</strong>. I have deprecated it, because it has been downloaded only 20 times during past 2 years.
+<br><br>
+It is still available <a href="https://github.com/DeprecatedPackages/NetteAdapterForSymfonyBundles">here for inspiration</a> though.
+                </div>
+            </div>
+
+            <br>
+
+
+        <div class="card">
+            <div class="card-body">
+                Every framework has its own unique Dependency Injection Container (DIC), where you register your services. <strong>Imagine a set of special glues that are required to add the same paper on different surfaces.</strong> Today I will show you how to use universal glue for Nette surface.
+            </div>
+        </div>
+
+        
+<p>To be specific: </p>
+<ul>
+<li>In Nette you use <a href="https://github.com/nette/di">Nette\DI package</a> and make an <strong>extension</strong>.</li>
+<li>In Symfony, you have to use <a href="http://symfony.com/doc/current/components/dependency_injection.html">Symfony\DependencyInjection package</a> and create a <strong>bundle</strong>.</li>
+</ul>
+<p>So when you hear somebody saying:</p>
+<blockquote>
+<p>&quot;I saw that in Symfony bundle and want to use in Nette&quot;</p>
+</blockquote>
+<p>you know it won't be easy.</p>
+<h2 id="dry-do-repeat-yourself-in-package-ratio"><a class="anchor" href="#dry-do-repeat-yourself-in-package-ratio" aria-hidden="true"><span class="anchor-icon">#</span></a>DRY (Do-Repeat-Yourself) in Package Ratio</h2>
+<p>That's why you see &quot;double&quot; integrations for 3rd party packages like:</p>
+<p><strong><a href="https://github.com/doctrine/migrations">Doctrine\Migrations</a></strong></p>
+<ul>
+<li>for Symfony: <a href="https://github.com/doctrine/DoctrineMigrationsBundle/">Doctrine/DoctrineMigrationsBundle</a></li>
+<li>for Nette: <a href="https://github.com/Zenify/DoctrineMigrations">Zenify/DoctrineMigrations</a></li>
+</ul>
+<p><strong><a href="http://simplebus.github.io/">MessageBus - CQRS</a></strong> </p>
+<ul>
+<li>for Symfony: <a href="https://github.com/SimpleBus/SymfonyBridge">SimpleBus/SymfonyBridge</a></li>
+<li>for Nette: <a href="https://github.com/newPOPE/Nette-CQRS-Commands">newPOPE/Nette-CQRS-Commands</a></li>
+</ul>
+<p><strong><a href="https://github.com/ruflin/Elastica">Elastica</a></strong></p>
+<ul>
+<li>for Symfony: <a href="https://github.com/FriendsOfSymfony/FOSElasticaBundle">FriendsOfSymfony/FOSElasticaBundle</a></li>
+<li>for Nette: <a href="https://github.com/Kdyby/ElasticSearch">Kdyby/ElasticSearch</a></li>
+</ul>
+<p>And so on. Let's ignore the syntax sugar that every programmer adds to his own integrations.   </p>
+<h3 id="this-leads-to"><a class="anchor" href="#this-leads-to" aria-hidden="true"><span class="anchor-icon">#</span></a>This leads to</h3>
+<ul>
+<li><strong>lot of duplicated code</strong> (register event subscribers, commands and all the services from 3rd party package)</li>
+<li><strong>lot of duplicated maintenance</strong> (fix compatibility with new version of 3rd party package)</li>
+<li>greater possibility of <strong>burnout syndrome</strong></li>
+</ul>
+<h2 id="is-this-really-needed"><a class="anchor" href="#is-this-really-needed" aria-hidden="true"><span class="anchor-icon">#</span></a>Is this really needed?</h2>
+<p>Well, if you look closer to Nette and Symfony DICs, you see <strong>they are quite similar</strong>. So answer is <strong>NO</strong>.</p>
+<p>Both Nette and Symfony have 3 basic operations dealing with DIC:</p>
+<h3 id="1-register-a-service"><a class="anchor" href="#1-register-a-service" aria-hidden="true"><span class="anchor-icon">#</span></a>1. Register a service</h3>
+<p>Common for all packages.</p>
+<ul>
+<li>Nette: <code>loadConfiguration()</code> method</li>
+<li>Symfony: <code>Extension</code> class</li>
+</ul>
+<h3 id="2-decorate-already-registered-services"><a class="anchor" href="#2-decorate-already-registered-services" aria-hidden="true"><span class="anchor-icon">#</span></a>2. Decorate already registered services</h3>
+<p>Add setter, pass arguments, add reference to other service, collect services of certain type.
+Used less often, yet still very useful.</p>
+<ul>
+<li>Nette: <code>beforeCompile()</code> method</li>
+<li>Symfony: <code>CompilerPassInterface</code> classes</li>
+</ul>
+<h3 id="3-add-some-magic-or-static-code-in-the-end"><a class="anchor" href="#3-add-some-magic-or-static-code-in-the-end" aria-hidden="true"><span class="anchor-icon">#</span></a>3. Add some magic or static code in the end</h3>
+<p>Usually workarounds, hacks, tweaks or performance tuning. Quite rare.</p>
+<ul>
+<li>Nette: <code>afterCompile()</code> method</li>
+<li>Symfony: specific <code>CompilerPassInterface</code> classes</li>
+</ul>
+<h2 id="enough-theory-give-me-the-solution"><a class="anchor" href="#enough-theory-give-me-the-solution" aria-hidden="true"><span class="anchor-icon">#</span></a>Enough Theory, Give me the Solution!</h2>
+<p>Okay, okay... These are last few lines before the code, I promise.</p>
+<p>Thanks to step 1. and 2. I could create an extension, that will <strong>take any Symfony bundle and register its services into the Nette application</strong>: <a href="https://github.com/TomasVotruba/NetteAdapterForSymfonyBundles">TomasVotruba/NetteAdapterForSymfonyBundles</a></p>
+<h2 id="how-to-register-a-symfony-bundle-into-your-nette-application-in-3-steps"><a class="anchor" href="#how-to-register-a-symfony-bundle-into-your-nette-application-in-3-steps" aria-hidden="true"><span class="anchor-icon">#</span></a>How to register a Symfony Bundle into your Nette Application in 3 steps</h2>
+<h3 id="1-install-package"><a class="anchor" href="#1-install-package" aria-hidden="true"><span class="anchor-icon">#</span></a>1. Install package</h3>
+<pre><code class="language-yaml">composer require symplify/nette-adapter-for-symfony-bundles</code></pre>
+<h3 id="2-register-extension"><a class="anchor" href="#2-register-extension" aria-hidden="true"><span class="anchor-icon">#</span></a>2. Register extension</h3>
+<pre><code class="language-yaml"># app/config/config.neon
+extensions:
+    symfonyBundles: Symplify\NetteAdapterForSymfonyBundles\DI\NetteAdapterForSymfonyBundlesExtension</code></pre>
+<h3 id="3-register-desired-symfony-bundle"><a class="anchor" href="#3-register-desired-symfony-bundle" aria-hidden="true"><span class="anchor-icon">#</span></a>3. Register desired Symfony Bundle</h3>
+<pre><code class="language-yaml"># app/config/config.neon
+symfonyBundles:
+    bundles:
+        - League\Tactician\Bundle\TacticianBundle</code></pre>
+<p>And that's it!</p>
+<p>For further use, <strong>just check Readme for <a href="https://github.com/Symplify/NetteAdapterForSymfonyBundles">Symplify/NetteAdapterForSymfonyBundles</a></strong>.</p>
+<hr />
+<p>So next time you see a Symfony bundle you would like to use in Nette, stop thinking about writing brand new duplicated extension and try this bundle first. You might save yourself great amount of time :) </p>
+<h2 id="made-for-you"><a class="anchor" href="#made-for-you" aria-hidden="true"><span class="anchor-icon">#</span></a>Made for you</h2>
+<p>Missing some feature or found a bug? Let me know. I want to make this package suit your needs and work as best as possible.</p>
+
+        <br>
+
+
+
+<div class="hireMe card border-info">
+    <div class="card-body bg-info text-white text-center">
+        <a href="/contact">
+            Do you like what I write about? <strong>I'll do it for you!</strong>
+        </a>
+    </div>
+</div>
+
+        <br>
+
+        <h3>What do you think?</h3>
+
+<div id="disqus_thread"></div>
+
+<script type="text/javascript">
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+
+        s.src = '//' + "itsworthsharing" + '.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+    </div>
+        </div>
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+<script>
+    ga=function(){ ga.q.push(arguments) };
+    ga.q=[];
+    ga.l=+new Date;
+    ga('create', "UA-46082345-1", 'auto');
+    ga('send','pageview');
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async defer></script>
+<script>
+    !function(f,b,e,v,n,t,s){ if(f.fbq)return;n=f.fbq=function(){ n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', "201338863559186");
+    fbq('track', 'PageView');
+</script>
+    </body>
+</html>
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="How to Use Symfony Bundles in Nette Without Rewriting DI Logic">
+    <meta property="og:description" content="Every framework has its own unique Dependency Injection Container (DIC), where you register your services. Imagine a set of special glues that are required to add the same paper on different surfaces. Today I will show you how to use universal glue for Nette surface.">
+    <meta property="og:url" content="https://www.tomasvotruba.cz/blog/2016/10/05/how-to-use-symfony-bundles-in-nette-without-rewriting-di-logic">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@votrubaT">
+    <meta name="twitter:title" content="How to Use Symfony Bundles in Nette Without Rewriting DI Logic">
+    <meta name="twitter:description" content="Every framework has its own unique Dependency Injection Container (DIC), where you register your services. Imagine a set of special glues that are required to add the same paper on different surfaces. Today I will show you how to use universal glue for Nette surface.">
+
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+
+    <link href="/assets/prism/prism.css" rel="stylesheet" type="text/css">

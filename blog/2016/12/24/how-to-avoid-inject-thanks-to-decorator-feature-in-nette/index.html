@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>How to avoid @inject thanks to Decorator feature in Nette | Tomas Votruba</title>
+    <meta charset="utf-8">
+    <meta name="robots" content="index, follow">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+
+    <link rel="alternate" type="application/rss+xml" title="Tomas Votruba Blog RSS" href="/rss.xml">
+
+    <link href="/assets/font-awesome/css/font-awesome.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/bootstrap/bootstrap.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/css/style.css?v=1.2" rel="stylesheet" type="text/css">
+
+</head>
+    <body>
+        <!-- post_id: 19 -->
+
+<div class="hidden-sm-down">
+    <nav class="navbar">
+        <div class="container-fluid">
+            <ul>
+                <li id="logo">
+                    Tomas Votruba
+                </li>
+                <li class="active">
+                    <a href="/">Blog</a>
+                </li>
+                <li>
+                    <a href="/mentoring-and-lectures/">Mentoring & Lectures</a>
+                </li>
+                <li>
+                    <a href="/talks/">Talks</a>
+                </li>
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<div class="hidden-md-up">
+    <nav class="navbar" id="mobile-menu">
+        <div class="container">
+            <a href="/" class="col-3 col-sm-3 active">
+                <em class="fa fa-book"></em>
+                <br>
+                PHP Blog
+            </a>
+            <a href="/mentoring-and-lectures/" class="col-3 col-sm-3">
+                <em class="fa fa-graduation-cap"></em>
+                <br>
+                Lectures
+            </a>
+            <a href="/about/" class="col-3 col-sm-3">
+                <em class="fa fa-id-badge"></em>
+                <br>
+                About
+            </a>
+            <a href="/contact/" class="col-3 col-sm-3">
+                <em class="fa fa-phone"></em>
+                <br>
+                Contact
+            </a>
+        </div>
+    </nav>
+</div>
+
+        <div class="mainContent">
+    <div class="container-fluid" id="post">
+        <h1>How to avoid @inject thanks to Decorator feature in Nette</h1>
+
+<ul class="list-inline">
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-clock-o fa-fw"></em>
+        <strong>5 min</strong>
+    </li>
+
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-calendar fa-fw"></em>
+        <time datetime="2016-12-Sat">Saturday, December 24, 2016</time>
+    </li>
+
+        <li class="list-inline-item mr-3">
+            <em class="fa fa-fw fa-comments"></em>
+            <a href="https://www.tomasvotruba.cz/blog/2016/12/24/how-to-avoid-inject-thanks-to-decorator-feature-in-nette/#disqus_thread">X</a> comments
+        </li>
+
+        <li class="list-inline-item">
+            <em class="fa fa-fw fa-pencil"></em>
+                <a href="https://github.com/TomasVotruba/tomasvotruba.cz/edit/master/source/_posts/2016/2016-12-24-how-to-avoid-inject-thanks-to-decorator-feature-in-nette.md">
+                Typo? Fix me please
+            </a>
+        </li>
+
+</ul>
+
+
+
+        <div class="card">
+            <div class="card-body">
+                I often find <code>@inject</code> being overused in projects I review while mentoring. They often bring less writing, but in exchange they break <a href="https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)">SOLID principles</a>.
+<br><br>
+Today I will show you solution that will <strong>keep your code both small and clean</strong> - <strong>Decorator feature in Nette</strong>.
+            </div>
+        </div>
+
+        
+<p>As <a href="https://www.ted.com/talks/simon_sinek_how_great_leaders_inspire_action">Derek Simons says</a> says...</p>
+<h2 id="start-with-quot-why-quot"><a class="anchor" href="#start-with-quot-why-quot" aria-hidden="true"><span class="anchor-icon">#</span></a>...Start with &quot;Why&quot;</h2>
+<p>Why am I writing this article? I try to improve knowledge interoperability between frameworks so it <strong>is easier to understand and use each other</strong>. The goal is to discourage Nette- (or any framework-) specific things <strong>in favor of those that may be common</strong>.</p>
+<p>Today, I will try to agree on setter injection with you. </p>
+<h2 id="inject-overuse-is-spreading"><a class="anchor" href="#inject-overuse-is-spreading" aria-hidden="true"><span class="anchor-icon">#</span></a>@Inject Overuse is Spreading</h2>
+<p>This code is common to 80 % Nette applications I came across in last year:</p>
+<pre><code class="language-php">// app/Presenter/ProductPresenter.php
+
+namespace App\Presenter;
+
+final class ProductPresenter extends AbstractBasePresenter
+{
+    /**
+     * @inject
+     * @var ProductRepository
+     */
+    public $productRepository;
+}</code></pre>
+<p>Using <code>@inject</code> annotations over constructor injection is <strong>fast, short and it just works</strong>.</p>
+<p>Ok, why not use it everywhere:</p>
+<pre><code class="language-php">// app/Repository/ProductRepository.php
+
+namespace App\Repository;
+
+class ProductRepository
+{
+    /**
+     * @inject
+     * @var Doctrine
+     */
+    public $entityManager;
+}</code></pre>
+<p>and </p>
+<pre><code class="language-yaml"># app/config/config.neon
+
+services:
+    -
+        class: App\Repository\ProductRepository
+        inject: on</code></pre>
+<h2 id="your-code-is-seen-as-manual-how-to-write"><a class="anchor" href="#your-code-is-seen-as-manual-how-to-write" aria-hidden="true"><span class="anchor-icon">#</span></a>Your Code is Seen as Manual How to Write</h2>
+<p>Why? Because &quot;what you see is what you write&quot;. New programmer joins the teams, sees this handy <code>@inject</code> feature and uses when possible and handy.</p>
+<p>Some of you, who already talked about <code>@inject</code> method usage already there are some and only few specific places to use it.</p>
+<h2 id="where-to-only-inject"><a class="anchor" href="#where-to-only-inject" aria-hidden="true"><span class="anchor-icon">#</span></a>Where to only @inject?</h2>
+<p><strong>To prevent constructor hell</strong>. If you meet this term first time, go read <a href="https://phpfashion.com/di-a-predavani-zavislosti#toc-constructor-hell">this short explanation</a> by David Grudl.</p>
+<p>The best use case is <code>AbstractBasePresenter</code>.<br />
+Let's say I need <code>Translator</code> service in all of my presenters.</p>
+<pre><code class="language-php">// app/Presenter/AbstractBasePresenter.php
+
+namespace App\Presenter;
+
+abstract class AbstractBasePresenter extends Nette\Application\UI\Presenter
+{
+    /**
+     * @inject
+     * @var Translator
+     */
+    public $translator;
+}</code></pre>
+<p>And I can use it in <code>ProductPresenter</code> along with constructor injection</p>
+<pre><code class="language-php">// app/Presenter/ProductPresenter.php
+
+namespace App\Presenter;
+
+final class ProductPresenter extends AbstractBasePresenter
+{
+    /**
+     * @var ProductRepository
+     */
+    private $productRepository;
+
+    public function __construct(ProductRepository $productRepository) 
+    {
+        $this-&gt;productRepository = $productRepository; 
+    }
+}</code></pre>
+<p>This is quite clean and easy to use, because presenters have injects <a href="https://github.com/nette/application/blob/3165d3a8dab876f4364cdcba450a33ab0182049a/src/Bridges/ApplicationDI/ApplicationExtension.php#L111-L116">enabled by default</a>.</p>
+<h2 id="level-up"><a class="anchor" href="#level-up" aria-hidden="true"><span class="anchor-icon">#</span></a>Level up</h2>
+<p>But what if we have other objects that:</p>
+<ul>
+<li><strong>inherit from abstract parent</strong></li>
+<li>needs <strong>1 service available everywhere</strong></li>
+</ul>
+<p>2 common case pop to my mind:</p>
+<ul>
+<li><code>AbstractBaseRepository</code> for all our repositories</li>
+<li><code>AbstractBaseControl</code> for all our components</li>
+</ul>
+<p>Let's take the first one:</p>
+<pre><code class="language-php">// app/Repository/AbstractBaseRepository.php
+
+namespace App\Repository;
+
+use Doctrine\ORM\EntityManagerInterface;
+
+abstract class AbstractBaseRepository
+{
+    /**
+     * @var EntityManagerInterface
+     */
+    protected $entityManager;
+
+    public function setEntityManager(EntityManagerInterface $entityManager)
+    {
+        $this-&gt;entityManager = $entityManager;
+    }
+}</code></pre>
+<p>And specific repository with some dependency:</p>
+<pre><code class="language-php">// app/Repository/ProductRepository.php
+
+namespace App\Repository;
+
+use App\Model\Product\ProductSorter;
+
+final ProductRepository extends AbstractBaseRepository
+{
+    /**
+     * @var ProductSorter
+     */
+    private $productSorter;
+
+    public function __construct(ProductSorter $productSorter)
+    {
+        $this-&gt;productSorter = $productSorter;
+    }
+}</code></pre>
+<p>So our config would look like:</p>
+<pre><code class="language-yaml"># app/config/config.neon
+
+services:
+    - 
+        class: App\Repository\ProductRepository
+        setup:
+            - setEntityManager
+    # and for other repositories
+    - 
+        class: App\Repository\UserRepository
+        setup:
+            - setEntityManager
+    - 
+        class: App\Repository\CategoryRepository
+        setup:
+            - setEntityManager</code></pre>
+<h3 id="so-much-writing"><a class="anchor" href="#so-much-writing" aria-hidden="true"><span class="anchor-icon">#</span></a>SO much writing!</h3>
+<p>It is cleaner, but with so much writing? Thanks, but no, thanks. Let's go back to <code>@inject</code>...</p>
+<p>Wait! Before any premature conclusion, let's set the goal first.</p>
+<h3 id="what-is-desired-result"><a class="anchor" href="#what-is-desired-result" aria-hidden="true"><span class="anchor-icon">#</span></a>What is Desired Result?</h3>
+<pre><code class="language-yaml"># app/config.config.neon
+
+services:
+    - App\Repository\ProductRepository
+    - App\Repository\UserRepository
+    - App\Repository\CategoryRepository</code></pre>
+<p>That would be great, right? Is that possible in Nette while keeping the code clean?</p>
+<h2 id="decorator-extension-to-the-rescue"><a class="anchor" href="#decorator-extension-to-the-rescue" aria-hidden="true"><span class="anchor-icon">#</span></a>Decorator Extension to the Rescue</h2>
+<p>This feature is in Nette <a href="https://github.com/nette/di/commit/28fdac304b967ae43a90936069d94316ee2daca4">since 2014</a> (&lt;= the best documentation for it so far). </p>
+<p>How does it work? </p>
+<pre><code class="language-yaml"># app/config/config.neon
+
+decorator: # keyword used by Nette
+    App\Repository\AbstractBaseRepository: # 1. find every service this type
+        setup: # same setup as we use in service configuration
+            - setEntityManager # 2. call this setter injection on it
+
+    # or do you need to call "setTranslator" on every component?
+    App\Component\AbstractBaseControl:
+        setup:
+            - setTranslator</code></pre>
+<p>That's it!</p>
+<h2 id="what-have-you-learned-today"><a class="anchor" href="#what-have-you-learned-today" aria-hidden="true"><span class="anchor-icon">#</span></a>What Have You Learned Today?</h2>
+<ul>
+<li>It is easy to overuse <code>@inject</code> in places where it doesn't solve any problem</li>
+<li>The problem <code>@inject</code>/<code>inject&lt;method&gt;</code> method were born to solve is called <em>dependency hell</em></li>
+<li>If you need to <strong>decorate service of some type</strong>, use <em>Decorator Extension</em></li>
+<li>This will lead <strong>to better framework understandability and usability</strong></li>
+<li>...and world peace in time :)</li>
+</ul>
+<p>In next article, we will look at other practical use cases for Decorator Extension.</p>
+<h3 id="p-s-what-about-symfony"><a class="anchor" href="#p-s-what-about-symfony" aria-hidden="true"><span class="anchor-icon">#</span></a>P.S.: What about Symfony?</h3>
+<p>Would like to see this feature in Symfony? Let me know. Maybe we can port it there.</p>
+<p>How do you use <code>@inject</code>, constructor injection or Decorator Extension? Let me know in the comments, I'm curious.</p>
+
+        <br>
+
+
+<div class="card border-warning" id="relatedPosts">
+    <div class="card-header text-white bg-warning border-warning">
+        <strong>Continue Reading</strong>
+    </div>
+    <div class="card-body">
+        <ul>
+                <li>
+                    <a href="/blog/2017/02/12/drop-all-service-tags-in-your-nette-and-symfony-applications">
+                        Drop all Service Tags in Your Nette and Symfony Applications
+                    </a>
+                </li>
+        </ul>
+    </div>
+</div>
+
+<div class="hireMe card border-info">
+    <div class="card-body bg-info text-white text-center">
+        <a href="/contact">
+            Do you like what I write about? <strong>I'll do it for you!</strong>
+        </a>
+    </div>
+</div>
+
+        <br>
+
+        <h3>What do you think?</h3>
+
+<div id="disqus_thread"></div>
+
+<script type="text/javascript">
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+
+        s.src = '//' + "itsworthsharing" + '.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+    </div>
+        </div>
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+<script>
+    ga=function(){ ga.q.push(arguments) };
+    ga.q=[];
+    ga.l=+new Date;
+    ga('create', "UA-46082345-1", 'auto');
+    ga('send','pageview');
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async defer></script>
+<script>
+    !function(f,b,e,v,n,t,s){ if(f.fbq)return;n=f.fbq=function(){ n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', "201338863559186");
+    fbq('track', 'PageView');
+</script>
+    </body>
+</html>
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="How to avoid @inject thanks to Decorator feature in Nette">
+    <meta property="og:description" content="I often find @inject being overused in projects I review while mentoring. They often bring less writing, but in exchange they break SOLID principles.
+
+Today I will show you solution that will keep your code both small and clean - Decorator feature in Nette.">
+    <meta property="og:url" content="https://www.tomasvotruba.cz/blog/2016/12/24/how-to-avoid-inject-thanks-to-decorator-feature-in-nette">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@votrubaT">
+    <meta name="twitter:title" content="How to avoid @inject thanks to Decorator feature in Nette">
+    <meta name="twitter:description" content="I often find @inject being overused in projects I review while mentoring. They often bring less writing, but in exchange they break SOLID principles.
+
+Today I will show you solution that will keep your code both small and clean - Decorator feature in Nette.">
+
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+
+    <link href="/assets/prism/prism.css" rel="stylesheet" type="text/css">

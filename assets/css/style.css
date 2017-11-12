@@ -1,0 +1,321 @@
+/*
+- black + purple
+- http://www.colourlovers.com/palette/85900/Midnight_Sex
+
+- grey: color: rgba(39,58,75,.97);
+- darkest-purple: #341931;
+- darker-purple: #571B3C;
+- lighter-purple: #7A1E48;
+- lightest-purple: #9D2053;
+*/
+
+body {
+    font-family: Arial, sans-serif;
+    color: #333;
+    padding-bottom: 2em;
+    font-size: 17px;
+    line-height: 1.5em;
+}
+
+a, a:active {
+    color: #9D2053;
+    text-decoration: none;
+}
+
+a:hover, a:focus {
+    color: #7A1E48;
+    text-decoration: underline;
+}
+
+a:focus {
+    outline: 5px auto -webkit-focus-ring-color;
+    outline-offset: -2px;
+}
+
+hr {
+    margin: 1.2em 0;
+    border: 0;
+    border-top: 1px solid #eeeeee;
+}
+
+p {
+    margin-bottom: .5em;
+}
+
+ul {
+    margin-top: 0;
+    margin-bottom: .5em;
+}
+
+@media (min-width: 768px) {
+    .conta+iner {
+        max-width: 100%;
+    }
+
+    .container-fluid {
+        max-width: 100%;
+    }
+}
+
+@media (min-width: 992px) {
+    .container {
+        max-width: 800px;
+    }
+
+    .container-fluid {
+        max-width: 800px;
+    }
+}
+
+/*!* Typography *!*/
+h1, h2, h3 {
+    font-weight: 700;
+}
+
+h1 a, h1 a:hover, h1 a:focus, h2 a, h2 a:hover, h2 a:focus, h3 a, h3 a:hover, h3 a:focus {
+    color: inherit;
+    text-decoration: none;
+}
+
+h2 {
+    font-size: 1.45em;
+    margin: 1.1em 0 .5em;
+}
+
+h3 {
+    font-size: 1.3em;
+    margin: 1.1em 0 .4em;
+}
+
+h1 {
+    font-weight: 600;
+    margin: .9em 0 .6em 0;
+    font-size: 2em;
+    line-height: 1.3em;
+    text-align: center;
+    padding-bottom: 1em;
+    border-bottom: 1px solid #EEE;
+}
+
+h1, h3 {
+    color: rgba(39,58,75,.97);
+}
+
+h2 {
+    color: #9D2053;
+    line-height: 1.3em;
+}
+
+h2 a:hover {
+    text-decoration: underline;
+}
+
+pre {
+    border: none;
+    border-radius: 2px;
+}
+
+.navbar {
+    border-radius: 0;
+    background-color: #7A1E48;
+    padding: 0;
+}
+
+.navbar li a, .navbar li a:active, .navbar li a:focus {
+    color: #f6f6f6;
+}
+
+article {
+    padding: .5em 0 2em;
+    border-bottom: 1px solid #eeeeee;
+}
+
+#blog h2 {
+    margin-bottom: .2em;
+}
+
+.card {
+    font-size: 1.1em;
+    line-height: 1.5em;
+    margin: 1.5em 0;
+}
+
+.card#relatedPosts .card-body {
+    padding: .7em 0 .3em 0;
+    line-height: 2em;
+}
+
+code {
+    font-size: .9em;
+}
+
+/* article helpers */
+.bigger {
+    font-size: 1.1em;
+}
+
+img {
+    max-width: 100%;
+}
+
+.yearLine {
+    font-size: 3em;
+    text-align: center;
+    color: #9D2053;
+    padding: .5em 0;
+    font-weight: 200;
+}
+
+pre {
+    font-size: 1em;
+    background-color: #fdf6e3;
+    padding-bottom: 1em;
+    padding-left: 1em;
+    overflow: auto;
+    word-wrap: normal;
+    white-space: pre;
+    border-radius: 6px;
+}
+
+
+/* menu */
+nav {
+    background-color: #7A1E48;
+    font-weight: 400;
+}
+
+nav ul {
+    list-style: none;
+    display: block;
+    float: left;
+    padding: 0;
+    margin-bottom: 0;
+}
+
+nav ul li {
+    float: left;
+    display: block;
+    position: relative;
+}
+
+nav ul li a, nav #logo, nav a {
+    padding: .81em 1em;
+    display: block;
+    color: #FFF;
+}
+
+nav #logo {
+    background-color: #64163f;
+}
+
+nav a:hover, nav ul li.active a, nav a.active, nav a:active
+{
+    color: #FFF;
+    text-decoration: none;
+    background: #9D2053;
+}
+
+#mobile-menu {
+    padding: 0;
+    width: 100%;
+    text-align: center;
+}
+
+#mobile-menu .container {
+    padding: 0px;
+    max-width: 100%;
+}
+
+#mobile-menu a {
+    float: left;
+    width: 100%;
+}
+
+.ico-note {
+    font-size: .7em;
+    color: #BBB;
+}
+
+
+/* anchors for post headlines */
+.anchor {
+    padding-right: .3em;
+    float: left;
+    margin-left: -.9em;
+}
+
+.anchor, .anchor:hover {
+    text-decoration: none;
+}
+
+h1 .anchor .anchor-icon, h2 .anchor .anchor-icon, h3 .anchor .anchor-icon {
+    visibility: hidden;
+}
+
+h1:hover .anchor-icon, h2:hover .anchor-icon, h3:hover .anchor-icon {
+    visibility: inherit;
+}
+
+.anchor-icon {
+    display: inline-block;
+}
+
+#post img {
+    margin: 1em 0;
+}
+
+.hireMe {
+	font-size: 1.6rem;
+	margin: 2rem auto;
+}
+
+.hireMe a {
+    color: #f6f6f6;
+    display: block;
+}
+
+
+/* show/hidden menu; ref https://stackoverflow.com/a/35362821/1348344 */
+@media (max-width: 768px) {
+    .hidden-sm-down {
+        display: none !important;
+    }
+}
+@media (min-width: 769px) {
+    .hidden-md-up {
+        display: none !important;
+    }
+}
+
+
+#about-quote {
+    font-size: 1.4em;
+    line-height: 1.6em;
+}
+
+#about-items {
+    font-size: 1.2em;
+    line-height: 1.7em;
+}
+
+#contact .bigger {
+    font-size: 1.2em;
+    line-height: 2.3em;
+}
+
+.card-normal .card-title {
+    margin-top: 0.3em;
+    margin-bottom: 0.9em;
+}
+
+.card-normal .card-body p, .card-normal .card-body li {
+    font-size: 0.9em;
+}
+
+.card-normal .card-body p {
+    line-height: 1.5em;
+}
+
+.card-normal ul {
+    padding-left: 1em;
+}

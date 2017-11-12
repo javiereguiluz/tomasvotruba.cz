@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Modular Routing in Symfony | Tomas Votruba</title>
+    <meta charset="utf-8">
+    <meta name="robots" content="index, follow">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+
+    <link rel="alternate" type="application/rss+xml" title="Tomas Votruba Blog RSS" href="/rss.xml">
+
+    <link href="/assets/font-awesome/css/font-awesome.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/bootstrap/bootstrap.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/css/style.css?v=1.2" rel="stylesheet" type="text/css">
+
+</head>
+    <body>
+        <!-- post_id: 5 -->
+
+<div class="hidden-sm-down">
+    <nav class="navbar">
+        <div class="container-fluid">
+            <ul>
+                <li id="logo">
+                    Tomas Votruba
+                </li>
+                <li class="active">
+                    <a href="/">Blog</a>
+                </li>
+                <li>
+                    <a href="/mentoring-and-lectures/">Mentoring & Lectures</a>
+                </li>
+                <li>
+                    <a href="/talks/">Talks</a>
+                </li>
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<div class="hidden-md-up">
+    <nav class="navbar" id="mobile-menu">
+        <div class="container">
+            <a href="/" class="col-3 col-sm-3 active">
+                <em class="fa fa-book"></em>
+                <br>
+                PHP Blog
+            </a>
+            <a href="/mentoring-and-lectures/" class="col-3 col-sm-3">
+                <em class="fa fa-graduation-cap"></em>
+                <br>
+                Lectures
+            </a>
+            <a href="/about/" class="col-3 col-sm-3">
+                <em class="fa fa-id-badge"></em>
+                <br>
+                About
+            </a>
+            <a href="/contact/" class="col-3 col-sm-3">
+                <em class="fa fa-phone"></em>
+                <br>
+                Contact
+            </a>
+        </div>
+    </nav>
+</div>
+
+        <div class="mainContent">
+    <div class="container-fluid" id="post">
+        <h1>Modular Routing in Symfony</h1>
+
+<ul class="list-inline">
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-clock-o fa-fw"></em>
+        <strong>3 min</strong>
+    </li>
+
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-calendar fa-fw"></em>
+        <time datetime="2016-02-Thu">Thursday, February 25, 2016</time>
+    </li>
+
+        <li class="list-inline-item mr-3">
+            <em class="fa fa-fw fa-comments"></em>
+            <a href="https://www.tomasvotruba.cz/blog/2016/02/25/modular-routing-in-symfony/#disqus_thread">X</a> comments
+        </li>
+
+        <li class="list-inline-item">
+            <em class="fa fa-fw fa-pencil"></em>
+                <a href="https://github.com/TomasVotruba/tomasvotruba.cz/edit/master/source/_posts/2016/2016-02-25-modular-routing-in-symfony.md">
+                Typo? Fix me please
+            </a>
+        </li>
+
+</ul>
+
+            <div class="card border-danger">
+                <div class="card-header text-white bg-danger border-danger">
+                    <strong>This post is deprecated since June 2017</strong>
+                </div>
+                <div class="card-body">
+                    I have deprecated this package, because of <a href="https://github.com/Symplify/Symplify/issues/181">feedback that it is not useful</a> and low download rates (under 2 000 in 2 years).
+<br><br>
+You can use <strong>annotation routing</strong> in combination with <strong><a href="/blog/2017/05/07/how-to-refactor-to-new-dependency-injection-features-in-symfony-3-3/#4-use-psr-4-based-service-autodiscovery-and-registration">PSR-4 controller autodiscovery</a></strong> since <strong>Symfony 3.3</strong> and with <a href="https://github.com/symfony/symfony/pull/23044">routing annotation loader enabled by default</a> since <strong>Symfony 3.4</strong>.    
+<br><br>
+This package is still available <a href="https://github.com/DeprecatedPackages/SymfonyModularRouting">here for inspiration</a> though.
+                </div>
+            </div>
+
+            <br>
+
+
+        <div class="card">
+            <div class="card-body">
+                Modular routing in Symfony is bounded to <code>routing.yml</code>. Adding few lines for each new module can create large mess. Can we make it bit simpler? Sure we do and I will show you how.
+            </div>
+        </div>
+
+        
+<p>Let's say you have fairly standalone module or package and you want to add its routes as simple as:</p>
+<pre><code class="language-php">// app/AppKernel.php
+
+final class AppKernel extends Kernel
+{
+    public function registerBundles(): array
+    {
+        $bundles = [
+            new App\MeetupModule\AppMeetupModuleBundle(),
+            // ...
+        ];
+    }
+}</code></pre>
+<h2 id="so-what-you-can-do"><a class="anchor" href="#so-what-you-can-do" aria-hidden="true"><span class="anchor-icon">#</span></a>So, what you can do?</h2>
+<ul>
+<li>add your routes manually to <code>routing.yml</code> - <strong>requires routing.yml modification</strong> </li>
+<li>implement <a href="http://symfony.com/doc/current/cookbook/routing/custom_route_loader.html">custom Route Loader</a> - <strong>requires routing.yml modification</strong></li>
+<li>use <a href="https://github.com/symfony-cmf/RoutingBundle">Symfony CMF RoutingBundle</a> and hook to <a href="http://symfony.com/doc/current/cmf/components/routing/chain.html">ChainRouter</a> - <strong>requires lots of reading and programming</strong></li>
+</ul>
+<p><br></p>
+<div class="text-center">
+    <img src="/assets/images/posts/2016/modular-router/mess.jpg" alt="Wow, so many options!"><br><em>Wow, so many options!</em>
+</div>
+<p><br></p>
+<p>As <a href="https://twitter.com/matthiasnoback">Matthias Noback</a> <a href="http://php-and-symfony.matthiasnoback.nl/2012/01/symfony2-dynamically-add-routes/">wrote 4 years ago</a>, in Symfony 1 you could use <code>routing.load_configuration</code> event to do this, but it was removed in Symfony 2. As a replacement, Matthias suggests creating custom Route Loader. It's the best solution so far I used before.</p>
+<p>But I'm older and more lazy now so I tried to find a simpler way.</p>
+<blockquote>
+<p>Warning!<br>
+If you prefer <strong>YAML, XML or PHP definition, good news - continue</strong>.<br>
+In case you use <code>@Route</code> annotation, following solution won't help you.</p>
+</blockquote>
+<h2 id="load-your-routes-in-1-method"><a class="anchor" href="#load-your-routes-in-1-method" aria-hidden="true"><span class="anchor-icon">#</span></a>Load your routes in 1 method</h2>
+<p>Routes are usually in form of a simple array with <code>url</code> → <code>controller</code> records.</p>
+<p><strong>What if loading of this simple array could be done via simple service? Something as simple as:</strong></p>
+<pre><code class="language-php">use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
+
+public function getRouteCollection(): RouteCollection
+{
+    return $this-&gt;loadRouteCollectionFromFile(__DIR__ . '/routes.yml');
+
+    // OR xml
+    return $this-&gt;loadRouteCollectionFromFile(__DIR__ . '/routes.xml');
+
+    // OR even multiple files
+    return $this-&gt;loadRouteCollectionFromFiles([
+        __DIR__ . '/front_routes.yml',
+        __DIR__ . '/admin_routes.yml'
+    ]);
+
+    // OR pure PHP with some tweaks
+    $routeCollection = new RouteCollection();
+    $routeCollection-&gt;add('my_route', new Route('/hello'));
+
+    return $routeCollection;
+}</code></pre>
+<h2 id="load-your-routes-in-modular-way-in-4-steps"><a class="anchor" href="#load-your-routes-in-modular-way-in-4-steps" aria-hidden="true"><span class="anchor-icon">#</span></a>Load your routes in modular way in 4 steps</h2>
+<p>All those options above are available in Symfony, thanks to <a href="https://github.com/Symplify/ModularRouting">Symplify\ModularRouting package</a>.</p>
+<p>Let's try it together.</p>
+<h3 id="1-install-package"><a class="anchor" href="#1-install-package" aria-hidden="true"><span class="anchor-icon">#</span></a>1. Install package</h3>
+<pre><code class="language-bash">composer require symplify/modular-routing</code></pre>
+<h3 id="2-register-bundles"><a class="anchor" href="#2-register-bundles" aria-hidden="true"><span class="anchor-icon">#</span></a>2. Register bundles</h3>
+<pre><code class="language-php">// app/AppKernel.php
+final class AppKernel extends Kernel
+{
+    public function registerBundles(): array
+    {
+        return [
+            new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
+            new Symfony\Cmf\Bundle\RoutingBundle\CmfRoutingBundle(),
+            new Symplify\ModularRouting\SymplifyModularRoutingBundle(),
+            // ...
+        ];
+    }
+}</code></pre>
+<h3 id="3-create-services-to-load-your-yaml-file"><a class="anchor" href="#3-create-services-to-load-your-yaml-file" aria-hidden="true"><span class="anchor-icon">#</span></a>3. Create services to load your YAML file</h3>
+<pre><code class="language-php">// src/SomeBundle/Routing/SomeRouteCollectionProvider.php
+namespace SomeBundle\Routing;
+
+use Symfony\Component\Routing\RouteCollection;
+use Symplify\ModularRouting\Routing\AbstractRouteCollectionProvider;
+
+final class SomeRouteCollectionProvider extends AbstractRouteCollectionProvider
+{
+    public function getRouteCollection(): RouteCollection
+    {
+        # routes.yml is the file, where all your routes are located
+        return $this-&gt;loadRouteCollectionFromFile(__DIR__ . '/routes.yml');
+    }
+}</code></pre>
+<h3 id="4-register-it-as-a-service-to-your-module"><a class="anchor" href="#4-register-it-as-a-service-to-your-module" aria-hidden="true"><span class="anchor-icon">#</span></a>4. Register it as a service to your module</h3>
+<pre><code class="language-yaml"># src/SomeBundle/Resources/config/services.yml
+services:
+    SomeBundle\Routing\SomeRouteCollectionProvider: ~</code></pre>
+<p>And that's it! Now all routes are loaded along with your bundle registration.</p>
+<p>For further use, <strong>just check <a href="https://github.com/Symplify/ModularRouting">Readme for Symplify/ModularRouting</a></strong>.</p>
+<p><br></p>
+<div class="text-center">
+    <img src="/assets/images/posts/2016/modular-router/you-are-king.jpg"></div>
+<p><br></p>
+<h2 id="what-have-you-learned-today"><a class="anchor" href="#what-have-you-learned-today" aria-hidden="true"><span class="anchor-icon">#</span></a>What have you learned today?</h2>
+<ul>
+<li>that registering routes usually requires using <code>app/routing/routing.yml</code> - unfortunately :( </li>
+<li>that routes is basically array of <code>url</code> → <code>controller</code> records</li>
+<li><strong>that you can load them per module via service with <a href="https://github.com/Symplify/ModularRouting">Symplify/ModularRouting</a></strong></li>
+</ul>
+<p>If you have some questions or tips for how to make loading of routes simpler, just let me know bellow.</p>
+<p>Happy coding!</p>
+
+        <br>
+
+
+
+<div class="hireMe card border-info">
+    <div class="card-body bg-info text-white text-center">
+        <a href="/contact">
+            Do you like what I write about? <strong>I'll do it for you!</strong>
+        </a>
+    </div>
+</div>
+
+        <br>
+
+        <h3>What do you think?</h3>
+
+<div id="disqus_thread"></div>
+
+<script type="text/javascript">
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+
+        s.src = '//' + "itsworthsharing" + '.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+    </div>
+        </div>
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+<script>
+    ga=function(){ ga.q.push(arguments) };
+    ga.q=[];
+    ga.l=+new Date;
+    ga('create', "UA-46082345-1", 'auto');
+    ga('send','pageview');
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async defer></script>
+<script>
+    !function(f,b,e,v,n,t,s){ if(f.fbq)return;n=f.fbq=function(){ n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', "201338863559186");
+    fbq('track', 'PageView');
+</script>
+    </body>
+</html>
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Modular Routing in Symfony">
+    <meta property="og:description" content="Modular routing in Symfony is bounded to routing.yml. Adding few lines for each new module can create large mess. Can we make it bit simpler? Sure we do and I will show you how.">
+    <meta property="og:url" content="https://www.tomasvotruba.cz/blog/2016/02/25/modular-routing-in-symfony">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@votrubaT">
+    <meta name="twitter:title" content="Modular Routing in Symfony">
+    <meta name="twitter:description" content="Modular routing in Symfony is bounded to routing.yml. Adding few lines for each new module can create large mess. Can we make it bit simpler? Sure we do and I will show you how.">
+
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+
+    <link href="/assets/prism/prism.css" rel="stylesheet" type="text/css">

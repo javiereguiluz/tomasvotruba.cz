@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Combine power of PHP_CodeSniffer and PHP CS Fixer in 3 lines | Tomas Votruba</title>
+    <meta charset="utf-8">
+    <meta name="robots" content="index, follow">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+
+    <link rel="alternate" type="application/rss+xml" title="Tomas Votruba Blog RSS" href="/rss.xml">
+
+    <link href="/assets/font-awesome/css/font-awesome.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/bootstrap/bootstrap.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/css/style.css?v=1.2" rel="stylesheet" type="text/css">
+
+</head>
+    <body>
+        <!-- post_id: 37 -->
+
+<div class="hidden-sm-down">
+    <nav class="navbar">
+        <div class="container-fluid">
+            <ul>
+                <li id="logo">
+                    Tomas Votruba
+                </li>
+                <li class="active">
+                    <a href="/">Blog</a>
+                </li>
+                <li>
+                    <a href="/mentoring-and-lectures/">Mentoring & Lectures</a>
+                </li>
+                <li>
+                    <a href="/talks/">Talks</a>
+                </li>
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<div class="hidden-md-up">
+    <nav class="navbar" id="mobile-menu">
+        <div class="container">
+            <a href="/" class="col-3 col-sm-3 active">
+                <em class="fa fa-book"></em>
+                <br>
+                PHP Blog
+            </a>
+            <a href="/mentoring-and-lectures/" class="col-3 col-sm-3">
+                <em class="fa fa-graduation-cap"></em>
+                <br>
+                Lectures
+            </a>
+            <a href="/about/" class="col-3 col-sm-3">
+                <em class="fa fa-id-badge"></em>
+                <br>
+                About
+            </a>
+            <a href="/contact/" class="col-3 col-sm-3">
+                <em class="fa fa-phone"></em>
+                <br>
+                Contact
+            </a>
+        </div>
+    </nav>
+</div>
+
+        <div class="mainContent">
+    <div class="container-fluid" id="post">
+        <h1>Combine power of PHP_CodeSniffer and PHP CS Fixer in 3 lines</h1>
+
+<ul class="list-inline">
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-clock-o fa-fw"></em>
+        <strong>2 min</strong>
+    </li>
+
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-calendar fa-fw"></em>
+        <time datetime="2017-05-Wed">Wednesday, May 3, 2017</time>
+    </li>
+
+        <li class="list-inline-item mr-3">
+            <em class="fa fa-fw fa-comments"></em>
+            <a href="https://www.tomasvotruba.cz/blog/2017/05/03/combine-power-of-php-code-sniffer-and-php-cs-fixer-in-3-lines/#disqus_thread">X</a> comments
+        </li>
+
+        <li class="list-inline-item">
+            <em class="fa fa-fw fa-pencil"></em>
+                <a href="https://github.com/TomasVotruba/tomasvotruba.cz/edit/master/source/_posts/2017/2017-05-03-combine-power-of-php-code-sniffer-and-php-cs-fixer-in-3-lines.md">
+                Typo? Fix me please
+            </a>
+        </li>
+
+</ul>
+
+
+
+        <div class="card">
+            <div class="card-body">
+                PHP_CodeSniffer has over <strong>3 400 stars</strong> on Github and <strong>210 default sniffs</strong>,
+PHP CS Fixer with <strong>4 423 stars</strong> brings you <strong>142 fixers</strong>.
+<br><br>
+Both powerful tools dealing with coding standards with <strong>huge communities behind them</strong>.
+Can you imagine using them both and actually enjoy it? Today I will show you how.
+            </div>
+        </div>
+
+        
+<div class="text-center">
+    <img src="/assets/images/posts/2017/easy-coding-standard-intro/together.png" class="img-thumbnail"></div>
+<h3 id="right-to-the-answer"><a class="anchor" href="#right-to-the-answer" aria-hidden="true"><span class="anchor-icon">#</span></a>Right to The Answer</h3>
+<p>Let's say we want to check arrays.  </p>
+<p>We add first <em>checker</em> that requires long <code>array()</code> syntax:</p>
+<pre><code class="language-yaml">checkers:
+    - PHP_CodeSniffer\Standards\Generic\Sniffs\Arrays\DisallowShortArraySyntaxSniff</code></pre>
+<p>Great start. Then we want to check for trailing commas, so every line has them.</p>
+<p>So add one more checker:</p>
+<pre><code class="language-yaml">checkers:
+    - PHP_CodeSniffer\Standards\Generic\Sniffs\Arrays\DisallowShortArraySyntaxSniff
+    - PhpCsFixer\Fixer\ArrayNotation\TrailingCommaInMultilineArrayFixer</code></pre>
+<p>Great job! <strong>You have just combined PHP_CodeSniffer and PHP CS Fixer in 3 lines.</strong></p>
+<p>With a help of <a href="https://github.com/Symplify/EasyCodingStandard">EasyCodingStandard</a>. Now, when title promise is fulfilled,
+I will show how to install it, run it and how nice and clear reports it generates.   </p>
+<h2 id="how-to-add-easycodingstandard-in-3-steps"><a class="anchor" href="#how-to-add-easycodingstandard-in-3-steps" aria-hidden="true"><span class="anchor-icon">#</span></a>How to add EasyCodingStandard in 3 steps</h2>
+<h3 id="1-install-package"><a class="anchor" href="#1-install-package" aria-hidden="true"><span class="anchor-icon">#</span></a>1. Install Package</h3>
+<pre><code class="language-bash">composer require --dev symplify/easy-coding-standard</code></pre>
+<h3 id="2-add-code-easy-coding-standard-neon-code-and-configure"><a class="anchor" href="#2-add-code-easy-coding-standard-neon-code-and-configure" aria-hidden="true"><span class="anchor-icon">#</span></a>2. Add <code>easy-coding-standard.neon</code> and Configure</h3>
+<p>Create a <code>easy-coding-standard.neon</code> file in your project and desired checkers.</p>
+<pre><code class="language-yaml">checkers:
+    # arrays
+    - PHP_CodeSniffer\Standards\Generic\Sniffs\Arrays\DisallowShortArraySyntaxSniff
+    - PhpCsFixer\Fixer\ArrayNotation\TrailingCommaInMultilineArrayFixer</code></pre>
+<p>You can add a comment to groups, so everyone can easily orientate when there are more checkers.</p>
+<h3 id="be-lazy-with-neon"><a class="anchor" href="#be-lazy-with-neon" aria-hidden="true"><span class="anchor-icon">#</span></a>Be Lazy with NEON</h3>
+<p>Do you use PHPStorm? If so, you can use <a href="https://plugins.jetbrains.com/plugin/7060-neon-support">NEON Plugin</a>. It allows you one amazing thing:</p>
+<div class="text-center">
+    <img src="/assets/images/posts/2017/easy-coding-standard-intro/neon-autocomplete.gif" class="img-thumbnail"></div>
+<p><strong>It autocompletes class names!</strong></p>
+<p>No more looking to documentation, what string matches what sniff or fixer, if there are any checkers for arrays or debugging typos.</p>
+<p><a href="https://ne-on.org/">NEON file format</a> is very similar to YAML.</p>
+<p><em>To install NEON PHPStorm plugin just: find everywhere → type &quot;Plugins&quot; → pick &quot;Browse repositories...&quot; in the bottom → type &quot;NEON&quot; and install it.</em>  </p>
+<h3 id="3-run-it-amp-fix-it"><a class="anchor" href="#3-run-it-amp-fix-it" aria-hidden="true"><span class="anchor-icon">#</span></a>3. Run it &amp; Fix it</h3>
+<pre><code class="language-bash">vendor/bin/easy-coding-standard check src
+
+# ...
+
+vendor/bin/easy-coding-standard check src --fix</code></pre>
+<div class="text-center">
+    <img src="/assets/images/posts/2017/easy-coding-standard-intro/run-and-fix.gif" class="img-thumbnail"></div>
+<p>That's all!</p>
+<p>Well, unless you like videos...</p>
+<h2 id="watch-11-min-intro-talks-from-dresden-php-meetup"><a class="anchor" href="#watch-11-min-intro-talks-from-dresden-php-meetup" aria-hidden="true"><span class="anchor-icon">#</span></a>Watch 🕑 11 min Intro Talks from Dresden PHP Meetup</h2>
+<p>I spoke about ECS last week in Dresden. <strong>If you have 11 minutes and you want to know more about it, <a href="https://www.facebook.com/pehapkari/videos/vl.1877987242460289/1321227224593751/?type=1">go watch it here it here</a>.</strong></p>
+<p>That's all for short intro of this tool. I'll post more articles about how to use it, about fast caching or how to write own checkers - both sniffs and fixers. </p>
+<p><strong>Thank you for any feedback.</strong> Here or in the issues.</p>
+
+        <br>
+
+
+<div class="card border-warning" id="relatedPosts">
+    <div class="card-header text-white bg-warning border-warning">
+        <strong>Continue Reading</strong>
+    </div>
+    <div class="card-body">
+        <ul>
+                <li>
+                    <a href="/blog/2017/07/31/how-php-coding-standard-tools-actually-work">
+                        How PHP Coding Standard Tools Actually Work
+                    </a>
+                </li>
+                <li>
+                    <a href="/blog/2017/07/24/how-to-write-custom-fixer-for-php-cs-fixer-24">
+                        How to Write Custom Fixer for PHP CS Fixer 2.4
+                    </a>
+                </li>
+                <li>
+                    <a href="/blog/2017/07/17/how-to-write-custom-sniff-for-code-sniffer-3">
+                        How to Write Custom Sniff for Code Sniffer 3
+                    </a>
+                </li>
+        </ul>
+    </div>
+</div>
+
+<div class="hireMe card border-info">
+    <div class="card-body bg-info text-white text-center">
+        <a href="/contact">
+            Do you like what I write about? <strong>I'll do it for you!</strong>
+        </a>
+    </div>
+</div>
+
+        <br>
+
+        <h3>What do you think?</h3>
+
+<div id="disqus_thread"></div>
+
+<script type="text/javascript">
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+
+        s.src = '//' + "itsworthsharing" + '.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+    </div>
+        </div>
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+<script>
+    ga=function(){ ga.q.push(arguments) };
+    ga.q=[];
+    ga.l=+new Date;
+    ga('create', "UA-46082345-1", 'auto');
+    ga('send','pageview');
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async defer></script>
+<script>
+    !function(f,b,e,v,n,t,s){ if(f.fbq)return;n=f.fbq=function(){ n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', "201338863559186");
+    fbq('track', 'PageView');
+</script>
+    </body>
+</html>
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Combine power of PHP_CodeSniffer and PHP CS Fixer in 3 lines">
+    <meta property="og:description" content="PHP_CodeSniffer has over 3 400 stars on Github and 210 default sniffs,
+PHP CS Fixer with 4 423 stars brings you 142 fixers.
+
+Both powerful tools dealing with coding standards with huge communities behind them.
+Can you imagine using them both and actually enjoy it? Today I will show you how.">
+    <meta property="og:url" content="https://www.tomasvotruba.cz/blog/2017/05/03/combine-power-of-php-code-sniffer-and-php-cs-fixer-in-3-lines">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@votrubaT">
+    <meta name="twitter:title" content="Combine power of PHP_CodeSniffer and PHP CS Fixer in 3 lines">
+    <meta name="twitter:description" content="PHP_CodeSniffer has over 3 400 stars on Github and 210 default sniffs,
+PHP CS Fixer with 4 423 stars brings you 142 fixers.
+
+Both powerful tools dealing with coding standards with huge communities behind them.
+Can you imagine using them both and actually enjoy it? Today I will show you how.">
+
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+
+    <link href="/assets/prism/prism.css" rel="stylesheet" type="text/css">

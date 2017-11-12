@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>How to Apply Nette Coding Standard in Your Project | Tomas Votruba</title>
+    <meta charset="utf-8">
+    <meta name="robots" content="index, follow">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+
+    <link rel="alternate" type="application/rss+xml" title="Tomas Votruba Blog RSS" href="/rss.xml">
+
+    <link href="/assets/font-awesome/css/font-awesome.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/bootstrap/bootstrap.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/css/style.css?v=1.2" rel="stylesheet" type="text/css">
+
+</head>
+    <body>
+        <!-- post_id: 50 -->
+
+<div class="hidden-sm-down">
+    <nav class="navbar">
+        <div class="container-fluid">
+            <ul>
+                <li id="logo">
+                    Tomas Votruba
+                </li>
+                <li class="active">
+                    <a href="/">Blog</a>
+                </li>
+                <li>
+                    <a href="/mentoring-and-lectures/">Mentoring & Lectures</a>
+                </li>
+                <li>
+                    <a href="/talks/">Talks</a>
+                </li>
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<div class="hidden-md-up">
+    <nav class="navbar" id="mobile-menu">
+        <div class="container">
+            <a href="/" class="col-3 col-sm-3 active">
+                <em class="fa fa-book"></em>
+                <br>
+                PHP Blog
+            </a>
+            <a href="/mentoring-and-lectures/" class="col-3 col-sm-3">
+                <em class="fa fa-graduation-cap"></em>
+                <br>
+                Lectures
+            </a>
+            <a href="/about/" class="col-3 col-sm-3">
+                <em class="fa fa-id-badge"></em>
+                <br>
+                About
+            </a>
+            <a href="/contact/" class="col-3 col-sm-3">
+                <em class="fa fa-phone"></em>
+                <br>
+                Contact
+            </a>
+        </div>
+    </nav>
+</div>
+
+        <div class="mainContent">
+    <div class="container-fluid" id="post">
+        <h1>How to Apply Nette Coding Standard in Your Project</h1>
+
+<ul class="list-inline">
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-clock-o fa-fw"></em>
+        <strong>2 min</strong>
+    </li>
+
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-calendar fa-fw"></em>
+        <time datetime="2017-08-Mon">Monday, August 14, 2017</time>
+    </li>
+
+        <li class="list-inline-item mr-3">
+            <em class="fa fa-fw fa-comments"></em>
+            <a href="https://www.tomasvotruba.cz/blog/2017/08/14/how-to-apply-nette-coding-standard-in-your-project/#disqus_thread">X</a> comments
+        </li>
+
+        <li class="list-inline-item">
+            <em class="fa fa-fw fa-pencil"></em>
+                <a href="https://github.com/TomasVotruba/tomasvotruba.cz/edit/master/source/_posts/2017/2017-08-14-how-to-apply-nette-coding-standard-in-your-project.md">
+                Typo? Fix me please
+            </a>
+        </li>
+
+</ul>
+
+
+
+        <div class="card">
+            <div class="card-body">
+                <strong>Pull-requests are more fun</strong> thanks to automated coding standard. You don't have explain where to put space or bracket. You <strong>can talk about architecture or meaning of the code</strong> instead. Moreover in open-source. <strong>I wanted to make this possible in Nette</strong>, but Coding Standards could be found only in <a href="https://nette.org/en/coding-standard">documentation</a>.
+<br><br>
+This year I started to work on a Nette Coding Standard (<em>NCS</em>) that you can put to CLI. And you'll <strong>be able set it up in in your project</strong> yourself today.
+            </div>
+        </div>
+
+        
+<p><a href="https://github.com/nette/coding-standard/">Nette\CodingStandard</a> version <a href="https://github.com/nette/coding-standard/releases/tag/v0.5.0">0.5</a> with important bug-fixes was released a week ago. This version <strong>is ready to use, includes all important checkers and is used on all <code>Nette\*</code> packages in Travis</strong>.</p>
+<p><strong>NCS checks every pull-request you make to Nette</strong>:</p>
+<div>
+    <a href="https://travis-ci.org/nette/application/jobs/261987910#L349">
+        <img src="/assets/images/posts/2017/nette-coding-standard/travis-check.png" class="img-thumbnail"></a>
+</div>
+<p>All that need is to <a href="https://github.com/nette/application/blob/2f545e64fc4bfc941d7e48a95e3faca7c468ac35/.travis.yml#L31-L41">define stage in <code>travis.yml</code></a>:</p>
+<div>
+    <img src="/assets/images/posts/2017/nette-coding-standard/travis-setup.png" class="img-thumbnail"></div>
+<p>That's it! Just 2 commands and it checks any project you have.</p>
+<p>But first...</p>
+<h2 id="php-7-1"><a class="anchor" href="#php-7-1" aria-hidden="true"><span class="anchor-icon">#</span></a>PHP 7.1+</h2>
+<p>This packages requires PHP 7.1 to run as the rest of the Nette (mostly current <code>master</code> or <code>3.0</code>).</p>
+<p>If you still don't know why should you <strong>join <a href="https://gophp71.org/">Symfony, Nette, Doctrine, Zend or Sylius</a></strong>, you can read <a href="/blog/2017/06/05/go-php-71/#why-go-right-to-php-7-1">this post</a> or wait a bit longer. It's up to you.  </p>
+<h2 id="setup-your-project"><a class="anchor" href="#setup-your-project" aria-hidden="true"><span class="anchor-icon">#</span></a>Setup Your Project</h2>
+<p>You have 2 options how to use NCS in your project. </p>
+<h3 id="1-as-a-composer-project"><a class="anchor" href="#1-as-a-composer-project" aria-hidden="true"><span class="anchor-icon">#</span></a>1. As a Composer Project</h3>
+<p>Nette packages require this approach, because NCS depends on many Nette packages. <strong>NCS should be installed to standalone directory</strong>, so changing the Nette code by NCS doesn't break NCS.</p>
+<p>The easiest way is to setup <code>.travis.yml</code>: </p>
+<pre><code class="language-bash">install:
+    - composer create-project nette/coding-standard temp/nette-coding-standard
+
+script:
+    - temp/nette-coding-standard/ecs check src tests --config temp/nette-coding-standard/coding-standard-php71.neon</code></pre>
+<p>And you are ready to go!</p>
+<h3 id="2-as-a-composer-dev-dependency"><a class="anchor" href="#2-as-a-composer-dev-dependency" aria-hidden="true"><span class="anchor-icon">#</span></a>2. As a Composer Dev Dependency</h3>
+<p>I prefer this in projects, where I <strong>want to check coding standards locally and have dependencies up-to date</strong>. It's easier than composer project, where you need to remember to update dependencies manually in the directory.</p>
+<pre><code class="language-bash">composer require nette/coding-standard --dev</code></pre>
+<p>Check the code:</p>
+<pre><code class="language-bash">vendor/bin/ecs check src tests --config vendor/nette/coding-standard/coding-standard-php71.neon </code></pre>
+<p>Fix the code:</p>
+<pre><code class="language-bash">vendor/bin/ecs check src tests --config vendor/nette/coding-standard/coding-standard-php71.neon --fix </code></pre>
+<h2 id="3-configs-based-on-php-version"><a class="anchor" href="#3-configs-based-on-php-version" aria-hidden="true"><span class="anchor-icon">#</span></a>3 Configs based on PHP version</h2>
+<p>Do you need to <strong>check code that is not PHP 7.0 ready</strong>? You can.</p>
+<p>At the moment there are 3 configs with set of checkers (click to see their content):</p>
+<ul>
+<li><a href="https://github.com/nette/coding-standard/blob/2f935070b82fbe4b1da8e564a8dc6dcb9bbeca25/coding-standard-php56.neon"><code>coding-standard-php56.neon</code></a> </li>
+<li><a href="https://github.com/nette/coding-standard/blob/2f935070b82fbe4b1da8e564a8dc6dcb9bbeca25/coding-standard-php70.neon"><code>coding-standard-php70.neon</code></a></li>
+<li><a href="https://github.com/nette/coding-standard/blob/2f935070b82fbe4b1da8e564a8dc6dcb9bbeca25/coding-standard-php71.neon"><code>coding-standard-php71.neon</code></a></li>
+</ul>
+<p><strong>Config with higher PHP version includes all lower versions</strong>, so with <code>coding-standard-php71.neon</code> you cover the other 2 configs as well. </p>
+<p>For PHP 5.6 it would like this:</p>
+<pre><code class="language-bash">vendor/bin/ecs check src tests --config vendor/nette/coding-standard/coding-standard-php56.neon </code></pre>
+<p>Happy coding!</p>
+
+        <br>
+
+
+<div class="card border-warning" id="relatedPosts">
+    <div class="card-header text-white bg-warning border-warning">
+        <strong>Continue Reading</strong>
+    </div>
+    <div class="card-body">
+        <ul>
+                <li>
+                    <a href="/blog/2017/08/07/7-new-features-in-easy-coding-standard-22">
+                        7 New Features in Easy Coding Standard 2.2
+                    </a>
+                </li>
+        </ul>
+    </div>
+</div>
+
+<div class="hireMe card border-info">
+    <div class="card-body bg-info text-white text-center">
+        <a href="/contact">
+            Do you like what I write about? <strong>I'll do it for you!</strong>
+        </a>
+    </div>
+</div>
+
+        <br>
+
+        <h3>What do you think?</h3>
+
+<div id="disqus_thread"></div>
+
+<script type="text/javascript">
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+
+        s.src = '//' + "itsworthsharing" + '.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+    </div>
+        </div>
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+<script>
+    ga=function(){ ga.q.push(arguments) };
+    ga.q=[];
+    ga.l=+new Date;
+    ga('create', "UA-46082345-1", 'auto');
+    ga('send','pageview');
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async defer></script>
+<script>
+    !function(f,b,e,v,n,t,s){ if(f.fbq)return;n=f.fbq=function(){ n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', "201338863559186");
+    fbq('track', 'PageView');
+</script>
+    </body>
+</html>
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="How to Apply Nette Coding Standard in Your Project">
+    <meta property="og:description" content="Pull-requests are more fun thanks to automated coding standard. You don&#039;t have explain where to put space or bracket. You can talk about architecture or meaning of the code instead. Moreover in open-source. I wanted to make this possible in Nette, but Coding Standards could be found only in documentation.
+
+This year I started to work on a Nette Coding Standard (NCS) that you can put to CLI. And you&#039;ll be able set it up in in your project yourself today.">
+    <meta property="og:url" content="https://www.tomasvotruba.cz/blog/2017/08/14/how-to-apply-nette-coding-standard-in-your-project">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@votrubaT">
+    <meta name="twitter:title" content="How to Apply Nette Coding Standard in Your Project">
+    <meta name="twitter:description" content="Pull-requests are more fun thanks to automated coding standard. You don&#039;t have explain where to put space or bracket. You can talk about architecture or meaning of the code instead. Moreover in open-source. I wanted to make this possible in Nette, but Coding Standards could be found only in documentation.
+
+This year I started to work on a Nette Coding Standard (NCS) that you can put to CLI. And you&#039;ll be able set it up in in your project yourself today.">
+
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+
+    <link href="/assets/prism/prism.css" rel="stylesheet" type="text/css">

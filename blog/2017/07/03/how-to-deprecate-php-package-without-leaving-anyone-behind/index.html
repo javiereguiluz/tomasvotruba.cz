@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>How to Deprecate PHP Package Without Leaving Anyone Behind | Tomas Votruba</title>
+    <meta charset="utf-8">
+    <meta name="robots" content="index, follow">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+
+    <link rel="alternate" type="application/rss+xml" title="Tomas Votruba Blog RSS" href="/rss.xml">
+
+    <link href="/assets/font-awesome/css/font-awesome.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/bootstrap/bootstrap.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/css/style.css?v=1.2" rel="stylesheet" type="text/css">
+
+</head>
+    <body>
+        <!-- post_id: 45 -->
+
+<div class="hidden-sm-down">
+    <nav class="navbar">
+        <div class="container-fluid">
+            <ul>
+                <li id="logo">
+                    Tomas Votruba
+                </li>
+                <li class="active">
+                    <a href="/">Blog</a>
+                </li>
+                <li>
+                    <a href="/mentoring-and-lectures/">Mentoring & Lectures</a>
+                </li>
+                <li>
+                    <a href="/talks/">Talks</a>
+                </li>
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<div class="hidden-md-up">
+    <nav class="navbar" id="mobile-menu">
+        <div class="container">
+            <a href="/" class="col-3 col-sm-3 active">
+                <em class="fa fa-book"></em>
+                <br>
+                PHP Blog
+            </a>
+            <a href="/mentoring-and-lectures/" class="col-3 col-sm-3">
+                <em class="fa fa-graduation-cap"></em>
+                <br>
+                Lectures
+            </a>
+            <a href="/about/" class="col-3 col-sm-3">
+                <em class="fa fa-id-badge"></em>
+                <br>
+                About
+            </a>
+            <a href="/contact/" class="col-3 col-sm-3">
+                <em class="fa fa-phone"></em>
+                <br>
+                Contact
+            </a>
+        </div>
+    </nav>
+</div>
+
+        <div class="mainContent">
+    <div class="container-fluid" id="post">
+        <h1>How to Deprecate PHP Package Without Leaving Anyone Behind</h1>
+
+<ul class="list-inline">
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-clock-o fa-fw"></em>
+        <strong>6 min</strong>
+    </li>
+
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-calendar fa-fw"></em>
+        <time datetime="2017-07-Mon">Monday, July 3, 2017</time>
+    </li>
+
+        <li class="list-inline-item mr-3">
+            <em class="fa fa-fw fa-comments"></em>
+            <a href="https://www.tomasvotruba.cz/blog/2017/07/03/how-to-deprecate-php-package-without-leaving-anyone-behind/#disqus_thread">X</a> comments
+        </li>
+
+        <li class="list-inline-item">
+            <em class="fa fa-fw fa-pencil"></em>
+                <a href="https://github.com/TomasVotruba/tomasvotruba.cz/edit/master/source/_posts/2017/2017-07-03-how-to-deprecate-php-package-without-leaving-anyone-behind.md">
+                Typo? Fix me please
+            </a>
+        </li>
+
+</ul>
+
+
+
+        <div class="card">
+            <div class="card-body">
+                You create PHP open-source packages because you personally use them in your projects. <strong>And you take care of them.</strong>
+In time you change a job or switch a programming language and you don't have time to take care of them properly. Number of issues and PRs grows and <strong>package is getting obsolete</strong>.
+<br><br>
+You can do 2 things in this situation: nothing like most people do or <strong>take responsibility, deprecate package and inform your users about better alternative</strong>.
+            </div>
+        </div>
+
+        
+<h2 id="why-care-about-deprecation-as-a-maintainer"><a class="anchor" href="#why-care-about-deprecation-as-a-maintainer" aria-hidden="true"><span class="anchor-icon">#</span></a>Why Care About Deprecation as a Maintainer</h2>
+<p>I created over 10 packages for <a href="https://nette.org">Nette</a> in the past under <em>Zenify</em> namespace. I used them in my projects extensively and they were growing in downloads. Then I switched to <a href="https://symfony.com">Symfony</a> and I worked mostly with Symfony projects.</p>
+<p>If I tell you this in person, you'd know that future of <em>Zenify</em> is not based on daily usage of it's author and you'd consider switching to concurrent packages.</p>
+<p><strong>The thing is: 95 % of users of your package don't know about your personal development and life path. They use <code>composer require vendor/package-name</code> and that's it.</strong> Of course, few people follow issues and PRs around your package and they might notice 6-months gap in activity. </p>
+<h3 id="open-source-holidays"><a class="anchor" href="#open-source-holidays" aria-hidden="true"><span class="anchor-icon">#</span></a>Open-Source Holidays</h3>
+<p>But in open-source these <em>pauses</em> are normal: you need to finish your work project, focus on boost of another package, you have some personal or family events (wedding, newborn child, break-up, moving to another country etc.), so you take a break.</p>
+<p><strong>6-months pause gap and 6-months end-of-development pause look the same. But they are way different.</strong> </p>
+<p>This is the second case.</p>
+<p>As <a href="https://www.amazon.com/No-More-Mr-Nice-Guy/dp/0762415339">No more Mr. Nice Guy</a> would say:</p>
+<h2 id="don-t-do-anything-in-secret"><a class="anchor" href="#don-t-do-anything-in-secret" aria-hidden="true"><span class="anchor-icon">#</span></a>Don't do Anything in Secret</h2>
+<h3 id="a-if-you-don-t-inform-people-they-might"><a class="anchor" href="#a-if-you-don-t-inform-people-they-might" aria-hidden="true"><span class="anchor-icon">#</span></a>A. If you DON'T inform people, they might:</h3>
+<ul>
+<li>build new open-source or application that depends <strong>on non-supported package</strong></li>
+<li>integrate your package deeply in their architecture </li>
+<li><strong>promote bad practice</strong> that you don't support anymore but don't have time to put them in the package</li>
+<li><strong>wait in darkness</strong> thinking &quot;Author is on a vacation&quot;</li>
+</ul>
+<h3 id="b-if-you-do-inform-people-they-will"><a class="anchor" href="#b-if-you-do-inform-people-they-will" aria-hidden="true"><span class="anchor-icon">#</span></a>B. If you DO inform people, they will:</h3>
+<ul>
+<li><strong>be informed</strong> - either notified by composer or on your blog (I will your show how later)</li>
+<li><strong>know</strong> what part of their application won't be upgraded anymore</li>
+<li><strong>be able to plan</strong> next upgrade much better</li>
+</ul>
+<p><br></p>
+<img src="/assets/images/posts/2017/deprecate/trust.jpg" class="img-thumbnail">
+<h2 id="packages-like-relationships-stand-on-trust"><a class="anchor" href="#packages-like-relationships-stand-on-trust" aria-hidden="true"><span class="anchor-icon">#</span></a>Packages like Relationships Stand on Trust</h2>
+<p>You have a meeting with a friend on Saturday on his birthday party. During the week you got close with a girl you like and you'd like to spend a weekend with her, because it's great opportunity to get to know her better. But what about your friend?</p>
+<p>You can either:</p>
+<ul>
+<li>A. Wait it out and don't tell him anything. He probably wouldn't even notice. </li>
+<li>B. Call him, explain the situation and let him know, you'll come next week as alternative.</li>
+</ul>
+<p><em>What would you choose if you were your friend?</em></p>
+<p>Actually, <strong>B builds foundations of great and strong relationship</strong>, because people know they can trust you if anything difficult ever happens between you.</p>
+<h2 id="deprecate-package-delete-package"><a class="anchor" href="#deprecate-package-delete-package" aria-hidden="true"><span class="anchor-icon">#</span></a>Deprecate Package !== Delete Package</h2>
+<p>I thought when I deprecate package, application who use it as a dependency stops working. This could be <strong>caused by deleting a package</strong>, but not by deprecating it. Imagine <strong>dropping from level 50 to 20</strong>. </p>
+<p><strong>Deprecating a package</strong> is like <strong>having level 50 and staying there</strong> forever. It will never be worse, but it won't be better either. Deprecation won't break anything and won't improve anything.</p>
+<p><a href="https://seld.be/notes/php-versions-stats-2016-2-edition"></p>
+<img src="https://seld.be/images/update-reqs.png" class="img-thumbnail">
+<p></a></p>
+<p>It works the same for releases. When you release version 2.0 that <a href="/blog/2017/06/05/go-php-71/">requires PHP 7.1</a>, it doesn't mean your package won't work on PHP 5.6. Version 1.0 still does.</p>
+<h2 id="3-steps-to-perform-safe-deprecation"><a class="anchor" href="#3-steps-to-perform-safe-deprecation" aria-hidden="true"><span class="anchor-icon">#</span></a>3 Steps To Perform Safe Deprecation</h2>
+<h3 id="1-explain-why"><a class="anchor" href="#1-explain-why" aria-hidden="true"><span class="anchor-icon">#</span></a>1. Explain Why</h3>
+<p>&quot;This package is deprecated&quot; isn't satisfying, is it?</p>
+<p>It's common psychological effect that people accept change with <a href="https://startwithwhy.com/"><strong>an explanation behind it</strong></a> more than without it.</p>
+<h3 id="2-suggest-replacement"><a class="anchor" href="#2-suggest-replacement" aria-hidden="true"><span class="anchor-icon">#</span></a>2. Suggest Replacement</h3>
+<p>Software develops all the time. New and better packages are born everyday.
+It so much helpful if you suggest a way to go. It doesn't have to share 100 % features of your package. <strong>A package that you'd use if your package won't exist is fine</strong>.</p>
+<p>You can combine both <a href="/blog/2016/03/10/autowired-controllers-as-services-for-lazy-people/">like this</a>: </p>
+<blockquote>
+<p>Since Symfony 3.3 you can use PSR4-based service discovery and registration. It does pretty much the
+same thing - registers autowired controllers (and more) - and it has native support in Symfony. </p>
+<p>I recommend using it instead!</p>
+</blockquote>
+<h3 id="3-inform-people-on-all-possible-places-they-can-meet-your-package"><a class="anchor" href="#3-inform-people-on-all-possible-places-they-can-meet-your-package" aria-hidden="true"><span class="anchor-icon">#</span></a>3. Inform People on All Possible Places They can Meet Your Package</h3>
+<p>How many places are there to get in contact with your package? Programmer A added package to his composer, programmer B read about it on Github, programmer C saw a blog post that your wrote about it.</p>
+<p>To make sure there are no deprecation leaks, put a sign on all sources:</p>
+<p><br></p>
+<p><strong>Packagist</strong></p>
+<ul>
+<li>Go to your package on Packagist, in my case <a href="https://packagist.org/packages/symplify/symfony-event-dispatcher">symplify/symfony-event-dispatcher</a></li>
+<li>
+<p>Hit &quot;Abandon&quot; button</p>
+<img src="/assets/images/posts/2017/deprecate/packagist-abandon.png" class="img-thumbnail">
+</li>
+<li>
+<p>Pick a replacement</p>
+<img src="/assets/images/posts/2017/deprecate/packagist-replacement.png" class="img-thumbnail">
+</li>
+<li>
+<p>And confirm</p>
+<img src="/assets/images/posts/2017/deprecate/packagist-abandoned.png" class="img-thumbnail">
+</li>
+</ul>
+<p>Now you hope that everybody is going to packagist to check if any of packages they're using are abandoned and seek their replacement... No it's not so painful.</p>
+<p>Composer will tell you for every <code>composer require/update</code> that includes this package from now on:</p>
+<img src="/assets/images/posts/2017/deprecate/composer-info.png" class="img-thumbnail">
+<p><br></p>
+<p><strong>Github Repository</strong></p>
+<p>The best way to make people know the package is deprecated on Github <strong>is not by a note in <code>README</code></strong>. Nobody reads readme if he doesn't use the package first time. Note in a description is also small to spot.</p>
+<p>Much more effective <strong>by changing an organization</strong>.</p>
+<p>(And if you still need an access to the package, let me know. I'll add it for you.)</p>
+<ul>
+<li>Go to your package on Github, in my case <a href="https://github.com/Symplify/SymfonyEventDispatcher">Symplify/SymfonyEventDispatcher</a></li>
+<li>Go to <em>Settings</em></li>
+<li>
+<p>Scroll down to <em>Danger Zone</em> and Pick <em>Transfer</em></p>
+<img src="/assets/images/posts/2017/deprecate/github-danger-zone.png" class="img-thumbnail">
+</li>
+<li>
+<p>Fill in the package name and <a href="https://github.com/DeprecatedPackages">&quot;DeprecatedPackages&quot; organization</a></p>
+<img src="/assets/images/posts/2017/deprecate/github-transfer.png" class="img-thumbnail">
+</li>
+<li>And you're done!</li>
+</ul>
+<p>This is the most obvious way to let people know on Github. </p>
+<p>If this process is too difficult for you, you can <a href="https://github.com/DeprecatedPackages/ControllerAutowire#controller-autowire---deprecated-in-core-of-symfony-33">add a &quot;deprecated&quot; note to README title</a> as well.   </p>
+<p><strong>The League of Deprecated Packages</strong></p>
+<p><a href="https://github.com/DeprecatedPackages"></p>
+<img src="https://avatars0.githubusercontent.com/u/22506867?v=3&s=200" class="img-thumbnail">
+<p></a></p>
+<p><em>Thanks to <a href="https://f3l1x.io/">Milan Šulc</a> for making this beautiful logo that tells all the story.</em></p>
+<p>I've come with this organization a year ago, when me and my friends needed to deprecate more package together. As some of you already figured out, it's a place to put all deprecated packages into.</p>
+<p><br></p>
+<p><strong>Blog Post(s) about Package</strong></p>
+<p>One the most underestimated places is a blog post. I consider it the most important place for people who don't know the package yet, but might start using it. I'd feel bad if people would start using package <strong>after I deprecated them</strong>, instead of reaching out for the replacement right away.</p>
+<p>I've <a href="https://github.com/TomasVotruba/tomasvotruba.cz/pull/88">created a simple warning system</a> on my blog:</p>
+<ul>
+<li>Open post about the package.</li>
+<li>
+<p>Add warning above the perex with reasoning and suggested replacement: </p>
+<img src="/assets/images/posts/2017/deprecate/blog-deprecate-note.png" class="img-thumbnail">
+</li>
+<li>Profit! Thousands of programmer pain-hours saved.</li>
+</ul>
+<h2 id="what-s-in-it-for-you-as-maintainer"><a class="anchor" href="#what-s-in-it-for-you-as-maintainer" aria-hidden="true"><span class="anchor-icon">#</span></a>What's in it For You as Maintainer?</h2>
+<p>This all you do is for package users - what a great and altruistic person you are!
+<strong>But it has one great upside for you as well.</strong> When I've <a href="/2017/05/29/symplify-packages-deprecations-brought-by-symfony-33/">deprecated 5 of Symplify packages</a> I was sad to loose a legacy, my baby, my work... <strong>But it's worth it!</strong></p>
+<p>In following weeks I found:</p>
+<ul>
+<li>I have <strong>more energy</strong> to work on the rest of packages,</li>
+<li>I have <strong>much less responsibility</strong> so I can breathe more lightly,</li>
+<li>and I can put more work into less projects</li>
+</ul>
+<p>Thanks to that, I've <a href="/blog/2017/05/03/combine-power-of-php-code-sniffer-and-php-cs-fixer-in-3-lines/">added new features to EasyCodingStandard</a>, released <a href="/blog/2017/06/26/php-object-calisthenics-rules-made-simple-version-3-0-is-out-now/">Object Calisthenics Coding Standard 3.0</a> and <a href="https://github.com/ApiGen/ApiGen/releases/tag/v5.0.0-RC2">released ApiGen 5.0-RC2</a>. The last one is secret in progress, so don't tell anybody.</p>
+
+        <br>
+
+
+<div class="card border-warning" id="relatedPosts">
+    <div class="card-header text-white bg-warning border-warning">
+        <strong>Continue Reading</strong>
+    </div>
+    <div class="card-body">
+        <ul>
+                <li>
+                    <a href="/blog/2017/02/07/how-to-decouple-monolith-like-a-boss-with-composer-local-packages">
+                        How to Decouple Monolith like a Boss with Composer Local Packages
+                    </a>
+                </li>
+                <li>
+                    <a href="/blog/2017/01/31/how-monolithic-repository-in-open-source-saved-my-laziness">
+                        How Monolithic Repository in Open Source saved my Laziness
+                    </a>
+                </li>
+        </ul>
+    </div>
+</div>
+
+<div class="hireMe card border-info">
+    <div class="card-body bg-info text-white text-center">
+        <a href="/contact">
+            Do you like what I write about? <strong>I'll do it for you!</strong>
+        </a>
+    </div>
+</div>
+
+        <br>
+
+        <h3>What do you think?</h3>
+
+<div id="disqus_thread"></div>
+
+<script type="text/javascript">
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+
+        s.src = '//' + "itsworthsharing" + '.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+    </div>
+        </div>
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+<script>
+    ga=function(){ ga.q.push(arguments) };
+    ga.q=[];
+    ga.l=+new Date;
+    ga('create', "UA-46082345-1", 'auto');
+    ga('send','pageview');
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async defer></script>
+<script>
+    !function(f,b,e,v,n,t,s){ if(f.fbq)return;n=f.fbq=function(){ n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', "201338863559186");
+    fbq('track', 'PageView');
+</script>
+    </body>
+</html>
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="How to Deprecate PHP Package Without Leaving Anyone Behind">
+    <meta property="og:description" content="You create PHP open-source packages because you personally use them in your projects. And you take care of them.
+In time you change a job or switch a programming language and you don&#039;t have time to take care of them properly. Number of issues and PRs grows and package is getting obsolete.
+
+You can do 2 things in this situation: nothing like most people do or take responsibility, deprecate package and inform your users about better alternative.">
+    <meta property="og:url" content="https://www.tomasvotruba.cz/blog/2017/07/03/how-to-deprecate-php-package-without-leaving-anyone-behind">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@votrubaT">
+    <meta name="twitter:title" content="How to Deprecate PHP Package Without Leaving Anyone Behind">
+    <meta name="twitter:description" content="You create PHP open-source packages because you personally use them in your projects. And you take care of them.
+In time you change a job or switch a programming language and you don&#039;t have time to take care of them properly. Number of issues and PRs grows and package is getting obsolete.
+
+You can do 2 things in this situation: nothing like most people do or take responsibility, deprecate package and inform your users about better alternative.">
+
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+
+    <link href="/assets/prism/prism.css" rel="stylesheet" type="text/css">

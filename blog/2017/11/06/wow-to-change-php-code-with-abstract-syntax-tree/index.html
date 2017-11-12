@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>How to change PHP code with Abstract Syntax Tree | Tomas Votruba</title>
+    <meta charset="utf-8">
+    <meta name="robots" content="index, follow">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+
+    <link rel="alternate" type="application/rss+xml" title="Tomas Votruba Blog RSS" href="/rss.xml">
+
+    <link href="/assets/font-awesome/css/font-awesome.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/bootstrap/bootstrap.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/css/style.css?v=1.2" rel="stylesheet" type="text/css">
+
+</head>
+    <body>
+        <!-- post_id: 63 -->
+
+<div class="hidden-sm-down">
+    <nav class="navbar">
+        <div class="container-fluid">
+            <ul>
+                <li id="logo">
+                    Tomas Votruba
+                </li>
+                <li class="active">
+                    <a href="/">Blog</a>
+                </li>
+                <li>
+                    <a href="/mentoring-and-lectures/">Mentoring & Lectures</a>
+                </li>
+                <li>
+                    <a href="/talks/">Talks</a>
+                </li>
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<div class="hidden-md-up">
+    <nav class="navbar" id="mobile-menu">
+        <div class="container">
+            <a href="/" class="col-3 col-sm-3 active">
+                <em class="fa fa-book"></em>
+                <br>
+                PHP Blog
+            </a>
+            <a href="/mentoring-and-lectures/" class="col-3 col-sm-3">
+                <em class="fa fa-graduation-cap"></em>
+                <br>
+                Lectures
+            </a>
+            <a href="/about/" class="col-3 col-sm-3">
+                <em class="fa fa-id-badge"></em>
+                <br>
+                About
+            </a>
+            <a href="/contact/" class="col-3 col-sm-3">
+                <em class="fa fa-phone"></em>
+                <br>
+                Contact
+            </a>
+        </div>
+    </nav>
+</div>
+
+        <div class="mainContent">
+    <div class="container-fluid" id="post">
+        <h1>How to change PHP code with Abstract Syntax Tree</h1>
+
+<ul class="list-inline">
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-clock-o fa-fw"></em>
+        <strong>5 min</strong>
+    </li>
+
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-calendar fa-fw"></em>
+        <time datetime="2017-11-Mon">Monday, November 6, 2017</time>
+    </li>
+
+        <li class="list-inline-item mr-3">
+            <em class="fa fa-fw fa-comments"></em>
+            <a href="https://www.tomasvotruba.cz/blog/2017/11/06/wow-to-change-php-code-with-abstract-syntax-tree/#disqus_thread">X</a> comments
+        </li>
+
+        <li class="list-inline-item">
+            <em class="fa fa-fw fa-pencil"></em>
+                <a href="https://github.com/TomasVotruba/tomasvotruba.cz/edit/master/source/_posts/2017/2017-11-06-wow-to-change-php-code-with-abstract-syntax-tree.md">
+                Typo? Fix me please
+            </a>
+        </li>
+
+        <li class="list-inline-item pull-right">
+            
+            <a href="https://github.com/TomasVotruba/tomasvotruba.cz/tree/master/tests/Posts/Year2017/Ast" class="badge badge-success">
+                <em class="fa fa-fw fa-thumbs-up"></em> Tested
+            </a>
+        </li>
+</ul>
+
+
+
+        <div class="card">
+            <div class="card-body">
+                Today we can do amazing things with PHP. Thanks to AST and <a href="https://github.com/nikic/PHP-Parser">nikic/php-parser</a> we can create very <strong>narrow artificial intelligence, which can work for us</strong>.
+<br><br>
+Let's create first its synapse! 
+            </div>
+        </div>
+
+        
+<p>We need to make clear what are we talking about right at the beginning. When we say &quot;PHP AST&quot;, you can talk about 2 things:</p>
+<h3 id="1-php-ast"><a class="anchor" href="#1-php-ast" aria-hidden="true"><span class="anchor-icon">#</span></a>1. php-ast</h3>
+<p>This is native extension which exports the AST internally used by PHP 7.0+. It allows <strong>read-only</strong> and is very fast, since it's native C extension. Internal AST was added to PHP 7.0 by skill-full Nikita Popov in <a href="https://wiki.php.net/rfc/abstract_syntax_tree">this RFC</a>. You can find it on Github under <a href="https://github.com/nikic/php-ast"><code>nikic/php-ast</code></a>.</p>
+<h3 id="2-php-ast"><a class="anchor" href="#2-php-ast" aria-hidden="true"><span class="anchor-icon">#</span></a>2. PHP AST</h3>
+<p>This is AST of PHP in Object PHP. It will take your PHP code, turn into PHP object with autocomplete in IDE and <strong>allows you to modify code</strong>. You can find it on Github under <a href="https://github.com/nikic/PHP-Parser/"><code>nikic/PHP-Parser</code></a>. </p>
+<p>Nikita explains <a href="https://github.com/nikic/php-ast#differences-to-php-parser">differences between those 2 in more detailed technical way</a>. Personally I love <a href="https://github.com/nikic/PHP-Parser/blob/master/doc/0_Introduction.markdown#what-is-this-for">this human reason</a> the most:</p>
+<blockquote class="blockquote">
+    "Why would I want to have a PHP parser written in PHP? Well, PHP might not be a language especially suited for fast parsing, but processing the AST is much easier in PHP than it would be in other, faster languages like C. Furthermore the people most probably wanting to do programmatic PHP code analysis are incidentally PHP developers, not C developers."
+    <footer class="blockquote-footer text-right">Nikita Popov</footer></blockquote>
+<p>Which one would you pick? If you're <strong>lazy like me and hate reading code and writing code</strong> over and over again, the 2nd one.</p>
+<h2 id="what-work-can-code-nikic-php-parser-code-do-for-us"><a class="anchor" href="#what-work-can-code-nikic-php-parser-code-do-for-us" aria-hidden="true"><span class="anchor-icon">#</span></a>What work can <code>nikic/PHP-Parser</code> do for us?</h2>
+<p>Saying that, <strong>we skip the read-feature</strong> of this package - it's used by <a href="https://github.com/phpstan/phpstan">PHPStan</a> or <a href="https://github.com/Roave/BetterReflection">BetterReflection</a> - and <strong>move right to the writing-feature</strong>. Btw, back in 2012, even <a href="https://github.com/nikic/PHP-Parser/issues/41">Fabien wanted to use it in PHP CS Fixer</a>, but it wasn't ready yet.</p>
+<h3 id="when-we-say-em-modify-em-and-em-ast-em-together-what-can-you-brainstorm"><a class="anchor" href="#when-we-say-em-modify-em-and-em-ast-em-together-what-can-you-brainstorm" aria-hidden="true"><span class="anchor-icon">#</span></a>When we say <em>modify</em> and <em>AST</em> together, what can you brainstorm?</h3>
+<ul>
+<li>change method name</li>
+<li>change class name</li>
+<li>rename property</li>
+<li>change property to method call</li>
+<li>move method from one class to another</li>
+<li>split class to multiple ones</li>
+<li>refactor <code>$this-&gt;get('name')</code> to constructor injection in Symfony App</li>
+<li>upgrade App from Symfony 3.0 to 4.0</li>
+<li>refactor Laravel App to Symfony App</li>
+<li>...</li>
+</ul>
+<p>It can do many things for you, depends on how much work you put in it. Today we will try to <strong>change method name</strong>. </p>
+<h2 id="4-steps-to-changing-a-name"><a class="anchor" href="#4-steps-to-changing-a-name" aria-hidden="true"><span class="anchor-icon">#</span></a>4 Steps to Changing a name</h2>
+<h3 id="1-parse-code-to-nodes"><a class="anchor" href="#1-parse-code-to-nodes" aria-hidden="true"><span class="anchor-icon">#</span></a>1. Parse code to Nodes</h3>
+<pre><code class="language-bash">composer require nikic/php-parser</code></pre>
+<p>Create parser and parse the file:</p>
+<pre><code class="language-php">use PhpParser\Parser;
+use PhpParser\ParserFactory;
+
+$parser = (new ParserFactory)-&gt;create(ParserFactory::PREFER_PHP7); # or PREFER_PHP5, if your code is older
+$nodes = $parser-&gt;parse(file_get_contents(__DIR__ . '/SomeClass.php'));</code></pre>
+<h3 id="2-find-method-node"><a class="anchor" href="#2-find-method-node" aria-hidden="true"><span class="anchor-icon">#</span></a>2. Find Method Node</h3>
+<p>The best way to work with Nodes is to <strong>traverse them with <a href="https://github.com/nikic/PHP-Parser/blob/master/lib/PhpParser/NodeTraverser.php"><code>PhpParser\NodeTraverser</code></a></strong>:</p>
+<pre><code class="language-php">$nodeTraverser = new PhpParser\NodeTraverser;
+$traversedNodes = $nodeTraverser-&gt;traverse($nodes);</code></pre>
+<p>Now we traversed all nodes, but nothing actually happened. Do you think we forgot to invite somebody in?</p>
+<p>Yes, <strong>we need <a href="https://github.com/nikic/PHP-Parser/blob/master/lib/PhpParser/NodeVisitor.php"><code>PhpParser\NodeVisitor</code></a></strong> - an interface with 4 methods. We can either implement all 4 of them, or use <a href="https://github.com/nikic/PHP-Parser/blob/master/lib/PhpParser/NodeVisitorAbstract.php"><code>PhpParser\NodeVisitorAbstract</code></a> to save some work:</p>
+<pre><code class="language-php">use PhpParser\NodeVisitorAbstract;
+
+final class ChangeMethodNameNodeVisitor extends NodeVisitorAbstract
+{
+}</code></pre>
+<p>We need to find a <code>ClassMethod</code> node. I know that, because I use this package often, <strong>but you can <a href="https://github.com/nikic/PHP-Parser/tree/master/lib/PhpParser/Node">find all nodes here</a></strong>. To do that, we'll use <code>enterNode()</code> method:</p>
+<pre><code class="language-php">use PhpParser\Node;
+use PhpParser\NodeVisitorAbstract;
+use PhpParser\Node\Stmt\ClassMethod;
+
+final class ChangeMethodNameNodeVisitor extend NodeVisitorAbstract
+{
+    public function enterNode(Node $node)
+    {
+        if (! $node instanceof ClassMethod) {
+            return false;
+        }
+
+        // so we got it, what now?
+    }
+}</code></pre>
+<h3 id="3-change-method-name"><a class="anchor" href="#3-change-method-name" aria-hidden="true"><span class="anchor-icon">#</span></a>3. Change Method Name</h3>
+<p>No we find it's name and change it!</p>
+<pre><code class="language-php">use PhpParser\Node;
+use PhpParser\Node\Name;
+use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\NodeVisitorAbstract;
+
+final class ChangeMethodNameNodeVisitor extend NodeVisitorAbstract
+{
+    public function enterNode(Node $node)
+    {
+        if (! $node instanceof ClassMethod) {
+            return false;
+        }
+
+        $node-&gt;name = new Name('newName');
+
+        // return node to tell parser to modify it    
+        return $node;
+    }
+}</code></pre>
+<p>To work with <strong>class names, interface names, method names</strong> etc., we need to <strong>use <code>PhpParser\Node\Name</code></strong>.</p>
+<p>Oh, I almost forgot, we need to actually <strong>invite visitor to the <code>NodeTraverser</code></strong> like this:</p>
+<pre><code class="language-php">$nodeTraverser = new PhpParser\NodeTraverser;
+$traversedNodes-&gt;addVisitor(new ChangeMethodNameNodeVisitor);
+$traversedNodes = $nodeTraverser-&gt;traverse($nodes);</code></pre>
+<h3 id="4-save-to-file"><a class="anchor" href="#4-save-to-file" aria-hidden="true"><span class="anchor-icon">#</span></a>4. Save to File</h3>
+<p>Last step is saving the file (<a href="https://github.com/nikic/PHP-Parser/blob/master/doc/component/Pretty_printing.markdown">see docs</a>). We have 2 options here:</p>
+<p><br></p>
+<p><strong>A. Dumb Saving</strong></p>
+<pre><code class="language-php">$prettyPrinter = new PhpParser\PrettyPrinter\Standard;
+$newCode = $prettyPrinter-&gt;prettyPrintFile($traversedNodes);
+
+file_put_contents(__DIR__ . '/SomeClass.php', $newCode);</code></pre>
+<p>But this will actually <strong>removes spaces and comments</strong>. How to make it right?</p>
+<p><br></p>
+<p><strong>B. Format-Preserving Printer</strong></p>
+<p>It requires more steps, but you will have output much more under control.</p>
+<p>Without our code, it would look like this:</p>
+<pre><code class="language-php">use PhpParser\Lexer\Emulative;
+use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitor;
+use PhpParser\NodeVisitor\CloningVisitor;
+use PhpParser\Parser\Php7;
+use PhpParser\PrettyPrinter\Standard;
+
+$lexer = new Emulative([
+    'usedAttributes' =&gt; [
+        'comments',
+        'startLine', 'endLine',
+        'startTokenPos', 'endTokenPos',
+    ],
+]);
+
+$parser = new Php7($lexer);
+$traverser = new NodeTraverser;
+$traverser-&gt;addVisitor(new CloningVisitor);
+
+$oldStmts = $parser-&gt;parse($code);
+$oldTokens = $lexer-&gt;getTokens();
+
+$newStmts = $traverser-&gt;traverse($oldStmts);
+
+// our code start
+
+$nodeTraverser = new NodeTraverser;
+$nodeTraverser-&gt;addVisitor($nodeVisitor);
+
+$newStmts = $traversedNodes = $nodeTraverser-&gt;traverse($newStmts);
+
+// our code end
+
+$newCode = (new Standard)-&gt;printFormatPreserving($newStmts, $oldStmts, $oldTokens);</code></pre>
+<p>Congrats, now you've successfully renamed method to <code>newName</code>! </p>
+<h2 id="advanced-changes-with-rector"><a class="anchor" href="#advanced-changes-with-rector" aria-hidden="true"><span class="anchor-icon">#</span></a>Advanced Changes? With Rector!</h2>
+<p>Do you want to see more advanced operaheretions, like those we <a href="#when-we-say-em-modify-em-and-em-ast-em-together-what-can-you-brainstorm">brainstormed in the beginning</a>? Look at package I'm working on which should <strong>automate application upgrades</strong> - <strong><a href="https://github.com/RectorPHP/Rector">RectorPHP</a></strong>.</p>
+<p><br></p>
+<h3 id="this-post-is-tested"><a class="anchor" href="#this-post-is-tested" aria-hidden="true"><span class="anchor-icon">#</span></a>This post is Tested</h3>
+<p>This is the first <a href="https://pehapkari.cz/blog/2017/01/12/why-articles-with-code-examples-should-be-CI-tested/">tested post</a> I've added to my blog.
+It means <strong>it will be updated as new versions of code used here will appear</strong> → <em>LTS post</em> that will work with newer <code>nikic/php-parser</code> versions. </p>
+<p>Do you want to see those tests? Just click <em>Tested</em> badge in the top. </p>
+<p><br></p>
+<p>Let me know in the comments, what would you like to read about AST and its Traversing and Modification. I might inspire by your ideas.</p>
+<p>Happy traversing!</p>
+
+        <br>
+
+
+
+<div class="hireMe card border-info">
+    <div class="card-body bg-info text-white text-center">
+        <a href="/contact">
+            Do you like what I write about? <strong>I'll do it for you!</strong>
+        </a>
+    </div>
+</div>
+
+        <br>
+
+        <h3>What do you think?</h3>
+
+<div id="disqus_thread"></div>
+
+<script type="text/javascript">
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+
+        s.src = '//' + "itsworthsharing" + '.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+    </div>
+        </div>
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+<script>
+    ga=function(){ ga.q.push(arguments) };
+    ga.q=[];
+    ga.l=+new Date;
+    ga('create', "UA-46082345-1", 'auto');
+    ga('send','pageview');
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async defer></script>
+<script>
+    !function(f,b,e,v,n,t,s){ if(f.fbq)return;n=f.fbq=function(){ n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', "201338863559186");
+    fbq('track', 'PageView');
+</script>
+    </body>
+</html>
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="How to change PHP code with Abstract Syntax Tree">
+    <meta property="og:description" content="Today we can do amazing things with PHP. Thanks to AST and nikic/php-parser we can create very narrow artificial intelligence, which can work for us.
+
+Let&#039;s create first its synapse! ">
+    <meta property="og:url" content="https://www.tomasvotruba.cz/blog/2017/11/06/wow-to-change-php-code-with-abstract-syntax-tree">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@votrubaT">
+    <meta name="twitter:title" content="How to change PHP code with Abstract Syntax Tree">
+    <meta name="twitter:description" content="Today we can do amazing things with PHP. Thanks to AST and nikic/php-parser we can create very narrow artificial intelligence, which can work for us.
+
+Let&#039;s create first its synapse! ">
+
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+
+    <link href="/assets/prism/prism.css" rel="stylesheet" type="text/css">

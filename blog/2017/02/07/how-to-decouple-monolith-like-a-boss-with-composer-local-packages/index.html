@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>How to Decouple Monolith like a Boss with Composer Local Packages | Tomas Votruba</title>
+    <meta charset="utf-8">
+    <meta name="robots" content="index, follow">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+
+    <link rel="alternate" type="application/rss+xml" title="Tomas Votruba Blog RSS" href="/rss.xml">
+
+    <link href="/assets/font-awesome/css/font-awesome.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/bootstrap/bootstrap.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/css/style.css?v=1.2" rel="stylesheet" type="text/css">
+
+</head>
+    <body>
+        <!-- post_id: 26 -->
+
+<div class="hidden-sm-down">
+    <nav class="navbar">
+        <div class="container-fluid">
+            <ul>
+                <li id="logo">
+                    Tomas Votruba
+                </li>
+                <li class="active">
+                    <a href="/">Blog</a>
+                </li>
+                <li>
+                    <a href="/mentoring-and-lectures/">Mentoring & Lectures</a>
+                </li>
+                <li>
+                    <a href="/talks/">Talks</a>
+                </li>
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<div class="hidden-md-up">
+    <nav class="navbar" id="mobile-menu">
+        <div class="container">
+            <a href="/" class="col-3 col-sm-3 active">
+                <em class="fa fa-book"></em>
+                <br>
+                PHP Blog
+            </a>
+            <a href="/mentoring-and-lectures/" class="col-3 col-sm-3">
+                <em class="fa fa-graduation-cap"></em>
+                <br>
+                Lectures
+            </a>
+            <a href="/about/" class="col-3 col-sm-3">
+                <em class="fa fa-id-badge"></em>
+                <br>
+                About
+            </a>
+            <a href="/contact/" class="col-3 col-sm-3">
+                <em class="fa fa-phone"></em>
+                <br>
+                Contact
+            </a>
+        </div>
+    </nav>
+</div>
+
+        <div class="mainContent">
+    <div class="container-fluid" id="post">
+        <h1>How to Decouple Monolith like a Boss with Composer Local Packages</h1>
+
+<ul class="list-inline">
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-clock-o fa-fw"></em>
+        <strong>4 min</strong>
+    </li>
+
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-calendar fa-fw"></em>
+        <time datetime="2017-02-Tue">Tuesday, February 7, 2017</time>
+    </li>
+
+        <li class="list-inline-item mr-3">
+            <em class="fa fa-fw fa-comments"></em>
+            <a href="https://www.tomasvotruba.cz/blog/2017/02/07/how-to-decouple-monolith-like-a-boss-with-composer-local-packages/#disqus_thread">X</a> comments
+        </li>
+
+        <li class="list-inline-item">
+            <em class="fa fa-fw fa-pencil"></em>
+                <a href="https://github.com/TomasVotruba/tomasvotruba.cz/edit/master/source/_posts/2017/2017-02-07-how-to-decouple-monolith-like-a-boss-with-composer-local-packages.md">
+                Typo? Fix me please
+            </a>
+        </li>
+
+</ul>
+
+
+
+        <div class="card">
+            <div class="card-body">
+                While building PHP applications that grows and grows, you often get to the situation when there is too much code. You get easily lost, duplicate and code smells and rottens. The cognitive upkeep to add a new class is bigger every day.
+<br><br>
+There are 3 solutions: put code <code>/libs</code> subdirectories, decouple to private packages using Satis or (the best) create an open-source packages.
+<br><br>
+<strong>All of them are overkill to the solution I will show you to day - composer local packages.</strong>
+            </div>
+        </div>
+
+        
+<p>I found first <a href="http://www.whitewashing.de/2015/04/11/monolithic_repositories_with_php_and_composer.html">article about this topic</a> in 2015, when Benjamin Eberlei created a tool called Fiddler. I was using similar approach in that time for a few months and I was happy I'm not alone.</p>
+<p>Benjamin wrote about an idea, that is <strong>now integrated in composer by default</strong>. To my surprise, nobody knows about it!
+That's similar case for great Composer tools like <a href="https://github.com/hirak/prestissimo">prestissimo</a> or <a href="https://github.com/Soullivaneuh/composer-versions-check">versions-check</a>.</p>
+<p>But first, we'll look at current solutions and why I don't see them scalable. We all tried them in Lekarna.cz and learned by painful experience that they don't work.</p>
+<h2 id="1-just-put-the-code-to-code-libs-code-or-code-src-code-directory"><a class="anchor" href="#1-just-put-the-code-to-code-libs-code-or-code-src-code-directory" aria-hidden="true"><span class="anchor-icon">#</span></a>1. Just Put The Code to <code>/libs</code> or <code>/src</code> Directory</h2>
+<p>This is most common solution I see. Is there a login logic? Just put the code to <code>/libs/Login</code> or <code>/src/LoginBundle</code>.
+Add it to <code>$robotLoader</code> (Nette) or Composer in Symfony and it works.</p>
+<h3 id="advantages"><a class="anchor" href="#advantages" aria-hidden="true"><span class="anchor-icon">#</span></a>Advantages</h3>
+<ul>
+<li>it's simple</li>
+<li>it's the least you can do</li>
+</ul>
+<h3 id="disadvantages"><a class="anchor" href="#disadvantages" aria-hidden="true"><span class="anchor-icon">#</span></a>Disadvantages</h3>
+<ul>
+<li>still coupled to the application, just now on 2 different places instead of 1</li>
+<li>service/route registration is in <code>app</code> - this is cyclic dependency (also known as &quot;vicious circle&quot;)</li>
+<li>it shows others that putting code to 2 or 3 places is ok</li>
+<li>the &quot;package&quot; is coupled to the application and it's not easy to use somewhere else</li>
+<li>dependencies of this &quot;package&quot; are unknown</li>
+</ul>
+<p><strong>It doesn't scale!</strong></p>
+<h2 id="2-create-private-packages"><a class="anchor" href="#2-create-private-packages" aria-hidden="true"><span class="anchor-icon">#</span></a>2. Create Private Packages</h2>
+<p>This way is a bit pro. We used Gitlab and Satis - it took a month to set up all access rights correctly (Gitlab CI and Satis server tend to argue). It's so much pain, there is even <a href="https://packagist.com/">official paid service</a> for it.</p>
+<h3 id="advantages"><a class="anchor" href="#advantages" aria-hidden="true"><span class="anchor-icon">#</span></a>Advantages</h3>
+<ul>
+<li>all is clean, separated and leads to good practices</li>
+<li>all code and test are in separated extension</li>
+<li>package have own README.md with documentation, so it's natural to document it</li>
+</ul>
+<h3 id="disadvantages"><a class="anchor" href="#disadvantages" aria-hidden="true"><span class="anchor-icon">#</span></a>Disadvantages</h3>
+<ul>
+<li>development is 4 step hell:
+<ul>
+<li>add feature to the package</li>
+<li>push and tag package</li>
+<li>wait</li>
+<li>run <code>composer update</code> in application and see the results</li>
+</ul></li>
+<li>it requires lot of maintainer skills (I would say at least 1 year in open-source) to do it fine</li>
+<li>it's premature decoupling that doesn't bring joy</li>
+</ul>
+<p><strong>It doesn't scale!</strong></p>
+<h2 id="3-publish-open-source-packages"><a class="anchor" href="#3-publish-open-source-packages" aria-hidden="true"><span class="anchor-icon">#</span></a>3. Publish Open-source Packages</h2>
+<p>I love this most and it was great for some packages. That's how many <a href="https://github.com/Zenify/">Zenify</a> Doctrine-related packages were born.</p>
+<h3 id="advantages"><a class="anchor" href="#advantages" aria-hidden="true"><span class="anchor-icon">#</span></a>Advantages</h3>
+<ul>
+<li>you feel great for giving back to community</li>
+<li>people will help improve the package</li>
+<li>open-source packages tend to have longer lifespan than private packages</li>
+</ul>
+<h3 id="disadvantages"><a class="anchor" href="#disadvantages" aria-hidden="true"><span class="anchor-icon">#</span></a>Disadvantages</h3>
+<ul>
+<li>even more steps to hell</li>
+<li>it's less flexible in experiments - somebody else is using it</li>
+<li>you can't money or security related packages like that</li>
+</ul>
+<p><strong>It doesn't scale.</strong></p>
+<p>During this path of packages we started to feel desperate. Nothing was good enough. I was loosing my belief in open source packages and packages themselves.</p>
+<h2 id="composer-saved-my-life"><a class="anchor" href="#composer-saved-my-life" aria-hidden="true"><span class="anchor-icon">#</span></a>Composer Saved my Life!</h2>
+<p>Not sure why and how, but in composer <a href="https://getcomposer.org/doc/05-repositories.md#path">&quot;path&quot; feature</a> was added. <strong>And it was exactly what we looked for!</strong></p>
+<p>This is so simple that many people find it hard to believe. Forget private and open-sourced packages. Forget Gitlab, Satis and Github. This is <strong>local filesystem only</strong> solution. <strong>All you need is composer</strong>.</p>
+<h3 id="lets-create-first-local-package-filesystem"><a class="anchor" href="#lets-create-first-local-package-filesystem" aria-hidden="true"><span class="anchor-icon">#</span></a>Lets create First Local Package - Filesystem</h3>
+<p>Back to Lekarna.cz. We had application that used own <em>filesystem services</em>. It was registered in <code>app/config/config.neon</code> (Nette app) and it was used in various scenarios. Once we needed to create directory, store image, create image from database, download remote <code>.xml</code> etc. <strong>It was growing and more and more coupled.</strong></p>
+<p>People started to create new classes and methods for what was already there, because there was too much code and nobody knew about it.</p>
+<p>I had enough!</p>
+<p>So I started to decouple this filesytem logic. How?</p>
+<h3 id="1-create-directory-for-local-package"><a class="anchor" href="#1-create-directory-for-local-package" aria-hidden="true"><span class="anchor-icon">#</span></a>1. Create Directory For Local Package</h3>
+<pre><code class="language-bash">/packages
+    /lekarna
+        /filesystem</code></pre>
+<h3 id="2-add-basic-package-directories-and-files"><a class="anchor" href="#2-add-basic-package-directories-and-files" aria-hidden="true"><span class="anchor-icon">#</span></a>2. Add Basic Package Directories and Files</h3>
+<pre><code class="language-bash">/packages
+    /lekarna
+        /filesystem
+            /src
+            /tests
+            README.md
+            composer.json</code></pre>
+<h3 id="3-name-the-package-in-its-code-composer-json-code"><a class="anchor" href="#3-name-the-package-in-its-code-composer-json-code" aria-hidden="true"><span class="anchor-icon">#</span></a>3. Name the Package in its <code>composer.json</code></h3>
+<p>The file is <code>packages/lekarna/filesystem/composer.json</code>:</p>
+<pre><code class="language-javascript">{
+    "name": "lekarna/filesystem",
+    "require": {
+        "php": "^7.1",
+        "nette/utils": "^2.4",
+    },
+    "autoload": {
+        "psr-4": {
+            "Lekarna\\Filesystem\\": "src"
+        }
+    }
+}</code></pre>
+<h3 id="4-register-package-to-main-code-composer-json-code"><a class="anchor" href="#4-register-package-to-main-code-composer-json-code" aria-hidden="true"><span class="anchor-icon">#</span></a>4. Register Package to Main <code>composer.json</code></h3>
+<pre><code class="language-javascript">{
+    "require": {
+        "lekarna/filesystem": "@dev"
+    },
+    "repositories": [
+        { "type": "path", "url": "packages/Lekarna/Filesystem" }
+    ],
+}</code></pre>
+<p>Run</p>
+<pre><code class="language-bash">composer update</code></pre>
+<p>and your package is ready. That's it! Easy, step-by-step maturing and scalable architecture pattern.</p>
+<p><strong>How do you maintain huge code bases?</strong></p>
+
+        <br>
+
+
+<div class="card border-warning" id="relatedPosts">
+    <div class="card-header text-white bg-warning border-warning">
+        <strong>Continue Reading</strong>
+    </div>
+    <div class="card-body">
+        <ul>
+                <li>
+                    <a href="/blog/2017/07/03/how-to-deprecate-php-package-without-leaving-anyone-behind">
+                        How to Deprecate PHP Package Without Leaving Anyone Behind
+                    </a>
+                </li>
+                <li>
+                    <a href="/blog/2017/01/31/how-monolithic-repository-in-open-source-saved-my-laziness">
+                        How Monolithic Repository in Open Source saved my Laziness
+                    </a>
+                </li>
+                <li>
+                    <a href="/blog/2016/09/16/how-to-write-open-source-in-php-2-enjoy-skeletons">
+                        How to write open-source in PHP 2: Rise value of your package with help of skeleton
+                    </a>
+                </li>
+                <li>
+                    <a href="/blog/2016/09/09/how-to-write-open-source-in-php-1-create-a-repository">
+                        How to write open-source in PHP 1: Create a repository on Github
+                    </a>
+                </li>
+        </ul>
+    </div>
+</div>
+
+<div class="hireMe card border-info">
+    <div class="card-body bg-info text-white text-center">
+        <a href="/contact">
+            Do you like what I write about? <strong>I'll do it for you!</strong>
+        </a>
+    </div>
+</div>
+
+        <br>
+
+        <h3>What do you think?</h3>
+
+<div id="disqus_thread"></div>
+
+<script type="text/javascript">
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+
+        s.src = '//' + "itsworthsharing" + '.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+    </div>
+        </div>
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+<script>
+    ga=function(){ ga.q.push(arguments) };
+    ga.q=[];
+    ga.l=+new Date;
+    ga('create', "UA-46082345-1", 'auto');
+    ga('send','pageview');
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async defer></script>
+<script>
+    !function(f,b,e,v,n,t,s){ if(f.fbq)return;n=f.fbq=function(){ n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', "201338863559186");
+    fbq('track', 'PageView');
+</script>
+    </body>
+</html>
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="How to Decouple Monolith like a Boss with Composer Local Packages">
+    <meta property="og:description" content="While building PHP applications that grows and grows, you often get to the situation when there is too much code. You get easily lost, duplicate and code smells and rottens. The cognitive upkeep to add a new class is bigger every day.
+
+There are 3 solutions: put code /libs subdirectories, decouple to private packages using Satis or (the best) create an open-source packages.
+
+All of them are overkill to the solution I will show you to day - composer local packages.">
+    <meta property="og:url" content="https://www.tomasvotruba.cz/blog/2017/02/07/how-to-decouple-monolith-like-a-boss-with-composer-local-packages">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@votrubaT">
+    <meta name="twitter:title" content="How to Decouple Monolith like a Boss with Composer Local Packages">
+    <meta name="twitter:description" content="While building PHP applications that grows and grows, you often get to the situation when there is too much code. You get easily lost, duplicate and code smells and rottens. The cognitive upkeep to add a new class is bigger every day.
+
+There are 3 solutions: put code /libs subdirectories, decouple to private packages using Satis or (the best) create an open-source packages.
+
+All of them are overkill to the solution I will show you to day - composer local packages.">
+
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+
+    <link href="/assets/prism/prism.css" rel="stylesheet" type="text/css">

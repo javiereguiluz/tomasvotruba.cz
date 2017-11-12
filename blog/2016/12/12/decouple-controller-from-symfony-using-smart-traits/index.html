@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Decouple Controller from Symfony using Traits | Tomas Votruba</title>
+    <meta charset="utf-8">
+    <meta name="robots" content="index, follow">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+
+    <link rel="alternate" type="application/rss+xml" title="Tomas Votruba Blog RSS" href="/rss.xml">
+
+    <link href="/assets/font-awesome/css/font-awesome.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/bootstrap/bootstrap.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/css/style.css?v=1.2" rel="stylesheet" type="text/css">
+
+</head>
+    <body>
+        <!-- post_id: 18 -->
+
+<div class="hidden-sm-down">
+    <nav class="navbar">
+        <div class="container-fluid">
+            <ul>
+                <li id="logo">
+                    Tomas Votruba
+                </li>
+                <li class="active">
+                    <a href="/">Blog</a>
+                </li>
+                <li>
+                    <a href="/mentoring-and-lectures/">Mentoring & Lectures</a>
+                </li>
+                <li>
+                    <a href="/talks/">Talks</a>
+                </li>
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<div class="hidden-md-up">
+    <nav class="navbar" id="mobile-menu">
+        <div class="container">
+            <a href="/" class="col-3 col-sm-3 active">
+                <em class="fa fa-book"></em>
+                <br>
+                PHP Blog
+            </a>
+            <a href="/mentoring-and-lectures/" class="col-3 col-sm-3">
+                <em class="fa fa-graduation-cap"></em>
+                <br>
+                Lectures
+            </a>
+            <a href="/about/" class="col-3 col-sm-3">
+                <em class="fa fa-id-badge"></em>
+                <br>
+                About
+            </a>
+            <a href="/contact/" class="col-3 col-sm-3">
+                <em class="fa fa-phone"></em>
+                <br>
+                Contact
+            </a>
+        </div>
+    </nav>
+</div>
+
+        <div class="mainContent">
+    <div class="container-fluid" id="post">
+        <h1>Decouple Controller from Symfony using Traits</h1>
+
+<ul class="list-inline">
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-clock-o fa-fw"></em>
+        <strong>3 min</strong>
+    </li>
+
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-calendar fa-fw"></em>
+        <time datetime="2016-12-Mon">Monday, December 12, 2016</time>
+    </li>
+
+        <li class="list-inline-item mr-3">
+            <em class="fa fa-fw fa-comments"></em>
+            <a href="https://www.tomasvotruba.cz/blog/2016/12/12/decouple-controller-from-symfony-using-smart-traits/#disqus_thread">X</a> comments
+        </li>
+
+        <li class="list-inline-item">
+            <em class="fa fa-fw fa-pencil"></em>
+                <a href="https://github.com/TomasVotruba/tomasvotruba.cz/edit/master/source/_posts/2016/2016-12-12-decouple-controller-from-symfony-using-smart-traits.md">
+                Typo? Fix me please
+            </a>
+        </li>
+
+</ul>
+
+            <div class="card border-danger">
+                <div class="card-header text-white bg-danger border-danger">
+                    <strong>This post is deprecated since May 2017</strong>
+                </div>
+                <div class="card-body">
+                    Since <strong>Symfony 3.3</strong> you can use <a href="https://github.com/symfony/symfony/pull/22157">AbstractController</a>.
+It does pretty much the same thing - <strong>in even cleaner way</strong> - and it has native support in Symfony.
+<br><br>
+I recommend using it instead!
+                </div>
+            </div>
+
+            <br>
+
+
+        <div class="card">
+            <div class="card-body">
+                If you start using controllers as services, you still <strong>often need helpers methods of Controller from FrameworkBundle</strong>. So your code still depends on service locator and decoupling is not really happening.<br><br>Today I will show you <strong>how to remove the dependency on Controller and keep those fancy methods at the same time</strong>.
+            </div>
+        </div>
+
+        
+<h2 id="typical-use-case-of-mixing-principles"><a class="anchor" href="#typical-use-case-of-mixing-principles" aria-hidden="true"><span class="anchor-icon">#</span></a>Typical use case of Mixing Principles</h2>
+<ol>
+<li>Constructor Injection</li>
+<li>Service locator (container) from parent Controller class</li>
+</ol>
+<p>Today it's not about which one is better and when to use it, but about consistency. I recommend either using first or second. Mixing them together is confusing and adds complexity without bringing value or improving readability. </p>
+<p>Let's see an example:</p>
+<pre><code class="language-php">namespace Symfony\Bundle\FrameworkBundle\Controller;
+
+final class ProductController extends Controller
+{
+    /**
+     * @var ProductRepository
+     */
+    private $productRepository;
+
+    // constructor injection
+    public function __construct(ProductRepository $productRepository)
+    {
+        $this-&gt;productRepository = $productRepository;
+    }
+
+    public function actionList()
+    {
+        // using parent method that uses service locator (container)
+        return $this-&gt;render('mytemplate.html.twig', [
+             'products' =&gt; $this-&gt;productRepository-&gt;fetchAll()
+        ]);
+    }
+}</code></pre>
+<p>Seeing this code anyone could easily extends it like this, and I would not blame him.</p>
+<pre><code class="language-php">public function actionList()
+{
+    return $this-&gt;render('mytemplate.html.twig', [
+         'products' =&gt; $this-&gt;productRepository-&gt;fetchAll(),
+         // using parent method that uses service locator (container)
+         'title' =&gt; $this-&gt;get('title_manager')-&gt;fetchForProducts()
+    ]);
+}</code></pre>
+<h2 id="real-issue-see-3-prs-to-symfony-core"><a class="anchor" href="#real-issue-see-3-prs-to-symfony-core" aria-hidden="true"><span class="anchor-icon">#</span></a>Real Issue? See 3 PRs to Symfony Core</h2>
+<p>There are some trials to make this bit more decoupled:</p>
+<ul>
+<li><a href="https://github.com/symfony/symfony/pull/17608">[DependencyInjection] Autowiring: add setter injection support</a>, but is was <a href="https://github.com/symfony/symfony/pull/20384">reverted</a> </li>
+<li><a href="https://github.com/symfony/symfony/pull/16863">[FrameworkBundle] Split abstract Controller class into traits</a> - opened in December 2015 and without attention </li>
+<li><a href="https://github.com/symfony/symfony/pull/18193">[FrameworkBundle] Introduce autowirable ControllerTrait</a> - similar to previous one, but depending on reverted setter injection </li>
+</ul>
+<p>There are some trials, but I guess <strong>this feature is not coming anytime soon</strong>.</p>
+<h3 id="how-to-make-a-change"><a class="anchor" href="#how-to-make-a-change" aria-hidden="true"><span class="anchor-icon">#</span></a>How to make a Change</h3>
+<p>When it's <strong>difficult to estimate if this would be useful feature to merge</strong>, somebody creates a bundle and test it in practise.</p>
+<p>Similar thing happened for <a href="https://github.com/knpuniversity/KnpUGuardBundle">knpuniversity/KnpUGuardBundle</a> that later became core part of Symfony.</p>
+<p>So...</p>
+<h3 id="is-there-a-bundle-for-this"><a class="anchor" href="#is-there-a-bundle-for-this" aria-hidden="true"><span class="anchor-icon">#</span></a>Is There a Bundle for This?</h3>
+<p>Few months ago <a href="https://twitter.com/PetrOlisar">Petr Olišar</a> reported <a href="https://github.com/Symplify/Symplify/issues/14">similar issue</a> to <a href="https://github.com/Symplify/ControllerAutowire">ControllerAutowire</a> package.</p>
+<p>I realized it perfectly fits there and <strong>I added it</strong>.</p>
+<p>Thank you Petr! </p>
+<h2 id="how-does-it-work"><a class="anchor" href="#how-does-it-work" aria-hidden="true"><span class="anchor-icon">#</span></a>How Does it Work?</h2>
+<p>Now you can do use bare Controller with only what you need:</p>
+<pre><code class="language-php">use Symplify\ControllerAutowire\Controller\Templating\ControllerRenderTrait;
+
+final class ProductController
+{
+    use ControllerRenderTrait;
+
+    /**
+     * @var ProductRepository
+     */
+    private $productRepository;
+
+    public function __construct(ProductRepository $productRepository)
+    {
+        $this-&gt;productRepository = $productRepository;
+    }
+
+    public function actionList()
+    {
+        return $this-&gt;render('mytemplate.html.twig', [
+             'products' =&gt; $this-&gt;productRepository-&gt;fetchAll()
+        ]);
+    }
+}</code></pre>
+<p><strong>You can use few small traits</strong> or <strong>just 1</strong> - <code>ControllerTrait</code>. Pick what fits your needs the best.</p>
+<p>You will <a href="https://github.com/Symplify/ControllerAutowire/tree/master/src/Controller">find them in repository</a> or just type <code>ControllerTrait</code> in your IDE: </p>
+<h2 id="try-this-out-and-let-us-know"><a class="anchor" href="#try-this-out-and-let-us-know" aria-hidden="true"><span class="anchor-icon">#</span></a>Try This Out and Let Us Know</h2>
+<p>There were many suggestions around those PR, but no package to really try it out in  practice.</p>
+<p>So feel free to install this package and try this out. Feedback is much appreciated. </p>
+<p><strong>It will be helpful in PRs to Symfony core and helps to make conscious decision about this topic</strong>.</p>
+
+        <br>
+
+
+
+<div class="hireMe card border-info">
+    <div class="card-body bg-info text-white text-center">
+        <a href="/contact">
+            Do you like what I write about? <strong>I'll do it for you!</strong>
+        </a>
+    </div>
+</div>
+
+        <br>
+
+        <h3>What do you think?</h3>
+
+<div id="disqus_thread"></div>
+
+<script type="text/javascript">
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+
+        s.src = '//' + "itsworthsharing" + '.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+    </div>
+        </div>
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+<script>
+    ga=function(){ ga.q.push(arguments) };
+    ga.q=[];
+    ga.l=+new Date;
+    ga('create', "UA-46082345-1", 'auto');
+    ga('send','pageview');
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async defer></script>
+<script>
+    !function(f,b,e,v,n,t,s){ if(f.fbq)return;n=f.fbq=function(){ n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', "201338863559186");
+    fbq('track', 'PageView');
+</script>
+    </body>
+</html>
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Decouple Controller from Symfony using Traits">
+    <meta property="og:description" content="If you start using controllers as services, you still often need helpers methods of Controller from FrameworkBundle. So your code still depends on service locator and decoupling is not really happening.Today I will show you how to remove the dependency on Controller and keep those fancy methods at the same time.">
+    <meta property="og:url" content="https://www.tomasvotruba.cz/blog/2016/12/12/decouple-controller-from-symfony-using-smart-traits">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@votrubaT">
+    <meta name="twitter:title" content="Decouple Controller from Symfony using Traits">
+    <meta name="twitter:description" content="If you start using controllers as services, you still often need helpers methods of Controller from FrameworkBundle. So your code still depends on service locator and decoupling is not really happening.Today I will show you how to remove the dependency on Controller and keep those fancy methods at the same time.">
+
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+
+    <link href="/assets/prism/prism.css" rel="stylesheet" type="text/css">

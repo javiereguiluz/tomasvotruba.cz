@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Statie 3: How to Add Reusable Parts of Code | Tomas Votruba</title>
+    <meta charset="utf-8">
+    <meta name="robots" content="index, follow">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+
+    <link rel="alternate" type="application/rss+xml" title="Tomas Votruba Blog RSS" href="/rss.xml">
+
+    <link href="/assets/font-awesome/css/font-awesome.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/bootstrap/bootstrap.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/css/style.css?v=1.2" rel="stylesheet" type="text/css">
+
+</head>
+    <body>
+        <!-- post_id: 33 -->
+
+<div class="hidden-sm-down">
+    <nav class="navbar">
+        <div class="container-fluid">
+            <ul>
+                <li id="logo">
+                    Tomas Votruba
+                </li>
+                <li class="active">
+                    <a href="/">Blog</a>
+                </li>
+                <li>
+                    <a href="/mentoring-and-lectures/">Mentoring & Lectures</a>
+                </li>
+                <li>
+                    <a href="/talks/">Talks</a>
+                </li>
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<div class="hidden-md-up">
+    <nav class="navbar" id="mobile-menu">
+        <div class="container">
+            <a href="/" class="col-3 col-sm-3 active">
+                <em class="fa fa-book"></em>
+                <br>
+                PHP Blog
+            </a>
+            <a href="/mentoring-and-lectures/" class="col-3 col-sm-3">
+                <em class="fa fa-graduation-cap"></em>
+                <br>
+                Lectures
+            </a>
+            <a href="/about/" class="col-3 col-sm-3">
+                <em class="fa fa-id-badge"></em>
+                <br>
+                About
+            </a>
+            <a href="/contact/" class="col-3 col-sm-3">
+                <em class="fa fa-phone"></em>
+                <br>
+                Contact
+            </a>
+        </div>
+    </nav>
+</div>
+
+        <div class="mainContent">
+    <div class="container-fluid" id="post">
+        <h1>Statie 3: How to Add Reusable Parts of Code</h1>
+
+<ul class="list-inline">
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-clock-o fa-fw"></em>
+        <strong>4 min</strong>
+    </li>
+
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-calendar fa-fw"></em>
+        <time datetime="2017-03-Thu">Thursday, March 9, 2017</time>
+    </li>
+
+        <li class="list-inline-item mr-3">
+            <em class="fa fa-fw fa-comments"></em>
+            <a href="https://www.tomasvotruba.cz/blog/2017/03/09/statie-3-how-to-add-reusable-parts-of-code/#disqus_thread">X</a> comments
+        </li>
+
+        <li class="list-inline-item">
+            <em class="fa fa-fw fa-pencil"></em>
+                <a href="https://github.com/TomasVotruba/tomasvotruba.cz/edit/master/source/_posts/2017/2017-03-09-statie-3-how-to-add-reusable-parts-of-code.md">
+                Typo? Fix me please
+            </a>
+        </li>
+
+</ul>
+
+
+
+        <div class="card">
+            <div class="card-body">
+                You already know <a href="/blog/2017/02/20/statie-how-to-run-it-locally">how to run Statie with layout</a> and <a href="/blog/2017/03/06/statie-2-how-to-add-contact-page-with-data">how to add data structures</a>.
+<br><br>
+Today I will show you: how to use <strong>decouple big templates to smaller and reusable snippets</strong>. Like Google Analytics code.
+            </div>
+        </div>
+
+        
+<p>Sometimes you need to add part of template, that you want to use on multiple pages (in the same form or with smaller changes) or that makes your template less readable.</p>
+<h2 id="google-analytics"><a class="anchor" href="#google-analytics" aria-hidden="true"><span class="anchor-icon">#</span></a>Google Analytics</h2>
+<p>Often you start a new web with settings up Google Analytics measure code.</p>
+<p>It looks like this:</p>
+<pre><code class="language-javascript">&lt;script&gt;
+    ga=function(){ ga.q.push(arguments) };
+    ga.q=[];
+    ga.l=+new Date;
+    ga('create', 'YXZ', 'auto');
+    ga('send','pageview');
+&lt;/script&gt;
+&lt;script async defer src="https://www.google-analytics.com/analytics.js"&gt;&lt;/script&gt;</code></pre>
+<p>We put into layout:</p>
+<pre><code class="language-html">&lt;!-- source/_layouts/default.latte --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta charset="utf-8"&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        {block content}{/block}
+
+        &lt;script&gt;
+            ga=function(){ ga.q.push(arguments) };
+            ga.q=[];
+            ga.l=+new Date;
+            ga('create', 'XYZ', 'auto');
+            ga('send','pageview');
+        &lt;/script&gt;
+        &lt;script async defer src="https://www.google-analytics.com/analytics.js"&gt;&lt;/script&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p>This layout might be small, but it will be definitely bigger in real app and <strong>will keep growing and growing in time</strong>.</p>
+<p>Google Analytics code is not something we change or extend too much. Why not outsource it?</p>
+<h2 id="sexy-amp-small-snippet"><a class="anchor" href="#sexy-amp-small-snippet" aria-hidden="true"><span class="anchor-icon">#</span></a>Sexy &amp; Small Snippet</h2>
+<p>What if you could use some &quot;include googleAnalytics snippet&quot; command?</p>
+<p>With Statie you can!</p>
+<pre><code class="language-twig">{include "googleAnalytics"}</code></pre>
+<h3 id="how-does-it-work"><a class="anchor" href="#how-does-it-work" aria-hidden="true"><span class="anchor-icon">#</span></a>How does it Work?</h3>
+<p>Statie scans <code>/_snippets</code> directory and turns all files to snippets. Name of the file represents key for including the snippets.</p>
+<ul>
+<li>&quot;googleAnalytics&quot; =&gt; <code>googleAnalytics.latte</code></li>
+</ul>
+<h3 id="decoupling-the-snippet"><a class="anchor" href="#decoupling-the-snippet" aria-hidden="true"><span class="anchor-icon">#</span></a>Decoupling the Snippet</h3>
+<p>First, we create the snippet file and move the Google Analytics code there:</p>
+<pre><code class="language-html">&lt;!-- source/_snippets/googleAnalytics.latte --&gt;
+
+&lt;script&gt;
+    ga=function(){ ga.q.push(arguments) };
+    ga.q=[];
+    ga.l=+new Date;
+    ga('create', 'XYZ', 'auto');
+    ga('send','pageview');
+&lt;/script&gt;
+&lt;script async defer src="https://www.google-analytics.com/analytics.js"&gt;&lt;/script&gt;</code></pre>
+<p>Then clean the layout:</p>
+<pre><code class="language-twig">&lt;!-- source/_layouts/default.latte --&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta charset="utf-8"&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        {block content}{/block}
+        {include "googleAnalytics"}
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p>There is one last think that bothers me:</p>
+<pre><code class="language-javascript">ga('create', 'XYZ', 'auto');</code></pre>
+<p>Can you see it?</p>
+<h2 id="protip-1-why-always-put-ids-to-config-and-not-to-code"><a class="anchor" href="#protip-1-why-always-put-ids-to-config-and-not-to-code" aria-hidden="true"><span class="anchor-icon">#</span></a>ProTip #1: Why Always Put IDs to Config and Not to Code</h2>
+<p>When you start using static site generator, you'll <strong>appreciate its power in scaling</strong>:</p>
+<ul>
+<li>First web might take some time to setup.</li>
+<li>Second is mostly copy-pasting previous settings and changing only layout and content.</li>
+<li>And third? Way too easy and well paid job.</li>
+</ul>
+<p>To allow this flow, I recommend <strong>keeping all IDs</strong> that change from site to site - Google Analytics, Facebook Pixel, Disqus ID... - in <code>_config/config.neon</code> file. When you create a new website, <strong>all you have to do is change one file</strong> to make it customized.</p>
+<h3 id="how-to-do-it"><a class="anchor" href="#how-to-do-it" aria-hidden="true"><span class="anchor-icon">#</span></a>How To Do It</h3>
+<p>I wrote about config in previous post - <a href="/blog/2017/03/06/statie-2-how-to-add-contact-page-with-data#2-global-or-bigger-amount-of-data">go read it, if you missed it</a>.</p>
+<p>So you should end up with this:</p>
+<pre><code class="language-javascript">ga('create', {$googleAnalytics}, 'auto');</code></pre>
+<p>Nice work!</p>
+<h2 id="protip-2-too-many-snippets-group-them-by-type"><a class="anchor" href="#protip-2-too-many-snippets-group-them-by-type" aria-hidden="true"><span class="anchor-icon">#</span></a>ProTip #2: Too Many Snippets? Group them by Type</h2>
+<p>Often, I've ended up with many unrelated snippets in one directory.</p>
+<pre><code class="language-bash">/source
+    /_snippets
+        comments.latte
+        header.latte
+        footer.latte
+        postMetadata.latte
+        postHeadline.latte
+        postRecommendations.latte</code></pre>
+<p>There is no need for that. You can group them to subdirs as you like. Nothing changes.</p>
+<pre><code class="language-bash">/source
+    /_snippets
+        /layout
+            header.latte
+            footer.latte
+        /post
+            comments.latte
+            postMetadata.latte
+            postHeadline.latte
+            postRecommendations.latte</code></pre>
+<h2 id="now-you-know"><a class="anchor" href="#now-you-know" aria-hidden="true"><span class="anchor-icon">#</span></a>Now You Know</h2>
+<ul>
+<li>That using snippets will save lot of time.</li>
+<li><strong>That snippets are named by their filename</strong>: <code>{include "fileName"}</code>.</li>
+<li><strong>That snippets work the best with <a href="/blog/2017/03/06/statie-2-how-to-add-contact-page-with-data#2-global-or-bigger-amount-of-data">global configuration</a></strong>.</li>
+</ul>
+<p>Happy coding!</p>
+
+        <br>
+
+
+<div class="card border-warning" id="relatedPosts">
+    <div class="card-header text-white bg-warning border-warning">
+        <strong>Continue Reading</strong>
+    </div>
+    <div class="card-body">
+        <ul>
+                <li>
+                    <a href="/blog/2017/03/13/statie-4-how-to-create-the-simplest-blog">
+                        Statie 4: How to Create The Simplest Blog
+                    </a>
+                </li>
+                <li>
+                    <a href="/blog/2017/03/06/statie-2-how-to-add-contact-page-with-data">
+                        Statie 2: How add Contact Page With Data
+                    </a>
+                </li>
+                <li>
+                    <a href="/blog/2017/02/20/statie-how-to-run-it-locally">
+                        Statie: How to run it Locally
+                    </a>
+                </li>
+        </ul>
+    </div>
+</div>
+
+<div class="hireMe card border-info">
+    <div class="card-body bg-info text-white text-center">
+        <a href="/contact">
+            Do you like what I write about? <strong>I'll do it for you!</strong>
+        </a>
+    </div>
+</div>
+
+        <br>
+
+        <h3>What do you think?</h3>
+
+<div id="disqus_thread"></div>
+
+<script type="text/javascript">
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+
+        s.src = '//' + "itsworthsharing" + '.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+    </div>
+        </div>
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+<script>
+    ga=function(){ ga.q.push(arguments) };
+    ga.q=[];
+    ga.l=+new Date;
+    ga('create', "UA-46082345-1", 'auto');
+    ga('send','pageview');
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async defer></script>
+<script>
+    !function(f,b,e,v,n,t,s){ if(f.fbq)return;n=f.fbq=function(){ n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', "201338863559186");
+    fbq('track', 'PageView');
+</script>
+    </body>
+</html>
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Statie 3: How to Add Reusable Parts of Code">
+    <meta property="og:description" content="You already know how to run Statie with layout and how to add data structures.
+
+Today I will show you: how to use decouple big templates to smaller and reusable snippets. Like Google Analytics code.">
+    <meta property="og:url" content="https://www.tomasvotruba.cz/blog/2017/03/09/statie-3-how-to-add-reusable-parts-of-code">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@votrubaT">
+    <meta name="twitter:title" content="Statie 3: How to Add Reusable Parts of Code">
+    <meta name="twitter:description" content="You already know how to run Statie with layout and how to add data structures.
+
+Today I will show you: how to use decouple big templates to smaller and reusable snippets. Like Google Analytics code.">
+
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+
+    <link href="/assets/prism/prism.css" rel="stylesheet" type="text/css">

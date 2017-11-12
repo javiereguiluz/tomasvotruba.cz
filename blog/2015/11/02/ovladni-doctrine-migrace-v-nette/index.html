@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Ovládni Doctrine migrace v Nette | Tomas Votruba</title>
+    <meta charset="utf-8">
+    <meta name="robots" content="index, follow">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+
+    <link rel="alternate" type="application/rss+xml" title="Tomas Votruba Blog RSS" href="/rss.xml">
+
+    <link href="/assets/font-awesome/css/font-awesome.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/bootstrap/bootstrap.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/css/style.css?v=1.2" rel="stylesheet" type="text/css">
+
+</head>
+    <body>
+        <!-- post_id: 1 -->
+
+<div class="hidden-sm-down">
+    <nav class="navbar">
+        <div class="container-fluid">
+            <ul>
+                <li id="logo">
+                    Tomas Votruba
+                </li>
+                <li class="active">
+                    <a href="/">Blog</a>
+                </li>
+                <li>
+                    <a href="/mentoring-and-lectures/">Mentoring & Lectures</a>
+                </li>
+                <li>
+                    <a href="/talks/">Talks</a>
+                </li>
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<div class="hidden-md-up">
+    <nav class="navbar" id="mobile-menu">
+        <div class="container">
+            <a href="/" class="col-3 col-sm-3 active">
+                <em class="fa fa-book"></em>
+                <br>
+                PHP Blog
+            </a>
+            <a href="/mentoring-and-lectures/" class="col-3 col-sm-3">
+                <em class="fa fa-graduation-cap"></em>
+                <br>
+                Lectures
+            </a>
+            <a href="/about/" class="col-3 col-sm-3">
+                <em class="fa fa-id-badge"></em>
+                <br>
+                About
+            </a>
+            <a href="/contact/" class="col-3 col-sm-3">
+                <em class="fa fa-phone"></em>
+                <br>
+                Contact
+            </a>
+        </div>
+    </nav>
+</div>
+
+        <div class="mainContent">
+    <div class="container-fluid" id="post">
+        <h1>Ovládni Doctrine migrace v Nette</h1>
+
+<ul class="list-inline">
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-clock-o fa-fw"></em>
+        <strong>4 min</strong>
+    </li>
+
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-calendar fa-fw"></em>
+        <time datetime="2015-11-Mon">Monday, November 2, 2015</time>
+    </li>
+
+        <li class="list-inline-item mr-3">
+            <em class="fa fa-fw fa-comments"></em>
+            <a href="https://www.tomasvotruba.cz/blog/2015/11/02/ovladni-doctrine-migrace-v-nette/#disqus_thread">X</a> comments
+        </li>
+
+        <li class="list-inline-item">
+            <em class="fa fa-fw fa-pencil"></em>
+                <a href="https://github.com/TomasVotruba/tomasvotruba.cz/edit/master/source/_posts/2015/2015-11-02-ovladni-doctrine-migrace-v-nette.md">
+                Typo? Fix me please
+            </a>
+        </li>
+
+</ul>
+
+            <div class="card border-danger">
+                <div class="card-header text-white bg-danger border-danger">
+                    <strong>This post is deprecated since January 2017</strong>
+                </div>
+                <div class="card-body">
+                    I have deprecated this package, because I see Doctrine ORM as over-complex tool not useful for new projects - <strong><a href="/blog/2017/03/27/why-is-doctrine-dying/">read a post here</a></strong>.
+<br><br>
+<strong>I recommend using more robust and active <a href="https://phinx.org/">Phinx migration tool</a> instead.</strong> I already do and it is great.
+<br><br>
+It is still available <a href="https://github.com/DeprecatedPackages/DoctrineMigrations">here for inspiration</a> though.
+                </div>
+            </div>
+
+            <br>
+
+
+        <div class="card">
+            <div class="card-body">
+                Pokud používáte Doctrine, Nette a potřebujete měnit databázi, budou se vám hodit migrace.
+            </div>
+        </div>
+
+        
+<p>Stejně jako Kdyby/Doctrine využívá doctrine/doctrine2, my použijeme <a href="https://github.com/doctrine/migrations">doctrine/migrations</a>. Ty si <a href="https://packagist.org/packages/doctrine/migrations/stats">denně stáhne přes 9 000 programátorů</a>, takže se nemusíte bát o jeho kvalitu.</p>
+<p>Do Nette jsem připravil integraci pomocí balíčku <a href="https://github.com/Zenify/DoctrineMigrations">Zenify/DoctrineMigrations</a>. </p>
+<h2 id="instalace-ve-3-krocich"><a class="anchor" href="#instalace-ve-3-krocich" aria-hidden="true"><span class="anchor-icon">#</span></a>Instalace ve 3 krocích</h2>
+<h3 id="1-balicek-nainstalujeme-pres-code-composer-code"><a class="anchor" href="#1-balicek-nainstalujeme-pres-code-composer-code" aria-hidden="true"><span class="anchor-icon">#</span></a>1. Balíček nainstalujeme přes <code>composer</code>:</h3>
+<pre><code class="language-bash">composer require zenify/doctrine-migrations</code></pre>
+<h3 id="2-pridame-rozsireni-do-code-config-neon-code"><a class="anchor" href="#2-pridame-rozsireni-do-code-config-neon-code" aria-hidden="true"><span class="anchor-icon">#</span></a>2. Přidáme rozšíření do <code>config.neon</code>:</h3>
+<pre><code class="language-yaml">extensions:
+    migrations: Zenify\DoctrineMigrations\DI\MigrationsExtension
+    eventDispatcher: Symnedi\EventDIspatcher\DI\EventDispatcherExtension
+
+    # nesmí chybět Kdyby\Doctrine nebo jiná integrace Doctrine</code></pre>
+<h3 id="3-overime"><a class="anchor" href="#3-overime" aria-hidden="true"><span class="anchor-icon">#</span></a>3. Ověříme</h3>
+<p>Ověření provedeme spuštěním z přikazového řádku. V Nette to znamená využít Kdyby\Console.</p>
+<p>Zkusíme vypsat všechny příkazy týkající se migrací.</p>
+<pre><code class="language-bash">$ php www/index.php list migrations</code></pre>
+<p>Pokud vidíme přehled příkazů, máme vyhráno a můžeme používat.</p>
+<pre><code class="language-bash"># ...
+
+Available commands for the "migrations" namespace:
+  migrations:diff      Generate a migration by comparing your current database to your mapping information.
+  migrations:execute   Execute a single migration version up or down manually.
+  ...</code></pre>
+<blockquote>
+<p>Čtete raději commity? Mrkněte na <a href="https://github.com/TomasVotruba/doctrine-migrations-sandbox/commits/master">sandbox na Githubu</a>.</p>
+</blockquote>
+<hr />
+<h2 id="profi-workflow-ve-4-krocich"><a class="anchor" href="#profi-workflow-ve-4-krocich" aria-hidden="true"><span class="anchor-icon">#</span></a>Profi workflow ve 4 krocích</h2>
+<p>Rád bych s vámi podělil o to, jak přistupujeme k migracím my v <a href="http://lekarna.cz/">Lékárna.cz</a>. </p>
+<p>Od šéfa jsme dostali zadání: <em>vytvořit tabulku na články</em>.</p>
+<h3 id="1-zkontrolujeme-status"><a class="anchor" href="#1-zkontrolujeme-status" aria-hidden="true"><span class="anchor-icon">#</span></a>1. Zkontrolujeme status</h3>
+<pre><code class="language-bash">$ php www/index.php migrations:status</code></pre>
+<p>Důležité je číslo v posledním řádku (&quot;New Migrations&quot;). Vypadá to, že vše je aktuální, tak můžeme pokračovat.</p>
+<pre><code class="language-bash"> == Configuration
+
+    &gt;&gt; Name:                                               Doctrine Database Migrations
+    &gt;&gt; Database Driver:                                    pdo_sqlite
+    ...
+    &gt;&gt; Available Migrations:                               0
+    &gt;&gt; New Migrations:                                     0</code></pre>
+<p>Pokud máme &quot;New Migrations&quot; větší než 0, tak je nejdříve aplikujeme (<a href="#apply-new-migrations">viz krok 4.</a>). </p>
+<h3 id="2-vytvorime-si-prazdnou-migraci"><a class="anchor" href="#2-vytvorime-si-prazdnou-migraci" aria-hidden="true"><span class="anchor-icon">#</span></a>2. Vytvoříme si prázdnou migraci</h3>
+<pre><code class="language-bash">$ php www/index.php migrations:generate</code></pre>
+<p>Název migrace je generován automaticky dle timestampu. Tady je použita defaultní složka <code>/migrations</code>.</p>
+<pre><code class="language-bash">Loading configuration from the integration code of your framework (setter).
+Generated new migration class to "/var/www/doctrine-migrations-sandbox/app/../migrations/Version20151031185405.php"</code></pre>
+<h3 id="3-pridame-sql-prikazy"><a class="anchor" href="#3-pridame-sql-prikazy" aria-hidden="true"><span class="anchor-icon">#</span></a>3. Přidáme SQL příkazy</h3>
+<p>Otevřeme si novou migraci <code>/migrations/Version20151031185405.php</code> a doplníme metody.</p>
+<ul>
+<li><code>up()</code> je použita defaultně, při migraci na novější verzi - obvykle <strong>přidáváme data</strong></li>
+<li><code>down()</code> pak migruje zpět na starší verzi - obvykle <strong>mažeme data</strong> </li>
+</ul>
+<p>Více bude jasnější ze samotného SQL zápisu:</p>
+<pre><code class="language-php">namespace Migrations;
+
+use Doctrine\DBAL\Migrations\AbstractMigration;
+use Doctrine\DBAL\Schema\Schema;
+
+/**
+ * Auto-generated Migration: Please modify to your needs!
+ */
+class Version20151031185405 extends AbstractMigration
+{
+
+    /**
+     * @param Schema $schema
+     */
+    public function up(Schema $schema)
+    {
+        $this-&gt;addSql('CREATE TABLE "article" ("id" serial NOT NULL, "name" text NOT NULL);');
+    }
+
+    /**
+     * @param Schema $schema
+     */
+    public function down(Schema $schema)
+    {
+        $this-&gt;addSql('DROP TABLE "article";');
+    }
+
+}</code></pre>
+<p>Tím naše práce s SQL končí.</p>
+<p>Když znovu dáme status...</p>
+<pre><code>$ php www/index.php migrations:status</code></pre>
+<p>...vidíme, že máme jednu novou migraci (dosud neaplikovanou na databázi).</p>
+<pre><code class="language-bash"># ...
+
+    &gt;&gt; Executed Migrations:                                0
+    &gt;&gt; Executed Unavailable Migrations:                    0
+    &gt;&gt; Available Migrations:                               1
+    &gt;&gt; New Migrations:                                     1</code></pre>
+<p><a name="apply-new-migrations"></a></p>
+<h3 id="4-ted-si-konecne-sahneme-na-databazi"><a class="anchor" href="#4-ted-si-konecne-sahneme-na-databazi" aria-hidden="true"><span class="anchor-icon">#</span></a>4. Teď si konečně sáhneme na databázi</h3>
+<p>Aplikujeme všechny nové změny:</p>
+<pre><code class="language-bash">php www/index.php migrations:migrate</code></pre>
+<pre><code class="language-bash">Loading configuration from the integration code of your framework (setter).
+
+                    Doctrine Database Migrations
+
+WARNING! You are about to execute a database migration that could result in schema changes and data lost.
+Are you sure you wish to continue? (y/n)</code></pre>
+<p>Potvrdíme, že cheme opravdu migrovat: &quot;y&quot;</p>
+<pre><code class="language-bash">Migrating up to 20151031185555 from 0
+
+  ++ migrating 20151031185555
+
+     -&gt; CREATE TABLE "article" ("id" serial NOT NULL, "name" text NOT NULL);
+
+  ++ migrated (0.02s)
+
+  ------------------------
+
+  ++ finished in 0.02
+  ++ 1 migrations executed
+  ++ 1 sql queries</code></pre>
+<p>A vidíme, že tabulka <code>article</code> byla úspěšně vytvořena.</p>
+<p><br></p>
+<div class="text-center">
+    <img src="/assets/images/posts/2015/doctrine-migrations/success-meme.jpg" alt="You own this!"></div>
+
+        <br>
+
+
+
+<div class="hireMe card border-info">
+    <div class="card-body bg-info text-white text-center">
+        <a href="/contact">
+            Do you like what I write about? <strong>I'll do it for you!</strong>
+        </a>
+    </div>
+</div>
+
+        <br>
+
+        <h3>What do you think?</h3>
+
+<div id="disqus_thread"></div>
+
+<script type="text/javascript">
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+
+        s.src = '//' + "itsworthsharing" + '.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+    </div>
+        </div>
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+<script>
+    ga=function(){ ga.q.push(arguments) };
+    ga.q=[];
+    ga.l=+new Date;
+    ga('create', "UA-46082345-1", 'auto');
+    ga('send','pageview');
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async defer></script>
+<script>
+    !function(f,b,e,v,n,t,s){ if(f.fbq)return;n=f.fbq=function(){ n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', "201338863559186");
+    fbq('track', 'PageView');
+</script>
+    </body>
+</html>
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Ovládni Doctrine migrace v Nette">
+    <meta property="og:description" content="Pokud používáte Doctrine, Nette a potřebujete měnit databázi, budou se vám hodit migrace.">
+    <meta property="og:url" content="https://www.tomasvotruba.cz/blog/2015/11/02/ovladni-doctrine-migrace-v-nette">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@votrubaT">
+    <meta name="twitter:title" content="Ovládni Doctrine migrace v Nette">
+    <meta name="twitter:description" content="Pokud používáte Doctrine, Nette a potřebujete měnit databázi, budou se vám hodit migrace.">
+
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+
+    <link href="/assets/prism/prism.css" rel="stylesheet" type="text/css">

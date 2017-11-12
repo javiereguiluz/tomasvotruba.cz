@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Why I Switched Scrutinizer for PHPStan and You Should Too | Tomas Votruba</title>
+    <meta charset="utf-8">
+    <meta name="robots" content="index, follow">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+
+    <link rel="alternate" type="application/rss+xml" title="Tomas Votruba Blog RSS" href="/rss.xml">
+
+    <link href="/assets/font-awesome/css/font-awesome.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/bootstrap/bootstrap.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/css/style.css?v=1.2" rel="stylesheet" type="text/css">
+
+</head>
+    <body>
+        <!-- post_id: 24 -->
+
+<div class="hidden-sm-down">
+    <nav class="navbar">
+        <div class="container-fluid">
+            <ul>
+                <li id="logo">
+                    Tomas Votruba
+                </li>
+                <li class="active">
+                    <a href="/">Blog</a>
+                </li>
+                <li>
+                    <a href="/mentoring-and-lectures/">Mentoring & Lectures</a>
+                </li>
+                <li>
+                    <a href="/talks/">Talks</a>
+                </li>
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<div class="hidden-md-up">
+    <nav class="navbar" id="mobile-menu">
+        <div class="container">
+            <a href="/" class="col-3 col-sm-3 active">
+                <em class="fa fa-book"></em>
+                <br>
+                PHP Blog
+            </a>
+            <a href="/mentoring-and-lectures/" class="col-3 col-sm-3">
+                <em class="fa fa-graduation-cap"></em>
+                <br>
+                Lectures
+            </a>
+            <a href="/about/" class="col-3 col-sm-3">
+                <em class="fa fa-id-badge"></em>
+                <br>
+                About
+            </a>
+            <a href="/contact/" class="col-3 col-sm-3">
+                <em class="fa fa-phone"></em>
+                <br>
+                Contact
+            </a>
+        </div>
+    </nav>
+</div>
+
+        <div class="mainContent">
+    <div class="container-fluid" id="post">
+        <h1>Why I Switched Scrutinizer for PHPStan and You Should Too</h1>
+
+<ul class="list-inline">
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-clock-o fa-fw"></em>
+        <strong>3 min</strong>
+    </li>
+
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-calendar fa-fw"></em>
+        <time datetime="2017-01-Sat">Saturday, January 28, 2017</time>
+    </li>
+
+        <li class="list-inline-item mr-3">
+            <em class="fa fa-fw fa-comments"></em>
+            <a href="https://www.tomasvotruba.cz/blog/2017/01/28/why-I-switched-scrutinizer-for-phpstan-and-you-should-too/#disqus_thread">X</a> comments
+        </li>
+
+        <li class="list-inline-item">
+            <em class="fa fa-fw fa-pencil"></em>
+                <a href="https://github.com/TomasVotruba/tomasvotruba.cz/edit/master/source/_posts/2017/2017-01-28-why-I-switched-scrutinizer-for-phpstan-and-you-should-too.md">
+                Typo? Fix me please
+            </a>
+        </li>
+
+</ul>
+
+
+
+        <div class="card">
+            <div class="card-body">
+                I used Scrutinizer for a few years now for code coverage and code quality. Configuration was far complex, some issues appeared and build kept failing. But I really wanted a code quality checker for my open-source projects and this was the best tool available.
+<br><br>
+But last week I had an issue with simple <code>composer install</code> command and I have had enough. Then <strong>my attention turned to PHPStan</strong>, soon-to-be its replacement.
+            </div>
+        </div>
+
+        
+<h2 id="what-is-phpstan"><a class="anchor" href="#what-is-phpstan" aria-hidden="true"><span class="anchor-icon">#</span></a>What is PHPStan</h2>
+<p><strong>PHPStan is a tool for static analysis of PHP code</strong>. It's open source and free to use.
+You can read more about it in this post with very true title - <a href="https://medium.com/@ondrejmirtes/phpstan-2939cd0ad0e3">PHPStan: Find Bugs In Your Code Without Writing Tests!</a></p>
+<img src="https://raw.githubusercontent.com/phpstan/phpstan/master/build/phpstan.gif" alt="PHPStan in action" class="img-thumbnail">
+<h2 id="why-i-prefer-it-over-scrutinizer-and-you-should-too"><a class="anchor" href="#why-i-prefer-it-over-scrutinizer-and-you-should-too" aria-hidden="true"><span class="anchor-icon">#</span></a>Why I Prefer It over Scrutinizer (and You Should Too)</h2>
+<h3 id="it-is-open-source"><a class="anchor" href="#it-is-open-source" aria-hidden="true"><span class="anchor-icon">#</span></a>It Is Open-Source</h3>
+<p><strong>I can improve it, I can add an issue, I can see its development</strong>. I can't do anything like that with Scrutinizer. It used to be <a href="https://github.com/scrutinizer-ci/scrutinizer">open-source</a> but got closed. That's was a huge step back.</p>
+<h3 id="it-focuses-just-on-php"><a class="anchor" href="#it-focuses-just-on-php" aria-hidden="true"><span class="anchor-icon">#</span></a>It Focuses Just on PHP</h3>
+<p><strong>It's a PHP tool that checks PHP code.</strong> Scrutinizer, on the other hand, focuses on various languages - Python, Ruby, soon Java and Scala. That's definitely a good direction, but not if a simple <code>composer install</code> command breaks and is not fixed for months.</p>
+<h3 id="i-can-control-it"><a class="anchor" href="#i-can-control-it" aria-hidden="true"><span class="anchor-icon">#</span></a>I Can Control It</h3>
+<p>I can use it for private packages. I can download it, extend it in various ways (I can define magic behaviour of my classes) and even write my own checks.</p>
+<p>For all these reasons I support <a href="https://www.patreon.com/phpstan">PHPStan on Patreon</a>. Try giving <strong>50 % of your hourly rate</strong> a month. It can make a huge impact on PHP world.</p>
+<h2 id="how-to-switch-from-scrutinizer-to-phpstan-in-4-steps"><a class="anchor" href="#how-to-switch-from-scrutinizer-to-phpstan-in-4-steps" aria-hidden="true"><span class="anchor-icon">#</span></a>How to Switch from Scrutinizer to PHPStan in 4 Steps</h2>
+<h3 id="1-disable-scrutinizer-code-rating"><a class="anchor" href="#1-disable-scrutinizer-code-rating" aria-hidden="true"><span class="anchor-icon">#</span></a>1. Disable Scrutinizer Code Rating</h3>
+<p>Drop this from <code>.scrutinizer.yml</code>:</p>
+<pre><code class="language-yaml">checks:
+    php:
+        code_rating: true</code></pre>
+<h3 id="2-add-phpstan-dependency"><a class="anchor" href="#2-add-phpstan-dependency" aria-hidden="true"><span class="anchor-icon">#</span></a>2. Add PHPStan Dependency</h3>
+<pre><code class="language-bash">composer require phpstan/phpstan --dev</code></pre>
+<h3 id="3-setup-command-in-code-composer-json-code"><a class="anchor" href="#3-setup-command-in-code-composer-json-code" aria-hidden="true"><span class="anchor-icon">#</span></a>3. Setup Command in <code>composer.json</code></h3>
+<p>This step is optional and it might seem weird seeing it for the first time, but I like the united usage (on all different projects and environments).</p>
+<pre><code class="language-javascript">{
+    "scripts": {
+        "phpstan": "vendor/bin/phpstan analyse src --level=0"
+    }
+}</code></pre>
+<p>Now you can run with the same script, even if the settings changes (and it will):</p>
+<pre><code class="language-bash">composer phpstan</code></pre>
+<h3 id="4-add-to-code-travis-yml-code"><a class="anchor" href="#4-add-to-code-travis-yml-code" aria-hidden="true"><span class="anchor-icon">#</span></a>4. Add to <code>travis.yml</code></h3>
+<pre><code class="language-yml">script:
+  - composer phpstan</code></pre>
+<p>Commit and... push! Now you are running PHPStan on your open-source project. Congrats!</p>
+<h2 id="the-one-thing-i-love-about-phpstan"><a class="anchor" href="#the-one-thing-i-love-about-phpstan" aria-hidden="true"><span class="anchor-icon">#</span></a>The One Thing I Love About PHPStan</h2>
+<p>One last thing. You may have noticed the <code>level</code> option. What's that for? PHPStan has now 6 levels (in time of writing this article) - <strong>0 = least strict, 5 = the most strict</strong>.</p>
+<p>This allowed me to <strong>put PHPStan to action without any huge work</strong>. I start with level 0, 12 errors were found and fixed them.</p>
+<p>Next week, when I'm rested and full of joy, I can go to level 1, fix another 8 errors.</p>
+<p>I love this approach over traditional overwhelming &quot;500 errors found. Fix them all or CI will keep failing.&quot;. That usually leads to removing the tool and to very long fixing process. I remember my long night hours with Scrutinizer just to get from code quality from 6 to 10.</p>
+<h3 id="try-it-out"><a class="anchor" href="#try-it-out" aria-hidden="true"><span class="anchor-icon">#</span></a>Try It Out...</h3>
+<p>...on your open-source or local projects and let me know how you like it.</p>
+<p>Happy coding!</p>
+
+        <br>
+
+
+
+<div class="hireMe card border-info">
+    <div class="card-body bg-info text-white text-center">
+        <a href="/contact">
+            Do you like what I write about? <strong>I'll do it for you!</strong>
+        </a>
+    </div>
+</div>
+
+        <br>
+
+        <h3>What do you think?</h3>
+
+<div id="disqus_thread"></div>
+
+<script type="text/javascript">
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+
+        s.src = '//' + "itsworthsharing" + '.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+    </div>
+        </div>
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+<script>
+    ga=function(){ ga.q.push(arguments) };
+    ga.q=[];
+    ga.l=+new Date;
+    ga('create', "UA-46082345-1", 'auto');
+    ga('send','pageview');
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async defer></script>
+<script>
+    !function(f,b,e,v,n,t,s){ if(f.fbq)return;n=f.fbq=function(){ n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', "201338863559186");
+    fbq('track', 'PageView');
+</script>
+    </body>
+</html>
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Why I Switched Scrutinizer for PHPStan and You Should Too">
+    <meta property="og:description" content="I used Scrutinizer for a few years now for code coverage and code quality. Configuration was far complex, some issues appeared and build kept failing. But I really wanted a code quality checker for my open-source projects and this was the best tool available.
+
+But last week I had an issue with simple composer install command and I have had enough. Then my attention turned to PHPStan, soon-to-be its replacement.">
+    <meta property="og:url" content="https://www.tomasvotruba.cz/blog/2017/01/28/why-I-switched-scrutinizer-for-phpstan-and-you-should-too">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@votrubaT">
+    <meta name="twitter:title" content="Why I Switched Scrutinizer for PHPStan and You Should Too">
+    <meta name="twitter:description" content="I used Scrutinizer for a few years now for code coverage and code quality. Configuration was far complex, some issues appeared and build kept failing. But I really wanted a code quality checker for my open-source projects and this was the best tool available.
+
+But last week I had an issue with simple composer install command and I have had enough. Then my attention turned to PHPStan, soon-to-be its replacement.">
+
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+
+    <link href="/assets/prism/prism.css" rel="stylesheet" type="text/css">

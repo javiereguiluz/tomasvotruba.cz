@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Minimalistic Way to Create Your First Nette Extension | Tomas Votruba</title>
+    <meta charset="utf-8">
+    <meta name="robots" content="index, follow">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+
+    <link rel="alternate" type="application/rss+xml" title="Tomas Votruba Blog RSS" href="/rss.xml">
+
+    <link href="/assets/font-awesome/css/font-awesome.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/bootstrap/bootstrap.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/css/style.css?v=1.2" rel="stylesheet" type="text/css">
+
+</head>
+    <body>
+        <!-- post_id: 28 -->
+
+<div class="hidden-sm-down">
+    <nav class="navbar">
+        <div class="container-fluid">
+            <ul>
+                <li id="logo">
+                    Tomas Votruba
+                </li>
+                <li class="active">
+                    <a href="/">Blog</a>
+                </li>
+                <li>
+                    <a href="/mentoring-and-lectures/">Mentoring & Lectures</a>
+                </li>
+                <li>
+                    <a href="/talks/">Talks</a>
+                </li>
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<div class="hidden-md-up">
+    <nav class="navbar" id="mobile-menu">
+        <div class="container">
+            <a href="/" class="col-3 col-sm-3 active">
+                <em class="fa fa-book"></em>
+                <br>
+                PHP Blog
+            </a>
+            <a href="/mentoring-and-lectures/" class="col-3 col-sm-3">
+                <em class="fa fa-graduation-cap"></em>
+                <br>
+                Lectures
+            </a>
+            <a href="/about/" class="col-3 col-sm-3">
+                <em class="fa fa-id-badge"></em>
+                <br>
+                About
+            </a>
+            <a href="/contact/" class="col-3 col-sm-3">
+                <em class="fa fa-phone"></em>
+                <br>
+                Contact
+            </a>
+        </div>
+    </nav>
+</div>
+
+        <div class="mainContent">
+    <div class="container-fluid" id="post">
+        <h1>Minimalistic Way to Create Your First Nette Extension</h1>
+
+<ul class="list-inline">
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-clock-o fa-fw"></em>
+        <strong>3 min</strong>
+    </li>
+
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-calendar fa-fw"></em>
+        <time datetime="2017-02-Wed">Wednesday, February 15, 2017</time>
+    </li>
+
+        <li class="list-inline-item mr-3">
+            <em class="fa fa-fw fa-comments"></em>
+            <a href="https://www.tomasvotruba.cz/blog/2017/02/15/minimalistic-way-to-create-your-first-nette-extension/#disqus_thread">X</a> comments
+        </li>
+
+        <li class="list-inline-item">
+            <em class="fa fa-fw fa-pencil"></em>
+                <a href="https://github.com/TomasVotruba/tomasvotruba.cz/edit/master/source/_posts/2017/2017-02-15-minimalistic-way-to-create-your-first-nette-extension.md">
+                Typo? Fix me please
+            </a>
+        </li>
+
+</ul>
+
+
+
+        <div class="card">
+            <div class="card-body">
+                Nette extension allows you not only to create open-source packages, but also to <strong>split your application to small and logical chunks of code</strong>.
+<br><br>
+Open-source extensions are more complex using many Nette\DI features, but today I will show you, how to <strong>start with one Nette\DI method and one service only</strong>.
+            </div>
+        </div>
+
+        
+<p>I consider <a href="https://github.com/nette/sandbox">Nette Sandbox</a> the best way to show learn any Nette feature. Let's use it.</p>
+<h2 id="register-service-in-nette-sandbox"><a class="anchor" href="#register-service-in-nette-sandbox" aria-hidden="true"><span class="anchor-icon">#</span></a>Register service in Nette Sandbox</h2>
+<p>If you want to register a service, what will you do?</p>
+<pre><code class="language-yaml"># app/config/config.neon
+
+services:
+    - App\Model\UserManager # put it there</code></pre>
+<p>File <code>app/config/config.neon</code> is like a socket.</p>
+<img src="/assets/images/posts/2017/nette-extension/single-socket.jpg" class="img-thumbnail">
+<p>There is <strong>one place to active your computer</strong>, when you plug it in.</p>
+<p>But what if your want to <strong>plug in computer and mobile charger</strong> in the same time?</p>
+<img src="/assets/images/posts/2017/nette-extension/multi-socket.jpg" class="img-thumbnail">
+<p>To load more services, we use the same interface as <code>app/config/config.neon</code>: <strong>a file with service section that lists services</strong>.</p>
+<h2 id="create-local-extension-in-5-steps"><a class="anchor" href="#create-local-extension-in-5-steps" aria-hidden="true"><span class="anchor-icon">#</span></a>Create Local Extension in 5 Steps</h2>
+<p>Let's say we want to decouple a FileSystem utilities.</p>
+<h3 id="1-pick-a-name-for-directory"><a class="anchor" href="#1-pick-a-name-for-directory" aria-hidden="true"><span class="anchor-icon">#</span></a>1. Pick a Name for Directory</h3>
+<p>What about &quot;FileSystem&quot;? If you agree, create <code>src/FileSystem</code> directory.
+We will put configuration (sevices.neon) and classes there.</p>
+<h3 id="2-create-or-move-related-classes-there"><a class="anchor" href="#2-create-or-move-related-classes-there" aria-hidden="true"><span class="anchor-icon">#</span></a>2. Create or move Related Classes there</h3>
+<p>Starting small, one service will do. When it grows, we can decouple it later.</p>
+<pre><code class="language-php"># src/FileSystem/FileSystem.php
+
+&lt;?php declare(strict_types=1);
+
+namespace FileSystem;
+
+final class FileSystem
+{
+    // some awesome methods!
+}
+</code></pre>
+<h3 id="3-create-config"><a class="anchor" href="#3-create-config" aria-hidden="true"><span class="anchor-icon">#</span></a>3. Create config</h3>
+<p>This is similar to <code>app/config/services.neon</code>, just in different location:</p>
+<pre><code class="language-yaml"># src/FileSystem/config/services.neon
+
+- FileSystem\FileSystem</code></pre>
+<h3 id="4-create-an-extension"><a class="anchor" href="#4-create-an-extension" aria-hidden="true"><span class="anchor-icon">#</span></a>4. Create an Extension</h3>
+<pre><code class="language-php"># src/FileSystem/DI/FileSystemExtension.php
+
+&lt;?php declare(strict_types=1);
+
+namespace FileSystem\DI;
+
+use Nette\DI\Compiler;
+use Nette\DI\CompilerExtension;
+
+final class FileSystemExtension extends CompilerExtension
+{
+    public function loadConfiguration()
+    {
+        // this method loads servcies from config and registers them do Nette\DI Container
+        Compiler::loadDefinitions(
+            $this-&gt;getContainerBuilder(),
+            $this-&gt;loadFromFile(__DIR__.'/../config/services.neon')
+        );
+    }
+}</code></pre>
+<h3 id="5-register-it-in-application"><a class="anchor" href="#5-register-it-in-application" aria-hidden="true"><span class="anchor-icon">#</span></a>5. Register it in Application</h3>
+<pre><code class="language-yaml"># app/config/config.neon
+
+extensions:
+    - FileSystem\DI\FileSystemExtension</code></pre>
+<p>That's it!</p>
+<h2 id="try-it-out"><a class="anchor" href="#try-it-out" aria-hidden="true"><span class="anchor-icon">#</span></a>Try it Out</h2>
+<p>Now try using <code>FileSystem\FileSystem</code> in HomepagePresenter:</p>
+<pre><code class="language-php"># app/presenters/HomepagePresenter.php
+
+&lt;?php declare(strict_types=1);
+
+namespace App\Presenters;
+
+use FileSystem\FileSystem;
+
+class HomepagePresenter extends BasePresenter
+{
+    public function __construct(FileSystem $fileSystem)
+    {
+        $this-&gt;fileSystem = $fileSystem;
+    }
+}</code></pre>
+<p>and running application:</p>
+<img src="/assets/images/posts/2017/nette-extension/bug.png" class="img-thumbnail">
+<p><strong>Fails</strong>? Damn, I can't put this on my blog.</p>
+<p>Oh, <strong>we need to tell composer about these classes</strong>. He doesn't know, where to find it.</p>
+<pre><code class="language-javascript">{
+    "require-dev": {
+        "..."
+    },
+    "autoload": {
+        "psr-4": {
+            "FileSystem\\": "src/FileSystem"
+        }
+    }
+}</code></pre>
+<p>And manually rebuild <code>autoload.php</code> (composer does by default only after <code>composer update</code>):</p>
+<pre><code class="language-bash">composer dump-autoload</code></pre>
+<p>Refresh and...</p>
+<img src="/assets/images/posts/2017/nette-extension/good.png" class="img-thumbnail">
+<p>...it works!</p>
+<p>Phew! That would have been embarrassing.</p>
+<h3 id="to-sum-up"><a class="anchor" href="#to-sum-up" aria-hidden="true"><span class="anchor-icon">#</span></a>To Sum Up</h3>
+<p><strong>Now you know how to do your first extension</strong>.</p>
+<ul>
+<li>create a directory in <code>/src</code></li>
+<li>add <code>/src/&lt;package-name&gt;/services.neon</code></li>
+<li>add <code>/src/DI/&lt;package-name&gt;Extension.neon</code></li>
+<li>register extension to <code>app/config/config.neon</code></li>
+<li>and extend <code>autoload</code> section in <code>composer.json</code> (prevents from putting failing code to public blog :))</li>
+</ul>
+<p><strong>Let me know if you get stuck somewhere</strong>. I want this tutorial to be as easy to understand as possible.</p>
+
+        <br>
+
+
+<div class="card border-warning" id="relatedPosts">
+    <div class="card-header text-white bg-warning border-warning">
+        <strong>Continue Reading</strong>
+    </div>
+    <div class="card-body">
+        <ul>
+                <li>
+                    <a href="/blog/2017/02/15/minimalistic-way-to-create-your-first-nette-extension">
+                        Minimalistic Way to Create Your First Nette Extension
+                    </a>
+                </li>
+        </ul>
+    </div>
+</div>
+
+<div class="hireMe card border-info">
+    <div class="card-body bg-info text-white text-center">
+        <a href="/contact">
+            Do you like what I write about? <strong>I'll do it for you!</strong>
+        </a>
+    </div>
+</div>
+
+        <br>
+
+        <h3>What do you think?</h3>
+
+<div id="disqus_thread"></div>
+
+<script type="text/javascript">
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+
+        s.src = '//' + "itsworthsharing" + '.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+    </div>
+        </div>
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+<script>
+    ga=function(){ ga.q.push(arguments) };
+    ga.q=[];
+    ga.l=+new Date;
+    ga('create', "UA-46082345-1", 'auto');
+    ga('send','pageview');
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async defer></script>
+<script>
+    !function(f,b,e,v,n,t,s){ if(f.fbq)return;n=f.fbq=function(){ n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', "201338863559186");
+    fbq('track', 'PageView');
+</script>
+    </body>
+</html>
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Minimalistic Way to Create Your First Nette Extension">
+    <meta property="og:description" content="Nette extension allows you not only to create open-source packages, but also to split your application to small and logical chunks of code.
+
+Open-source extensions are more complex using many Nette\DI features, but today I will show you, how to start with one Nette\DI method and one service only.">
+    <meta property="og:url" content="https://www.tomasvotruba.cz/blog/2017/02/15/minimalistic-way-to-create-your-first-nette-extension">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@votrubaT">
+    <meta name="twitter:title" content="Minimalistic Way to Create Your First Nette Extension">
+    <meta name="twitter:description" content="Nette extension allows you not only to create open-source packages, but also to split your application to small and logical chunks of code.
+
+Open-source extensions are more complex using many Nette\DI features, but today I will show you, how to start with one Nette\DI method and one service only.">
+
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+
+    <link href="/assets/prism/prism.css" rel="stylesheet" type="text/css">

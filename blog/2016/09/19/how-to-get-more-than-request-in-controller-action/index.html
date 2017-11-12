@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>How to get more than Request in Controller Action | Tomas Votruba</title>
+    <meta charset="utf-8">
+    <meta name="robots" content="index, follow">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+
+    <link rel="alternate" type="application/rss+xml" title="Tomas Votruba Blog RSS" href="/rss.xml">
+
+    <link href="/assets/font-awesome/css/font-awesome.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/bootstrap/bootstrap.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/css/style.css?v=1.2" rel="stylesheet" type="text/css">
+
+</head>
+    <body>
+        <!-- post_id: 14 -->
+
+<div class="hidden-sm-down">
+    <nav class="navbar">
+        <div class="container-fluid">
+            <ul>
+                <li id="logo">
+                    Tomas Votruba
+                </li>
+                <li class="active">
+                    <a href="/">Blog</a>
+                </li>
+                <li>
+                    <a href="/mentoring-and-lectures/">Mentoring & Lectures</a>
+                </li>
+                <li>
+                    <a href="/talks/">Talks</a>
+                </li>
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<div class="hidden-md-up">
+    <nav class="navbar" id="mobile-menu">
+        <div class="container">
+            <a href="/" class="col-3 col-sm-3 active">
+                <em class="fa fa-book"></em>
+                <br>
+                PHP Blog
+            </a>
+            <a href="/mentoring-and-lectures/" class="col-3 col-sm-3">
+                <em class="fa fa-graduation-cap"></em>
+                <br>
+                Lectures
+            </a>
+            <a href="/about/" class="col-3 col-sm-3">
+                <em class="fa fa-id-badge"></em>
+                <br>
+                About
+            </a>
+            <a href="/contact/" class="col-3 col-sm-3">
+                <em class="fa fa-phone"></em>
+                <br>
+                Contact
+            </a>
+        </div>
+    </nav>
+</div>
+
+        <div class="mainContent">
+    <div class="container-fluid" id="post">
+        <h1>How to get more than Request in Controller Action</h1>
+
+<ul class="list-inline">
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-clock-o fa-fw"></em>
+        <strong>3 min</strong>
+    </li>
+
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-calendar fa-fw"></em>
+        <time datetime="2016-09-Mon">Monday, September 19, 2016</time>
+    </li>
+
+        <li class="list-inline-item mr-3">
+            <em class="fa fa-fw fa-comments"></em>
+            <a href="https://www.tomasvotruba.cz/blog/2016/09/19/how-to-get-more-than-request-in-controller-action/#disqus_thread">X</a> comments
+        </li>
+
+        <li class="list-inline-item">
+            <em class="fa fa-fw fa-pencil"></em>
+                <a href="https://github.com/TomasVotruba/tomasvotruba.cz/edit/master/source/_posts/2016/2016-09-19-how-to-get-more-than-request-in-controller-action.md">
+                Typo? Fix me please
+            </a>
+        </li>
+
+</ul>
+
+            <div class="card border-danger">
+                <div class="card-header text-white bg-danger border-danger">
+                    <strong>This post is deprecated since May 2017</strong>
+                </div>
+                <div class="card-body">
+                    You can <a href="https://github.com/symfony/symfony/pull/21771">inject services into actions</a> using <code>controller.service_arguments</code> tag
+since <strong>Symfony 3.3</strong>. 
+<br><br>
+Combined with <a href="https://github.com/symfony/symfony/pull/21289">PSR4-based service discovery and registration</a>
+and <a href="http://symfony.com/blog/new-in-symfony-3-3-service-autoconfiguration">autoconfiguration</a> this is amazing feature.
+<br><br>
+I recommend using it instead!
+                </div>
+            </div>
+
+            <br>
+
+
+        <div class="card">
+            <div class="card-body">
+                You already know you can get <code>Request</code> object in your controller action. Cool, but there is more.
+In <em>Symfony 3.1</em> is new <a href="http://symfony.com/doc/current/controller/argument_value_resolver.html">Action Argument Resolving feature</a>,
+so you can <strong>get any service you need</strong>. With a bit of work. Today I will show you how. 
+            </div>
+        </div>
+
+        
+<h2 id="disclaimer-what-happened-to-controller-constructor-injection"><a class="anchor" href="#disclaimer-what-happened-to-controller-constructor-injection" aria-hidden="true"><span class="anchor-icon">#</span></a>Disclaimer: What happened to controller constructor injection?</h2>
+<p><strong>I still prefer constructor injection in controllers</strong>. Are you asking why and how to achieve that in Symfony?</p>
+<p>In 3 minutes <a href="/blog/2016/03/10/autowired-controllers-as-services-for-lazy-people">you will find out in my other article</a>.
+I will wait here...</p>
+<p><br>
+<br>
+<br></p>
+<p>...ok. Now you are probably in one of these 2 groups:</p>
+<h3 id="1-you-want-to-use-constructor-injection-in-controllers-because-you-like-advantages-of-service-design"><a class="anchor" href="#1-you-want-to-use-constructor-injection-in-controllers-because-you-like-advantages-of-service-design" aria-hidden="true"><span class="anchor-icon">#</span></a>1. You want to use constructor injection in controllers, because you like advantages of service design</h3>
+<p>Stop reading, because this article describes only method injection, which is not so clean. It would add unnecessary complexity to your
+already solid system with no added value.
+So go <a href="https://github.com/Symplify/ControllerAutowire">install Symplify/ControllerAutowire bundle</a> and enjoy your day!</p>
+<h3 id="2-you-consider-constructor-injection-in-controller-too-much-writing-with-not-much-added-value"><a class="anchor" href="#2-you-consider-constructor-injection-in-controller-too-much-writing-with-not-much-added-value" aria-hidden="true"><span class="anchor-icon">#</span></a>2. You consider constructor injection in controller too much writing with not much added value</h3>
+<p><strong>This is article for you. Keep reading!</strong></p>
+<p>To be honest, first I was completely ignoring this second group, but <a href="https://twitter.com/enumag">Jáchym</a> explained me why it's important.</p>
+<h2 id="how-named-services-bring-less-writing"><a class="anchor" href="#how-named-services-bring-less-writing" aria-hidden="true"><span class="anchor-icon">#</span></a>How named services bring less writing</h2>
+<p>Typical controller in Symfony looks like this:</p>
+<pre><code class="language-php">// src/AppBundle/Controller/MeetupController.php
+namespace AppBundle\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
+class MeetupController extends Controller
+{
+    public function listAction()
+    {
+        $meetupRepository = $this-&gt;get('meetup_repository');
+
+        return $this-&gt;render('meetup/list.twig', [
+            'meetups' =&gt; $meetupRepository-&gt;findAll()
+        ]);
+    }
+}</code></pre>
+<p>These 2 lines are the most important:</p>
+<pre><code class="language-php">$meetupRepository = $this-&gt;get('meetup_repository');
+['meetups' =&gt; $meetupRepository-&gt;findAll()]</code></pre>
+<h2 id="hidden-vendor-lock"><a class="anchor" href="#hidden-vendor-lock" aria-hidden="true"><span class="anchor-icon">#</span></a>Hidden vendor lock</h2>
+<p><strong>How do we know, that <code>meetup_repository</code> service has <code>findAll()</code> method?</strong></p>
+<p>You need <strong>3 things</strong> to work at once: </p>
+<ul>
+<li>PHPStorm</li>
+<li>Symfony plugin</li>
+<li>correct setup for particular project structure 
+<ul>
+<li>Symfony 2 and Symfony 3 have <a href="https://knpuniversity.com/screencast/symfony3-upgrade/new-dir-structure">different directory structure</a>, so plugin has to be setup manually to suit it </li>
+</ul></li>
+</ul>
+<h2 id="is-this-really-necessary"><a class="anchor" href="#is-this-really-necessary" aria-hidden="true"><span class="anchor-icon">#</span></a>Is this really necessary?</h2>
+<p>Nope. <strong>Any IDE can autocomplete on object or interface typehint. And without plugins.</strong></p>
+<p>But how to get that there? We can use constructor injection with typehints, <strong>but it would be too much writing</strong>.</p>
+<p>Compare yourself this:</p>
+<pre><code class="language-php">/**
+ * @var MeetupRepository
+ */
+private $meetupRepository;
+
+public function __construct(MeetupRepository $meetupRepository)
+{
+    $this-&gt;meetupRepository = $meetupRepository;
+}
+
+public function listAction()
+{
+    // $this-&gt;meetupRepository;
+}</code></pre>
+<p>to this:</p>
+<pre><code class="language-php">public function listAction()
+{
+    // $this-&gt;get('meetup_repository');
+}</code></pre>
+<p>I've counted that for you:</p>
+<p><strong>It's 11 lines to 1 just to just get a service!</strong></p>
+<p>I must admit, this is killer argument <strong>why not to use constructor injection in controllers</strong>.</p>
+<h3 id="meet-me-half-way"><a class="anchor" href="#meet-me-half-way" aria-hidden="true"><span class="anchor-icon">#</span></a>Meet me half way?</h3>
+<p>What if you could inject the service via method?</p>
+<pre><code class="language-php">public function listAction(MeetupRepository $meetupRepository)
+{
+    $meetups = $meetupRepository-&gt;findAll();
+    // ...
+}</code></pre>
+<h3 id="result"><a class="anchor" href="#result" aria-hidden="true"><span class="anchor-icon">#</span></a>Result?</h3>
+<ul>
+<li>Now we are down to <strong>0 extra lines</strong> to get a dependency</li>
+<li>We can use <strong>any IDE</strong></li>
+<li>We are <strong>independent on project structure</strong></li>
+</ul>
+<p>This all brings greater secondary advantages:</p>
+<ul>
+<li>Less stuff to remember, <strong>less complexity</strong>.</li>
+<li><strong>Faster on-boarding</strong> of new programmers.</li>
+<li><strong>More joy</strong> to your daily work. </li>
+</ul>
+<p>To make this happened, I made <a href="https://github.com/Symplify/ActionAutowire">Symplify\ActionAutowire bundle</a>.</p>
+<h2 id="how-to-enable-controllers-action-autowiring-in-3-steps"><a class="anchor" href="#how-to-enable-controllers-action-autowiring-in-3-steps" aria-hidden="true"><span class="anchor-icon">#</span></a>How to enable controllers action autowiring in 3 steps</h2>
+<h3 id="1-install-package"><a class="anchor" href="#1-install-package" aria-hidden="true"><span class="anchor-icon">#</span></a>1. Install package</h3>
+<pre><code class="language-yaml">composer require symplify/action-autowire</code></pre>
+<h3 id="2-register-bundle"><a class="anchor" href="#2-register-bundle" aria-hidden="true"><span class="anchor-icon">#</span></a>2. Register bundle</h3>
+<pre><code class="language-php">// app/AppKernel.php
+class AppKernel extends Kernel
+{
+    public function registerBundles()
+    {
+        $bundles = [
+            new Symplify\ActionAutowire\SymplifyActionAutowireBundle(),
+            // ...
+        ];
+    }
+}</code></pre>
+<h3 id="3-add-some-dependency-for-your-controller-via-constructor"><a class="anchor" href="#3-add-some-dependency-for-your-controller-via-constructor" aria-hidden="true"><span class="anchor-icon">#</span></a>3. Add some dependency for your controller via constructor</h3>
+<pre><code class="language-php">// src/AppBundle/Controller/MeetupController.php
+namespace AppBundle\Controller;
+
+class MeetupController extends Controller
+{
+    public function listAction(MeetupRepository $meetupRepository)
+    {
+        return $this-&gt;render('meetup/list.twig', [
+            'meetups' =&gt; $meetupRepository-&gt;findAll()
+        ]);
+    }
+}</code></pre>
+<p>And that's it!</p>
+<p>For further use, <strong>just check Readme for <a href="https://github.com/Symplify/ActionAutowire">Symplify/ActionAutowire</a>.</strong></p>
+<h2 id="made-for-you"><a class="anchor" href="#made-for-you" aria-hidden="true"><span class="anchor-icon">#</span></a>Made for you</h2>
+<p>Missing some feature or found a bug? Let me know. I want to make this package suit your needs and work as best as possible.</p>
+
+        <br>
+
+
+
+<div class="hireMe card border-info">
+    <div class="card-body bg-info text-white text-center">
+        <a href="/contact">
+            Do you like what I write about? <strong>I'll do it for you!</strong>
+        </a>
+    </div>
+</div>
+
+        <br>
+
+        <h3>What do you think?</h3>
+
+<div id="disqus_thread"></div>
+
+<script type="text/javascript">
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+
+        s.src = '//' + "itsworthsharing" + '.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+    </div>
+        </div>
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+<script>
+    ga=function(){ ga.q.push(arguments) };
+    ga.q=[];
+    ga.l=+new Date;
+    ga('create', "UA-46082345-1", 'auto');
+    ga('send','pageview');
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async defer></script>
+<script>
+    !function(f,b,e,v,n,t,s){ if(f.fbq)return;n=f.fbq=function(){ n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', "201338863559186");
+    fbq('track', 'PageView');
+</script>
+    </body>
+</html>
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="How to get more than Request in Controller Action">
+    <meta property="og:description" content="You already know you can get Request object in your controller action. Cool, but there is more.
+In Symfony 3.1 is new Action Argument Resolving feature,
+so you can get any service you need. With a bit of work. Today I will show you how. ">
+    <meta property="og:url" content="https://www.tomasvotruba.cz/blog/2016/09/19/how-to-get-more-than-request-in-controller-action">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@votrubaT">
+    <meta name="twitter:title" content="How to get more than Request in Controller Action">
+    <meta name="twitter:description" content="You already know you can get Request object in your controller action. Cool, but there is more.
+In Symfony 3.1 is new Action Argument Resolving feature,
+so you can get any service you need. With a bit of work. Today I will show you how. ">
+
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+
+    <link href="/assets/prism/prism.css" rel="stylesheet" type="text/css">

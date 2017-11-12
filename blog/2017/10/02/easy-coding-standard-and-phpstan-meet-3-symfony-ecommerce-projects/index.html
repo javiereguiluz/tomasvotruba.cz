@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>EasyCodingStandard and PHPStan meet 3 Symfony E-Commerce Projects | Tomas Votruba</title>
+    <meta charset="utf-8">
+    <meta name="robots" content="index, follow">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+
+    <link rel="alternate" type="application/rss+xml" title="Tomas Votruba Blog RSS" href="/rss.xml">
+
+    <link href="/assets/font-awesome/css/font-awesome.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/bootstrap/bootstrap.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/css/style.css?v=1.2" rel="stylesheet" type="text/css">
+
+</head>
+    <body>
+        <!-- post_id: 57 -->
+
+<div class="hidden-sm-down">
+    <nav class="navbar">
+        <div class="container-fluid">
+            <ul>
+                <li id="logo">
+                    Tomas Votruba
+                </li>
+                <li class="active">
+                    <a href="/">Blog</a>
+                </li>
+                <li>
+                    <a href="/mentoring-and-lectures/">Mentoring & Lectures</a>
+                </li>
+                <li>
+                    <a href="/talks/">Talks</a>
+                </li>
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<div class="hidden-md-up">
+    <nav class="navbar" id="mobile-menu">
+        <div class="container">
+            <a href="/" class="col-3 col-sm-3 active">
+                <em class="fa fa-book"></em>
+                <br>
+                PHP Blog
+            </a>
+            <a href="/mentoring-and-lectures/" class="col-3 col-sm-3">
+                <em class="fa fa-graduation-cap"></em>
+                <br>
+                Lectures
+            </a>
+            <a href="/about/" class="col-3 col-sm-3">
+                <em class="fa fa-id-badge"></em>
+                <br>
+                About
+            </a>
+            <a href="/contact/" class="col-3 col-sm-3">
+                <em class="fa fa-phone"></em>
+                <br>
+                Contact
+            </a>
+        </div>
+    </nav>
+</div>
+
+        <div class="mainContent">
+    <div class="container-fluid" id="post">
+        <h1>EasyCodingStandard and PHPStan meet 3&nbsp;Symfony E-Commerce Projects</h1>
+
+<ul class="list-inline">
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-clock-o fa-fw"></em>
+        <strong>6 min</strong>
+    </li>
+
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-calendar fa-fw"></em>
+        <time datetime="2017-10-Mon">Monday, October 2, 2017</time>
+    </li>
+
+        <li class="list-inline-item mr-3">
+            <em class="fa fa-fw fa-comments"></em>
+            <a href="https://www.tomasvotruba.cz/blog/2017/10/02/easy-coding-standard-and-phpstan-meet-3-symfony-ecommerce-projects/#disqus_thread">X</a> comments
+        </li>
+
+        <li class="list-inline-item">
+            <em class="fa fa-fw fa-pencil"></em>
+                <a href="https://github.com/TomasVotruba/tomasvotruba.cz/edit/master/source/_posts/2017/2017-10-02-easy-coding-standard-and-phpstan-meet-3-symfony-ecommerce-projects.md">
+                Typo? Fix me please
+            </a>
+        </li>
+
+</ul>
+
+
+
+        <div class="card">
+            <div class="card-body">
+                <a href="/blog/2017/08/28/shopsys-spriker-and-sylius-under-static-analysis/">In the last post</a>, we looked at the static analysis of 3 Symfony E-Commerce projects.</p>
+<p><strong>Lines of code, Duplicated code, Cyclomatic complexity or Method length</strong>. These metrics are very rarely used in practise (even though there is a <a href="https://github.com/Symplify/Symplify/blob/bf802422b9528946a8bd7e7f0331d858a9bf5740/easy-coding-standard.neon#L27-L28">sniff for that</a>).</p>
+<p>Today, I am going to show you how you can check them with tools that can help you keep your code better on daily basis - <a href="https://github.com/Symplify/EasyCodingStandard">EasyCodingStandard</a> and <a href="https://github.com/phpstan/phpstan">PHPStan</a>.
+            </div>
+        </div>
+
+        
+<h2 id="try-it-yourself"><a class="anchor" href="#try-it-yourself" aria-hidden="true"><span class="anchor-icon">#</span></a>Try It Yourself</h2>
+<p>I've updated <a href="https://github.com/TomasVotruba/shopsys-spryker-and-sylius-analysis">the repository on Github</a> with both tools, so you can verify all the results in this post locally.</p>
+<p><br></p>
+<div class="col-6 mb-3">
+    <a href="https://www.shopsys-framework.com/">
+        <img src="/assets/images/posts/2017/shopsys-static-anal/shopsys.png"></a>
+</div>
+<div class="col-5">
+    <a href="http://sylius.org/">
+        <img src="/assets/images/posts/2017/shopsys-static-anal/sylius.png"></a>
+</div>
+<div class="col-5">
+    <a href="https://spryker.com/">
+        <img src="/assets/images/posts/2017/shopsys-static-anal/spryker.png"></a>
+</div>
+<p><em>(Tip: logos lead to projects' landing pages. Be sure to explore.)</em></p>
+<h2 id="why-these-tools"><a class="anchor" href="#why-these-tools" aria-hidden="true"><span class="anchor-icon">#</span></a>Why These Tools?</h2>
+<p>When a project uses coding standards - moreover CI-checkers - it is very easy to contribute to it. <strong>I don't have to be afraid a PR gets rejected or at least postponed due to a wrong bracket position</strong> (yea, that happens). </p>
+<p>Second, <a href="https://github.com/phpstan/phpstan">PHPStan</a> is the best tool when it comes to <strong>passing type validations</strong> (arrays of objects, like <code>Type[]</code>), <strong>incorrect namespaces</strong>, <strong>calling non-existing methods</strong> <a href="https://medium.com/@ondrejmirtes/phpstan-2939cd0ad0e3#b18f">and more</a>.</p>
+<p>To get the idea how it improves your code in practice, just <a href="https://github.com/ApiGen/ApiGen/commit/9ab5d1f94e95ac91a6cf2d0edd1d0c384f6299d7">check this commit</a> in <a href="/blog/2017/09/04/how-apigen-survived-its-own-death/">ApiGen</a>.</p>
+<h2 id="coding-style-violations-with-easycodingstandard"><a class="anchor" href="#coding-style-violations-with-easycodingstandard" aria-hidden="true"><span class="anchor-icon">#</span></a>Coding Style Violations with EasyCodingStandard</h2>
+<h3 id="psr2"><a class="anchor" href="#psr2" aria-hidden="true"><span class="anchor-icon">#</span></a>PSR2</h3>
+<p><strong>PSR-2 is the most spread coding standard in PHP</strong>, described in <a href="http://www.php-fig.org/psr/psr-2/">PHP-FIG guide</a>. Both PHP_CodeSniffer and PHP CS Fixer have a set of ~30 rules, so why not to <a href="https://github.com/Symplify/EasyCodingStandard/blob/master/config/psr2-checkers.neon">combine them</a> and use them on our projects?</p>
+<p><br></p>
+<table class="table table-bordered table-responsive"><thead class="thead-inverse"><tr><th>Shopsys</th>
+            <th>Spryker</th>
+            <th>Sylius</th>
+        </tr></thead><tr><td>0 errors</td>
+        <td>9 723 errors</td>
+        <td>133 errors</td>
+    </tr></table>
+<p><br></p>
+<h3 id="what-would-be-the-takeaways"><a class="anchor" href="#what-would-be-the-takeaways" aria-hidden="true"><span class="anchor-icon">#</span></a>What Would Be the Takeaways?</h3>
+<p>If you’re used to PSR2 style, you probably use PHPStorm to check it and <strong>contributing to Sylius would mean no extra work for you</strong>. <a href="https://github.com/Sylius/Sylius/blob/b5f6a4e4383fcbf5b1b9730094d1e1aa756de7a2/etc/phpcs/.php_cs">Sylius' ruleset</a> contains just handful of checkers though.</p>
+<p>Spryker has <a href="https://github.com/spryker/code-sniffer">own package just for coding-standard</a> build on PHP_CodeSnifer, but they don't comply with some rules of PHP CS Fixer. <strong>This might be issue if you're in the Symfony world</strong> and you use that tool in your projects.</p>
+<p>Shopsys <strong>has its own <a href="https://github.com/shopsys/coding-standards">coding-standard package</a> build on both tools</strong> - PHP CS Fixer and PHP_CodeSniffer - compatble with PSR-2. I'd say that's the best solution, because you have <strong>the least responsibility as a contributor</strong>. CI tools will handle the code style for you.</p>
+<h2 id="the-four-cleaners"><a class="anchor" href="#the-four-cleaners" aria-hidden="true"><span class="anchor-icon">#</span></a>The Four Cleaners</h2>
+<p>This is another <a href="/blog/2017/09/18/4-simple-checkers-for-coding-standard-haters-but-clean-code-lovers/">small and easy-to-understand set</a> I use to keep the code of open-source packages clean. In Sylius <a href="https://github.com/Sylius/Sylius/pull/8557">it removed 500 lines of unused code</a> just few days ago as of writing this article.</p>
+<p>The full set looks like this:</p>
+<pre><code class="language-yaml">checkers:
+    # use short array []
+    PhpCsFixer\Fixer\ArrayNotation\ArraySyntaxFixer: 
+        syntax: short
+    # drop dead code
+    - SlevomatCodingStandard\Sniffs\Classes\UnusedPrivateElementsSniff 
+    # drop dead use namespaces
+    - PhpCsFixer\Fixer\Import\NoUnusedImportsFixer 
+    # and sort them A→Z
+    - PhpCsFixer\Fixer\Import\OrderedImportsFixer </code></pre>
+<p><br></p>
+<p>And results for our 3 projects?</p>
+<p><br></p>
+<table class="table table-bordered table-responsive"><thead class="thead-inverse"><tr><th>Shopsys</th>
+            <th>Spryker</th>
+            <th>Sylius</th>
+        </tr></thead><tr><td>39 errors</td>
+        <td>97 errors</td>
+        <td>7 errors</td>
+    </tr></table>
+<p><br></p>
+<h2 id="code-violations-with-phpstan"><a class="anchor" href="#code-violations-with-phpstan" aria-hidden="true"><span class="anchor-icon">#</span></a>Code Violations with PHPStan</h2>
+<p><strong>There are 8 levels in PHPStan to this day</strong> - from 0 to 7. Level 0 being <em>the starter</em> and 7 <em>the Mission Impossible</em> for most projects.</p>
+<p>If you never used this tools before, <strong>you probably don’t know how strict PHPStan is</strong>.
+Doctrine2 has now level 1 and successfully passes it, thanks to <a href="https://github.com/Majkl578">Majkl578</a>. In order to get the idea of what had to be done, <a href="https://github.com/doctrine/doctrine2/pull/6535/files">see the PR</a>.</p>
+<p>Do you want to add PHPStan to your project? <a href="/blog/2017/01/28/why-I-switched-scrutinizer-for-phpstan-and-you-should-too/">Read this short intro</a>.</p>
+<div class="text-center">
+    <img src="/assets/images/posts/2017/shopsys-static-anal-2/phpstan.png" style="max-width:100%" class="img-thumbnail"></div>
+<p><br></p>
+<p>To have an idea about real numbers, <strong>I picked results for lvl 0 and lvl 7</strong>:</p>
+<p><br></p>
+<table class="table table-bordered table-responsive table-striped"><tr><thead class="thead-inverse"><th>PHPStan levels \ Projects</th>
+            <th>Shopsys</th>
+            <th>Spryker</th>
+            <th>Sylius</th>
+        </thead></tr><tr><th>0
+        </th>
+<td>1 406 errors</td>
+        <td>7 905 errors</td>
+        <td>1 404 errors</td>
+    </tr><tr><th>7
+        </th>
+<td>1 413 errors</td>
+        <td>12 977 errors</td>
+        <td>3 715 errors</td>
+    </tr></table>
+<p><br></p>
+<p>As you can see, both <strong>Shopsys and Sylius are doing great</strong>. Sylius is just falling bit behind in higher levels.</p>
+<p>As we have seen in <a href="/blog/2017/08/28/shopsys-spriker-and-sylius-under-static-analysis/">the previous article</a>, <strong>not all the projects are of the same size</strong>. It might not be fair to Spryker to count only PHPStan violations as its codebase is considerably larger. <strong>If we count violations relative to the size of the project</strong> (measured in lines of code) the graph changes significantly:</p>
+<p><br></p>
+<div class="text-center">
+    <img src="/assets/images/posts/2017/shopsys-static-anal-2/phpstan-relative.png" style="max-width:100%" class="img-thumbnail"></div>
+<p><br></p>
+<p><strong>Results for lvl 0 and lvl 7</strong>:</p>
+<p><br></p>
+<table class="table table-bordered table-responsive table-striped"><tr><thead class="thead-inverse"><th>Relative to LOC</th>
+            <th>Shopsys</th>
+            <th>Spryker</th>
+            <th>Sylius</th>
+        </thead></tr><tr><th>0
+        </th>
+<td>0.014</td>
+        <td>0.021</td>
+        <td>0.012</td>
+    </tr><tr><th>7
+        </th>
+<td>0.014</td>
+        <td>0.035</td>
+        <td>0.033</td>
+    </tr></table>
+<p><br></p>
+<p>This point of view shows that, on the less strict levels of analysis, <strong>Sylius and Shopsys are ahead of Spryker in terms of PHPStan violations</strong>. During the second level of analysis this changes and number of problems found notably rises, only <strong>Shopsys stands out</strong> with less than a half of the issues of both other frameworks. This trend does not change even while moving to the higher levels of scrutiny from mr. PHPStan.</p>
+<p>Shopsys has long way to passing level 7 with 0 errors, but it has still <a href="https://blog.shopsys.com/we-have-started-with-our-regular-releases-public-beta-coming-soon-c1f879657bd4">some time till the release</a> to improve this.</p>
+<p>Happy coding!</p>
+
+        <br>
+
+
+<div class="card border-warning" id="relatedPosts">
+    <div class="card-header text-white bg-warning border-warning">
+        <strong>Continue Reading</strong>
+    </div>
+    <div class="card-body">
+        <ul>
+                <li>
+                    <a href="/blog/2017/08/28/shopsys-spriker-and-sylius-under-static-analysis">
+                        Shopsys, Spryker &amp; Sylius under Static Analysis
+                    </a>
+                </li>
+        </ul>
+    </div>
+</div>
+
+<div class="hireMe card border-info">
+    <div class="card-body bg-info text-white text-center">
+        <a href="/contact">
+            Do you like what I write about? <strong>I'll do it for you!</strong>
+        </a>
+    </div>
+</div>
+
+        <br>
+
+        <h3>What do you think?</h3>
+
+<div id="disqus_thread"></div>
+
+<script type="text/javascript">
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+
+        s.src = '//' + "itsworthsharing" + '.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+    </div>
+        </div>
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+<script>
+    ga=function(){ ga.q.push(arguments) };
+    ga.q=[];
+    ga.l=+new Date;
+    ga('create', "UA-46082345-1", 'auto');
+    ga('send','pageview');
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async defer></script>
+<script>
+    !function(f,b,e,v,n,t,s){ if(f.fbq)return;n=f.fbq=function(){ n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', "201338863559186");
+    fbq('track', 'PageView');
+</script>
+    </body>
+</html>
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="EasyCodingStandard and PHPStan meet 3 Symfony E-Commerce Projects">
+    <meta property="og:description" content="In the last post, we looked at the static analysis of 3 Symfony E-Commerce projects.
+Lines of code, Duplicated code, Cyclomatic complexity or Method length. These metrics are very rarely used in practise (even though there is a sniff for that).
+Today, I am going to show you how you can check them with tools that can help you keep your code better on daily basis - EasyCodingStandard and PHPStan.">
+    <meta property="og:url" content="https://www.tomasvotruba.cz/blog/2017/10/02/easy-coding-standard-and-phpstan-meet-3-symfony-ecommerce-projects">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@votrubaT">
+    <meta name="twitter:title" content="EasyCodingStandard and PHPStan meet 3 Symfony E-Commerce Projects">
+    <meta name="twitter:description" content="In the last post, we looked at the static analysis of 3 Symfony E-Commerce projects.
+Lines of code, Duplicated code, Cyclomatic complexity or Method length. These metrics are very rarely used in practise (even though there is a sniff for that).
+Today, I am going to show you how you can check them with tools that can help you keep your code better on daily basis - EasyCodingStandard and PHPStan.">
+
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+
+    <link href="/assets/prism/prism.css" rel="stylesheet" type="text/css">

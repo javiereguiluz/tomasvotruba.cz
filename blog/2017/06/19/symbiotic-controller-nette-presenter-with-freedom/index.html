@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Symbiotic Controller: Nette Presenter with Freedom | Tomas Votruba</title>
+    <meta charset="utf-8">
+    <meta name="robots" content="index, follow">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+
+    <link rel="alternate" type="application/rss+xml" title="Tomas Votruba Blog RSS" href="/rss.xml">
+
+    <link href="/assets/font-awesome/css/font-awesome.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/bootstrap/bootstrap.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/css/style.css?v=1.2" rel="stylesheet" type="text/css">
+
+</head>
+    <body>
+        <!-- post_id: 43 -->
+
+<div class="hidden-sm-down">
+    <nav class="navbar">
+        <div class="container-fluid">
+            <ul>
+                <li id="logo">
+                    Tomas Votruba
+                </li>
+                <li class="active">
+                    <a href="/">Blog</a>
+                </li>
+                <li>
+                    <a href="/mentoring-and-lectures/">Mentoring & Lectures</a>
+                </li>
+                <li>
+                    <a href="/talks/">Talks</a>
+                </li>
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<div class="hidden-md-up">
+    <nav class="navbar" id="mobile-menu">
+        <div class="container">
+            <a href="/" class="col-3 col-sm-3 active">
+                <em class="fa fa-book"></em>
+                <br>
+                PHP Blog
+            </a>
+            <a href="/mentoring-and-lectures/" class="col-3 col-sm-3">
+                <em class="fa fa-graduation-cap"></em>
+                <br>
+                Lectures
+            </a>
+            <a href="/about/" class="col-3 col-sm-3">
+                <em class="fa fa-id-badge"></em>
+                <br>
+                About
+            </a>
+            <a href="/contact/" class="col-3 col-sm-3">
+                <em class="fa fa-phone"></em>
+                <br>
+                Contact
+            </a>
+        </div>
+    </nav>
+</div>
+
+        <div class="mainContent">
+    <div class="container-fluid" id="post">
+        <h1>Symbiotic Controller: Nette&nbsp;Presenter&nbsp;with&nbsp;Freedom</h1>
+
+<ul class="list-inline">
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-clock-o fa-fw"></em>
+        <strong>5 min</strong>
+    </li>
+
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-calendar fa-fw"></em>
+        <time datetime="2017-06-Mon">Monday, June 19, 2017</time>
+    </li>
+
+        <li class="list-inline-item mr-3">
+            <em class="fa fa-fw fa-comments"></em>
+            <a href="https://www.tomasvotruba.cz/blog/2017/06/19/symbiotic-controller-nette-presenter-with-freedom/#disqus_thread">X</a> comments
+        </li>
+
+        <li class="list-inline-item">
+            <em class="fa fa-fw fa-pencil"></em>
+                <a href="https://github.com/TomasVotruba/tomasvotruba.cz/edit/master/source/_posts/2017/2017-06-19-symbiotic-controller-nette-presenter-with-freedom.md">
+                Typo? Fix me please
+            </a>
+        </li>
+
+</ul>
+
+            <div class="card border-danger">
+                <div class="card-header text-white bg-danger border-danger">
+                    <strong>This post is deprecated since October 2017</strong>
+                </div>
+                <div class="card-body">
+                    This was deprecated due to low usage of package and too complicated API. <strong>Use class that implements <code>Nette\Application\IPresenter</code> with <code>run(Request $request)</code> instead</strong>.
+<br>
+<br>
+For more, see <a href="https://github.com/Symplify/Symplify/issues/402">issue on Github</a>.
+                </div>
+            </div>
+
+            <br>
+
+
+        <div class="card">
+            <div class="card-body">
+                Symfony and Laravel allow decoupled controllers by default thanks to simple principle: <em>controller/presenter = callback</em>. No base class or interface is needed.
+<br><br>
+People around me are already using single action presenters, but still depend on Nette. Why? Coupling of <code>IPresenter</code> in Application and Router.
+<br><br>
+I think framework should help you and not limit you in a way how you write your code.
+<strong>Today we look how to make that happen even for Nette presenters and how to set them free</strong>.
+            </div>
+        </div>
+
+        
+<h2 id="3-misconceptions-first"><a class="anchor" href="#3-misconceptions-first" aria-hidden="true"><span class="anchor-icon">#</span></a>3 Misconceptions First</h2>
+<p>When I talked about <a href="https://www.facebook.com/pehapkari/videos/1285464581503349/">single action or rather invokable presenters in Nette</a> on 87. Posobota meetup in Prague, <strong>people were talking about 3 missconceptions</strong>. I'd like clarify them first.</p>
+<h3 id="1-nette-needs-code-ipresenter-code"><a class="anchor" href="#1-nette-needs-code-ipresenter-code" aria-hidden="true"><span class="anchor-icon">#</span></a>1. Nette needs <code>IPresenter</code></h3>
+<p>My first attempt decouple presenter from Nette <a href="https://github.com/nette/application/blob/0941b6b7023a43ddd0627ad5ac3ffba606709ef5/src/Application/PresenterFactory.php#L78-L79">failed on <code>PresenterFactory</code></a>:</p>
+<pre><code class="language-php">// ...
+if (!$reflection-&gt;implementsInterface(IPresenter::class)) {
+    throw new InvalidPresenterException("Cannot load presenter '$name', class '$class' is not Nette\\Application\\IPresenter implementor.");
+}</code></pre>
+<p>This took me few weeks to figure out because of coupling to latte, providers and layout autodiscovery.
+I needed to modify <code>PresenterFactory</code>, <code>Application-&gt;run()</code> and create own <code>PresneterRoute</code>.</p>
+<p><strong>So yes, when you modify few places, you can use it without <code>IPresenter</code> interface.</strong></p>
+<h3 id="2-what-about-ajax-what-about-components"><a class="anchor" href="#2-what-about-ajax-what-about-components" aria-hidden="true"><span class="anchor-icon">#</span></a>2. What about ajax? What about Components?</h3>
+<p><strong>If you use ajax and components, this approach is not probably for you application</strong>. </p>
+<p>I thought it's impossible to use Nette without components as well, but <a href="https://ondrej.mirtes.cz">Ondrej Mirtes</a> from Slevomat take me out of my misery: &quot;We don't use components in Slevomat, just presenters.&quot; So feel free to ask him how they do it.</p>
+<p><strong>You'll appreciate this approach in applications, where</strong>:</p>
+<ul>
+<li>frontend is managed not by Nette ajax, but by <strong>ReactJS, Angular or any other frontend framework</strong>  </li>
+<li><strong>API, Rest or GraphQL</strong> is the main entry point to the application</li>
+<li>your application is growing and you want to <strong>avoid god classes like presenters with 10 actions methods</strong> in next couple of years</li>
+</ul>
+<h3 id="3-there-should-be-an-interface-for-that"><a class="anchor" href="#3-there-should-be-an-interface-for-that" aria-hidden="true"><span class="anchor-icon">#</span></a>3. There should be an Interface for that</h3>
+<p>Even when some people agreed with invokable/single action approach, they still missed some interface that would enforce a method. I must say <code>__invoke()</code> method seemed weird to me at first too.</p>
+<p><strong>Give <code>invoke()</code> a try, it's Fine</strong></p>
+<p>But I've learned what <a href="http://php.net/manual/en/language.oop5.magic.php#object.invoke"><code>__invoke()</code> is</a> and that <a href="http://symfony.com/doc/current/controller/service.html#invokable-controllers">Symfony</a> and <a href="https://laravel.com/docs/5.4/controllers#single-action-controllers">Laravel use</a> it for years. </p>
+<p>Also, <strong>using an interface would only create a new dependency</strong> for something that is already used in specific way. Moreover for controller which <a href="https://book.cakephp.org/2.0/en/controllers.html#controller-actions">every</a> <a href="http://www.yiiframework.com/doc-2.0/guide-structure-controllers.html#actions">framework</a> <a href="https://book.cakephp.org/3.0/en/controllers.html">bend</a> <a href="https://laravel.com/docs/5.4/controllers#defining-controllers">to</a> <a href="https://doc.nette.org/en/2.4/presenters#toc-processing-presenter-action">its</a> <a href="http://symfony.com/doc/current/best_practices/controllers.html#what-does-the-controller-look-like">own</a> needs.</p>
+<p><code>__invoke()</code> is normal method, just like <code>__constructor()</code> is normal for passing dependencies nowadays.</p>
+<h2 id="inspiration-from-symfony-community-matthias-noback-amp-keving-dunglas"><a class="anchor" href="#inspiration-from-symfony-community-matthias-noback-amp-keving-dunglas" aria-hidden="true"><span class="anchor-icon">#</span></a>Inspiration from Symfony Community - Matthias Noback &amp; Keving Dunglas</h2>
+<p><strong>Why Decouple Controller From Framework?</strong></p>
+<p>If you look for reasons to decouple from framework, read <a href="https://php-and-symfony.matthiasnoback.nl/tags/controller/">this 3 parts series: Framework Independent Controllers</a> by <a href="https://matthiasnoback.nl">Matthias Noback</a> about independent controllers in Symfony.</p>
+<p><strong>Why are Single Action Presenters Great for Growing Projects?</strong></p>
+<p>Similar <a href="https://dunglas.fr/2016/01/dunglasactionbundle-symfony-controllers-redesigned/">package and post</a> was made by Kevin Dunglas exactly 1,5 year ago. You'll find your answers there.</p>
+<p>No more questions, right to the code.</p>
+<h2 id="how-single-action-controller-looks-like"><a class="anchor" href="#how-single-action-controller-looks-like" aria-hidden="true"><span class="anchor-icon">#</span></a>How Single Action Controller looks like?</h2>
+<p>The goal was:</p>
+<ul>
+<li><strong>don't depend on any interface or class</strong></li>
+<li>have <strong>1 public method</strong> <code>__invoke()</code></li>
+</ul>
+<p>Ideal code for Nette-agnostic presenter would look like this:</p>
+<pre><code class="language-php">namespace App\Presenter;
+
+use Symplify\SymbioticController\Adapter\Nette\Template\TemplateRenderer;
+
+final class StandalonePresenter
+{
+    /**
+     * @var TemplateRenderer
+     */
+    private $templateRenderer;
+
+    public function __construct(TemplateRenderer $templateRenderer)
+    {
+        $this-&gt;templateRenderer = $templateRenderer;
+    }
+
+    public function __invoke(): string
+    {
+        return $this-&gt;templateRenderer-&gt;renderFileWithParameters(
+            __DIR__ . '/templates/Contact.latte'
+        );
+    }
+}</code></pre>
+<p>Or if you use API and json:</p>
+<pre><code class="language-php">namespace App\Presenter;
+
+use Nette\Application\Responses\JsonResponse;
+
+final class ApiPresenter
+{
+    public function __invoke(): JsonResponse
+    {
+        return new JsonResponse('Hi!');
+    }
+}</code></pre>
+<h3 id="clickable-template-paths-as-positive-side-effect"><a class="anchor" href="#clickable-template-paths-as-positive-side-effect" aria-hidden="true"><span class="anchor-icon">#</span></a>Clickable template paths as Positive Side-Effect</h3>
+<p><code>Module:Presenter:template</code> =&gt; <code>__DIR__ . '/templates/template.latte</code>  </p>
+<p>Instead of using magic notation, you can go right with absolute path for templates.</p>
+<p>If this would be used by every controller and framework, there would be much lower entry barrier for front-end developers. Another new way to use your IDE the right-way:</p>
+<div class="text-center">
+    <img src="/assets/images/posts/2017/symbiotic-controller/presenter.gif" class="img-thumbnail"></div>
+<h2 id="and-router"><a class="anchor" href="#and-router" aria-hidden="true"><span class="anchor-icon">#</span></a>And Router?</h2>
+<p>But how to register this presenter in router? Since the called action is now <em>not a method in a class</em> but <em>a class</em>, we cannot use common way to add route:</p>
+<pre><code class="language-php"># this won't work
+$routes[] = new Route('/contact', 'Contact:default');
+$routes[] = new Route('/contact', 'Contact:__invoke');</code></pre>
+<p>We need to use presenter as target:</p>
+<pre><code class="language-php">use App\Presenter\ContactPresenter; 
+
+$routes[] = new Route('/contact', ContactPresenter::class);</code></pre>
+<p>But that won't work either as <code>Route</code> class requires <code>&lt;presenter&gt;:&lt;method&gt;</code> format for target.</p>
+<h3 id="presenter-route"><a class="anchor" href="#presenter-route" aria-hidden="true"><span class="anchor-icon">#</span></a>Presenter Route</h3>
+<p>To solve this, <strong>we'll use custom Route that accepts Presenter class as argument</strong>.</p>
+<pre><code class="language-php"># app/Router/RouterFactory.php
+
+use App\Presenter\ContactPresenter;
+use Symplify\SymbioticController\Adapter\Nette\Routing;
+
+final class RouterFactory
+{
+    public function create(): RouteList
+    {
+        $routes = new RouteList;
+        $routes[] = new PresenterRoute('/contact', ContactPresenter::class);
+        $routes[] = new Route('&lt;presenter&gt;/&lt;action&gt;', 'Homepage:default');
+
+        return $routes;
+    }
+}</code></pre>
+<p>It has 2 important tasks:</p>
+<ul>
+<li><strong>it validates that class has <code>__invoke()</code> method</strong></li>
+<li>you can <strong>click right to the presenter class</strong> in your IDE</li>
+</ul>
+<h2 id="from-stringly-route-to-strongly-route"><a class="anchor" href="#from-stringly-route-to-strongly-route" aria-hidden="true"><span class="anchor-icon">#</span></a>From Stringly Route to Strongly Route</h2>
+<p>Same way you can use your IDE to open the template, you can use it to open presenter target.</p>
+<p>From magic <code>Homepage:default</code> to clickable class: </p>
+<div class="text-center">
+    <img src="/assets/images/posts/2017/symbiotic-controller/router.gif" class="img-thumbnail"></div>
+<h2 id="do-you-want-to-try-this"><a class="anchor" href="#do-you-want-to-try-this" aria-hidden="true"><span class="anchor-icon">#</span></a>Do you want to try this?</h2>
+<p>You have 2 options: check <a href="https://github.com/TomasVotruba/nette-single-action-presenter">nette/sandbox based demo on Github</a> or install to your application yourself:</p>
+<h2 id="3-steps-to-your-first-framework-agnostic-presenter-in-nette"><a class="anchor" href="#3-steps-to-your-first-framework-agnostic-presenter-in-nette" aria-hidden="true"><span class="anchor-icon">#</span></a>3 Steps To Your First Framework Agnostic Presenter in Nette</h2>
+<h3 id="1-install-a-href-https-github-com-symplify-symbioticcontroller-symplify-symbioticcontroller-a-package"><a class="anchor" href="#1-install-a-href-https-github-com-symplify-symbioticcontroller-symplify-symbioticcontroller-a-package" aria-hidden="true"><span class="anchor-icon">#</span></a>1. Install <a href="https://github.com/Symplify/SymbioticController">Symplify\SymbioticController</a> package</h3>
+<pre><code class="language-yaml">composer require symplify/symbiotic-controller</code></pre>
+<h3 id="2-register-needed-extensions"><a class="anchor" href="#2-register-needed-extensions" aria-hidden="true"><span class="anchor-icon">#</span></a>2. Register Needed Extensions</h3>
+<pre><code class="language-yaml"># app/config/config.neon
+
+extensions:
+    - Symplify\SymbioticController\Adapter\Nette\DI\SymbioticControllerExtension
+    - Contributte\EventDispatcher\DI\EventDispatcherExtension</code></pre>
+<h3 id="3-create-your-presenter-and-use-it"><a class="anchor" href="#3-create-your-presenter-and-use-it" aria-hidden="true"><span class="anchor-icon">#</span></a>3. Create Your Presenter and Use It</h3>
+<p>That's all :)</p>
+<h2 id="takeaways"><a class="anchor" href="#takeaways" aria-hidden="true"><span class="anchor-icon">#</span></a>Takeaways</h2>
+<ul>
+<li>Using framework agnostics controllers has its use cases. <strong>The best are: API, backend-mostly and fast growing applications</strong>. </li>
+<li>Don't be afraid of <code>__invoke()</code>. It is your friend, mainly for future.</li>
+<li><strong>Use Strong types over String types and forget the magic</strong>. </li>
+</ul>
+<h3 id="how-do-you-approach-using-controller-in-nette"><a class="anchor" href="#how-do-you-approach-using-controller-in-nette" aria-hidden="true"><span class="anchor-icon">#</span></a>How do YOU approach using controller (in Nette)?</h3>
+<ul>
+<li>Do you use components?</li>
+<li>Do you know why you depend on Nette?</li>
+<li>Do you try some other approach than traditional one?</li>
+</ul>
+<p>Let me know in the comments. I always like to hear different opinions.</p>
+
+        <br>
+
+
+<div class="card border-warning" id="relatedPosts">
+    <div class="card-header text-white bg-warning border-warning">
+        <strong>Continue Reading</strong>
+    </div>
+    <div class="card-body">
+        <ul>
+                <li>
+                    <a href="/blog/2017/02/15/minimalistic-way-to-create-your-first-nette-extension">
+                        Minimalistic Way to Create Your First Nette Extension
+                    </a>
+                </li>
+        </ul>
+    </div>
+</div>
+
+<div class="hireMe card border-info">
+    <div class="card-body bg-info text-white text-center">
+        <a href="/contact">
+            Do you like what I write about? <strong>I'll do it for you!</strong>
+        </a>
+    </div>
+</div>
+
+        <br>
+
+        <h3>What do you think?</h3>
+
+<div id="disqus_thread"></div>
+
+<script type="text/javascript">
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+
+        s.src = '//' + "itsworthsharing" + '.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+    </div>
+        </div>
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+<script>
+    ga=function(){ ga.q.push(arguments) };
+    ga.q=[];
+    ga.l=+new Date;
+    ga('create', "UA-46082345-1", 'auto');
+    ga('send','pageview');
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async defer></script>
+<script>
+    !function(f,b,e,v,n,t,s){ if(f.fbq)return;n=f.fbq=function(){ n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', "201338863559186");
+    fbq('track', 'PageView');
+</script>
+    </body>
+</html>
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Symbiotic Controller: Nette Presenter with Freedom">
+    <meta property="og:description" content="Symfony and Laravel allow decoupled controllers by default thanks to simple principle: controller/presenter = callback. No base class or interface is needed.
+
+People around me are already using single action presenters, but still depend on Nette. Why? Coupling of IPresenter in Application and Router.
+
+I think framework should help you and not limit you in a way how you write your code.
+Today we look how to make that happen even for Nette presenters and how to set them free.">
+    <meta property="og:url" content="https://www.tomasvotruba.cz/blog/2017/06/19/symbiotic-controller-nette-presenter-with-freedom">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@votrubaT">
+    <meta name="twitter:title" content="Symbiotic Controller: Nette Presenter with Freedom">
+    <meta name="twitter:description" content="Symfony and Laravel allow decoupled controllers by default thanks to simple principle: controller/presenter = callback. No base class or interface is needed.
+
+People around me are already using single action presenters, but still depend on Nette. Why? Coupling of IPresenter in Application and Router.
+
+I think framework should help you and not limit you in a way how you write your code.
+Today we look how to make that happen even for Nette presenters and how to set them free.">
+
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+
+    <link href="/assets/prism/prism.css" rel="stylesheet" type="text/css">

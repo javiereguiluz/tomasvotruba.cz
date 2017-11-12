@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Decouple Your Doctrine Filters | Tomas Votruba</title>
+    <meta charset="utf-8">
+    <meta name="robots" content="index, follow">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+
+    <link rel="alternate" type="application/rss+xml" title="Tomas Votruba Blog RSS" href="/rss.xml">
+
+    <link href="/assets/font-awesome/css/font-awesome.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/bootstrap/bootstrap.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/css/style.css?v=1.2" rel="stylesheet" type="text/css">
+
+</head>
+    <body>
+        <!-- post_id: 8 -->
+
+<div class="hidden-sm-down">
+    <nav class="navbar">
+        <div class="container-fluid">
+            <ul>
+                <li id="logo">
+                    Tomas Votruba
+                </li>
+                <li class="active">
+                    <a href="/">Blog</a>
+                </li>
+                <li>
+                    <a href="/mentoring-and-lectures/">Mentoring & Lectures</a>
+                </li>
+                <li>
+                    <a href="/talks/">Talks</a>
+                </li>
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<div class="hidden-md-up">
+    <nav class="navbar" id="mobile-menu">
+        <div class="container">
+            <a href="/" class="col-3 col-sm-3 active">
+                <em class="fa fa-book"></em>
+                <br>
+                PHP Blog
+            </a>
+            <a href="/mentoring-and-lectures/" class="col-3 col-sm-3">
+                <em class="fa fa-graduation-cap"></em>
+                <br>
+                Lectures
+            </a>
+            <a href="/about/" class="col-3 col-sm-3">
+                <em class="fa fa-id-badge"></em>
+                <br>
+                About
+            </a>
+            <a href="/contact/" class="col-3 col-sm-3">
+                <em class="fa fa-phone"></em>
+                <br>
+                Contact
+            </a>
+        </div>
+    </nav>
+</div>
+
+        <div class="mainContent">
+    <div class="container-fluid" id="post">
+        <h1>Decouple Your Doctrine Filters</h1>
+
+<ul class="list-inline">
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-clock-o fa-fw"></em>
+        <strong>3 min</strong>
+    </li>
+
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-calendar fa-fw"></em>
+        <time datetime="2016-04-Sat">Saturday, April 30, 2016</time>
+    </li>
+
+        <li class="list-inline-item mr-3">
+            <em class="fa fa-fw fa-comments"></em>
+            <a href="https://www.tomasvotruba.cz/blog/2016/04/30/decouple-your-doctrine-filters/#disqus_thread">X</a> comments
+        </li>
+
+        <li class="list-inline-item">
+            <em class="fa fa-fw fa-pencil"></em>
+                <a href="https://github.com/TomasVotruba/tomasvotruba.cz/edit/master/source/_posts/2016/2016-04-30-decouple-your-doctrine-filters.md">
+                Typo? Fix me please
+            </a>
+        </li>
+
+</ul>
+
+            <div class="card border-danger">
+                <div class="card-header text-white bg-danger border-danger">
+                    <strong>This post is deprecated since March 2017</strong>
+                </div>
+                <div class="card-body">
+                    I have deprecated this package, because I see Doctrine ORM as over-complex tool not useful for new projects - <strong><a href="/blog/2017/03/27/why-is-doctrine-dying/">read a post here</a></strong>.
+<br><br>
+It is still available <a href="https://github.com/deprecatedPackages/DoctrineFilters">here for inspiration</a> though.
+                </div>
+            </div>
+
+            <br>
+
+
+        <div class="card">
+            <div class="card-body">
+                Doctrine filters are powerful tool. Yet their registration and management are bit overcomplicated. Today I will show you how to decouple them to standalone services that can take care of everything you need.
+            </div>
+        </div>
+
+        
+<h2 id="standard-process-to-enable-filter"><a class="anchor" href="#standard-process-to-enable-filter" aria-hidden="true"><span class="anchor-icon">#</span></a>Standard Process to Enable Filter</h2>
+<p>If you don't know Doctrine Filters, <a href="https://knpuniversity.com/">KnpUniversity</a> has very nice, short and funny tutorial about them. <a href="https://knpuniversity.com/screencast/doctrine-queries/filters">Go check it</a>, I'll wait here...</p>
+<blockquote>
+<p>Are you busy and smart? Just check <a href="http://www.slideshare.net/rosstuck/extending-doctrine-2-for-your-domain-model-13257781/13">slides 13 to 31</a> from <a href="https://twitter.com/rosstuck">@RossTuck</a>'s presentation about cool features of Doctrine.</p>
+</blockquote>
+<p>So now you know, that to enable filter in Symfony you have to:</p>
+<ol>
+<li>register them manually under DoctrineBundle configuration (in one global config file <code>app/config/config.yml</code>)</li>
+<li>get Doctrine's EntityManager in Controller</li>
+<li>get filter by it's name previously defined in <code>app/config/config.yml</code></li>
+<li>enable it</li>
+</ol>
+<p>You have to do all these steps just to turn something on. Imagine you'd have to do this for every Voter, Command or EventSubscriber. </p>
+<h2 id="could-we-make-it-easier"><a class="anchor" href="#could-we-make-it-easier" aria-hidden="true"><span class="anchor-icon">#</span></a>Could We Make It Easier?</h2>
+<p>In the tutorial from KnpUniversity, there is way to skip enabling filters in controller - by creating own <a href="https://knpuniversity.com/screencast/doctrine-queries/filters#enabling-a-filter-globally">BeforeRequestListener</a>. </p>
+<p>It's quite nice, but it just moves all these steps from controller's responsibility somewhere else. So you have to enable them again, just in different place.</p>
+<p>Let's say this is fine enough. <strong>But what about modular applications with own per module filters?</strong> Not so easy.</p>
+<h2 id="minimal-viable-product"><a class="anchor" href="#minimal-viable-product" aria-hidden="true"><span class="anchor-icon">#</span></a>Minimal Viable Product</h2>
+<p>For better understanding what is really important, let's break down the purpose of the filter. </p>
+<ul>
+<li>it's a <strong>piece of code in class that must inherit from <code>Doctrine\ORM\Query\Filter\SQLFilter</code></strong></li>
+<li>it <strong>decorates SQL queries</strong> with custom code</li>
+<li><strong>sometimes it's conditional</strong> - you want it to be enabled or disabled</li>
+</ul>
+<p>That's all it does. Everything else is just syntax sugar, glue code or entry point to work with them.</p>
+<p>Saying that, we can <strong>get rid of Controllers, Subscribers, DoctrineBundle, <code>app/config/config.yml</code></strong> and yet still make use of them. </p>
+<h2 id="decouple-your-doctrine-filter-to-service"><a class="anchor" href="#decouple-your-doctrine-filter-to-service" aria-hidden="true"><span class="anchor-icon">#</span></a>Decouple Your Doctrine Filter... to Service</h2>
+<p>When we remove everything we don't need, we could end up with simple service:</p>
+<pre><code class="language-php">use Doctrine\ORM\Mapping\ClassMetadata;
+use Symplify\DoctrineFilters\Contract\Filter\FilterInterface;
+
+final class ActiveFilter implements FilterInterface
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function addFilterConstraint(ClassMetadata $entity, $alias)
+    {
+        return "$alias.active = 1";
+    }
+}</code></pre>
+<p>And register it as service:</p>
+<pre><code class="language-yaml"># Resoureces/config.yml
+services:
+    module.softdeletable_filter:
+        class: SoftdeletableFilter</code></pre>
+<p>That's all we really need to do.</p>
+<h2 id="decoupling-of-doctrine-filter-in-4-steps"><a class="anchor" href="#decoupling-of-doctrine-filter-in-4-steps" aria-hidden="true"><span class="anchor-icon">#</span></a>Decoupling of Doctrine Filter in 4 steps</h2>
+<p>This is already possible thanks to <a href="https://github.com/Symplify/ModularDoctrineFilters">Symplify/ModularDoctrineFilters</a> package.</p>
+<p>Let's try it together!</p>
+<h3 id="1-install-package"><a class="anchor" href="#1-install-package" aria-hidden="true"><span class="anchor-icon">#</span></a>1. Install package</h3>
+<pre><code class="language-bash">composer require symplify/modular-doctrine-filters</code></pre>
+<h3 id="2-register-bundle"><a class="anchor" href="#2-register-bundle" aria-hidden="true"><span class="anchor-icon">#</span></a>2. Register Bundle</h3>
+<pre><code class="language-php">// app/AppKernel.php
+class AppKernel extends Kernel
+{
+    public function registerBundles()
+    {
+        $bundles = [
+            new Symplify\ModularDoctrineFilters\SymplifyModularDoctrineFiltersBundle(),
+            // ...
+        ];
+    }
+}</code></pre>
+<h3 id="3-create-service"><a class="anchor" href="#3-create-service" aria-hidden="true"><span class="anchor-icon">#</span></a>3. Create Service</h3>
+<pre><code class="language-php">// src/SomeBundle/Doctrine/Filter/SoftdeletableFilter.php
+namespace SomeBundle\Doctrine\Filter;
+
+use Symplify\DoctrineFilters\Contract\Filter\FilterInterface;
+
+final class SoftdeletableFilter implements FilterInterface
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function addFilterConstraint(ClassMetadata $entity, $alias)
+    {
+        if ($entity-&gt;getReflectionClass()-&gt;hasProperty('isDeleted')) { 
+            // or another condition to integrate enable/disable process
+            return "$alias.isDeleted = 0";
+        }
+        return '';
+    }
+}</code></pre>
+<blockquote>
+<p>This could be filter for <a href="https://github.com/KnpLabs/DoctrineBehaviors#softDeletable">Softdeletable</a> from <a href="https://github.com/KnpLabs/DoctrineBehaviors">DoctrineBehaviors</a>.</p>
+</blockquote>
+<h3 id="4-register-it-as-a-service-to-your-module"><a class="anchor" href="#4-register-it-as-a-service-to-your-module" aria-hidden="true"><span class="anchor-icon">#</span></a>4. Register it as a service to your module</h3>
+<pre><code class="language-yaml"># src/SomeBundle/Resources/config/services.yml
+services:
+    some_module.softdeletable_filter:
+        class: SomeBundle\Doctrine\Filter\SoftdeletableFilter</code></pre>
+<p>And that's it! Now your filter will be reflected in whole application.</p>
+<p>For further use <strong>just check Readme for <a href="https://github.com/Symplify/ModularDoctrineFilters">Symplify/ModularDoctrineFilters</a></strong>.</p>
+<h2 id="what-have-you-learned-today"><a class="anchor" href="#what-have-you-learned-today" aria-hidden="true"><span class="anchor-icon">#</span></a>What Have You Learned Today?</h2>
+<ul>
+<li>that Doctrine Filters can decorate every query in your application from single place</li>
+<li>that Doctrine Filter is basically just an object that might add some code to query</li>
+<li><strong>that you can add filter via simple service with <a href="https://github.com/Symplify/ModularDoctrineFilters">Symplify/ModularDoctrineFilters</a></strong>   </li>
+</ul>
+<p>If you have some tips how to this simpler or want to share your experience with filters, just let me know bellow.</p>
+<p>Happy coding!</p>
+
+        <br>
+
+
+
+<div class="hireMe card border-info">
+    <div class="card-body bg-info text-white text-center">
+        <a href="/contact">
+            Do you like what I write about? <strong>I'll do it for you!</strong>
+        </a>
+    </div>
+</div>
+
+        <br>
+
+        <h3>What do you think?</h3>
+
+<div id="disqus_thread"></div>
+
+<script type="text/javascript">
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+
+        s.src = '//' + "itsworthsharing" + '.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+    </div>
+        </div>
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+<script>
+    ga=function(){ ga.q.push(arguments) };
+    ga.q=[];
+    ga.l=+new Date;
+    ga('create', "UA-46082345-1", 'auto');
+    ga('send','pageview');
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async defer></script>
+<script>
+    !function(f,b,e,v,n,t,s){ if(f.fbq)return;n=f.fbq=function(){ n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', "201338863559186");
+    fbq('track', 'PageView');
+</script>
+    </body>
+</html>
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Decouple Your Doctrine Filters">
+    <meta property="og:description" content="Doctrine filters are powerful tool. Yet their registration and management are bit overcomplicated. Today I will show you how to decouple them to standalone services that can take care of everything you need.">
+    <meta property="og:url" content="https://www.tomasvotruba.cz/blog/2016/04/30/decouple-your-doctrine-filters">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@votrubaT">
+    <meta name="twitter:title" content="Decouple Your Doctrine Filters">
+    <meta name="twitter:description" content="Doctrine filters are powerful tool. Yet their registration and management are bit overcomplicated. Today I will show you how to decouple them to standalone services that can take care of everything you need.">
+
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+
+    <link href="/assets/prism/prism.css" rel="stylesheet" type="text/css">

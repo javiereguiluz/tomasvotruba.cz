@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>How ApiGen Survived its Own Death | Tomas Votruba</title>
+    <meta charset="utf-8">
+    <meta name="robots" content="index, follow">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+
+    <link rel="alternate" type="application/rss+xml" title="Tomas Votruba Blog RSS" href="/rss.xml">
+
+    <link href="/assets/font-awesome/css/font-awesome.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/bootstrap/bootstrap.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/css/style.css?v=1.2" rel="stylesheet" type="text/css">
+
+</head>
+    <body>
+        <!-- post_id: 53 -->
+
+<div class="hidden-sm-down">
+    <nav class="navbar">
+        <div class="container-fluid">
+            <ul>
+                <li id="logo">
+                    Tomas Votruba
+                </li>
+                <li class="active">
+                    <a href="/">Blog</a>
+                </li>
+                <li>
+                    <a href="/mentoring-and-lectures/">Mentoring & Lectures</a>
+                </li>
+                <li>
+                    <a href="/talks/">Talks</a>
+                </li>
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<div class="hidden-md-up">
+    <nav class="navbar" id="mobile-menu">
+        <div class="container">
+            <a href="/" class="col-3 col-sm-3 active">
+                <em class="fa fa-book"></em>
+                <br>
+                PHP Blog
+            </a>
+            <a href="/mentoring-and-lectures/" class="col-3 col-sm-3">
+                <em class="fa fa-graduation-cap"></em>
+                <br>
+                Lectures
+            </a>
+            <a href="/about/" class="col-3 col-sm-3">
+                <em class="fa fa-id-badge"></em>
+                <br>
+                About
+            </a>
+            <a href="/contact/" class="col-3 col-sm-3">
+                <em class="fa fa-phone"></em>
+                <br>
+                Contact
+            </a>
+        </div>
+    </nav>
+</div>
+
+        <div class="mainContent">
+    <div class="container-fluid" id="post">
+        <h1>How ApiGen Survived its Own Death</h1>
+
+<ul class="list-inline">
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-clock-o fa-fw"></em>
+        <strong>6 min</strong>
+    </li>
+
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-calendar fa-fw"></em>
+        <time datetime="2017-09-Mon">Monday, September 4, 2017</time>
+    </li>
+
+        <li class="list-inline-item mr-3">
+            <em class="fa fa-fw fa-comments"></em>
+            <a href="https://www.tomasvotruba.cz/blog/2017/09/04/how-apigen-survived-its-own-death/#disqus_thread">X</a> comments
+        </li>
+
+        <li class="list-inline-item">
+            <em class="fa fa-fw fa-pencil"></em>
+                <a href="https://github.com/TomasVotruba/tomasvotruba.cz/edit/master/source/_posts/2017/2017-09-04-how-apigen-survived-its-own-death.md">
+                Typo? Fix me please
+            </a>
+        </li>
+
+</ul>
+
+
+
+        <div class="card">
+            <div class="card-body">
+                <a href="https://github.com/apigen/apigen">ApiGen</a> was broken for a long time. It depended on Reflection package, that was not developed since 2013 and was unable to parse <em>newer</em> code. When I say newer, I mean <em>hot</em> PHP features like <code>::class</code> in 5.5. I don't even talk about 5.6 or 7.
+<br><br>
+I got frustrated. I spent a year on a project that is still not working out of the box. So I took spring off to change it. <strong>My goal was to replace reflection or let the project die in peace</strong>.
+<br><br>
+This is story about the whole journey of ups and downs.
+            </div>
+        </div>
+
+        
+<p>Prepare for deep darkness, (almost) burning out and... team work that helped me to make it to the end.</p>
+<img src="/assets/images/posts/2017/apigen-revival/apigen.png" class="img-thumbnail">
+<h2 id="step-1-bump-to-php-7-1"><a class="anchor" href="#step-1-bump-to-php-7-1" aria-hidden="true"><span class="anchor-icon">#</span></a>Step 1: Bump to PHP 7.1</h2>
+<p>I love PHP 7.1 and I use it everywhere since its release in 2016. This year <a href="/blog/2017/06/05/go-php-71/">more and more big projects are migrating</a>, yet this is still low % of all packages.</p>
+<p>So my condition was to <a href="https://github.com/ApiGen/ApiGen/issues/779#issuecomment-285960383">bump minimal requirement to PHP 7.1</a>. Current maintainers agreed, so I had green on. Thank you <a href="https://github.com/jankal">Alexander Jank</a> for your support in my first PRs to ApiGen this year. </p>
+<h2 id="step-2-pick-the-right-reflection-successor"><a class="anchor" href="#step-2-pick-the-right-reflection-successor" aria-hidden="true"><span class="anchor-icon">#</span></a>Step 2: Pick the right Reflection Successor</h2>
+<p>ApiGen uses reflection to analyze classes, their methods, interfaces, traits, parent class of the class, their methods etc.</p>
+<p><strong>Pure PHP reflection can be barely used for advanced tasks like the last one</strong>, so I'd have to rewrite whole package myself. That's not a way to go if you want to have a calm life and normal sleep.</p>
+<p>The question was, <strong>where to find the right one?</strong></p>
+<p>I knew a few, but not any that would be able to parse PHP 7.1 by itself. I was aware of <a href="https://github.com/nikic/PHP-Parser">nikic/php-parser</a>, that was maintained and future-compatible (Nikic even added PHP 7.2 features recently). But it was only parsing tool, not smart reflection wrapper.</p>
+<h3 id="reaching-out-for-help"><a class="anchor" href="#reaching-out-for-help" aria-hidden="true"><span class="anchor-icon">#</span></a>Reaching out for Help</h3>
+<p>In that time, I came across <a href="https://github.com/nikic/PHP-Parser/wiki/Projects-using-the-PHP-Parser">Projects using the PHP Parser</a> on Wiki of PHP-Parse, I consulted with <a href="https://github.com/jantvrdik">Jan Tvrdik</a> and <a href="https://twitter.com/OndrejMirtes">Ondrej Mirtes</a>. </p>
+<p>This all <a href="https://github.com/ApiGen/ApiGen/issues/817">led me to a package</a> called <a href="https://github.com/roave/better-reflection">Roave/BetterReflection</a> by <a href="https://www.jamestitcumb.com/">James Titcumb</a> and <a href="https://ocramius.github.io/">Marco Pivetta</a>.</p>
+<p>I'm bit suspicious to projects that were lastly tagged a half year ago, but I felt I could gave it a go.</p>
+<h2 id="step-3-replace-reflection"><a class="anchor" href="#step-3-replace-reflection" aria-hidden="true"><span class="anchor-icon">#</span></a>Step 3: Replace Reflection</h2>
+<p>All right, package picked! The <strike>fun</strike> hell was about to begin.</p>
+<p>Imagine your whole application uses everywhere a package, that got stuck 4 PHP versions ago. You feel it more and more. Everyday you need to patch it because there are other packages that are up-to-date. You know, like PHP itself.</p>
+<p>When I maintained the ApiGen in 2014, I felt I should <a href="https://ocramius.github.io/blog/when-to-declare-classes-final/">interface everything</a> - thank you for that <em>past me</em>. All reflection classes were interfaced, and there was somewhat of a bridge between TokenReflection (the old package) and ApiGen value objects for Reflections.</p>
+<p>Still, I could not drop all old reflections without having prepared all new ones.</p>
+<p>But the algorithm alone was simple (well after stepping back from ~3 k lines of code): </p>
+<ul>
+<li>
+<ol>
+<li>a 3rd party package's <code>&lt;class&gt;Reflection</code> goes in</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>ApiGen transforms it </li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>an ApiGen Reflection comes out</li>
+</ol>
+</li>
+</ul>
+<h3 id="collector-transformer-router-to-the-rescue"><a class="anchor" href="#collector-transformer-router-to-the-rescue" aria-hidden="true"><span class="anchor-icon">#</span></a>Collector + Transformer + Router to the rescue</h3>
+<p>I don't know how that happened, but I managed to combine 3 patterns to make this work.</p>
+<p>By &quot;making this work&quot; I mean:</p>
+<ul>
+<li><strong>keep old</strong> reflection package as stable fallback</li>
+<li><strong>use new reflection package</strong> only on single reflection class, e.g. <code>ClassConstantReflection</code></li>
+</ul>
+<p>The main service that takes cares of this is <a href="https://github.com/ApiGen/ApiGen/blob/a6f56691d87f74a64b31a15b7866d5a839aecb60/packages/Reflection/src/TransformerCollector.php#">TransformerCollector</a>.</p>
+<p>All particular Transformers are <strong>collected</strong> into it.</p>
+<p>When reflection is passed, ApiGen will decide what to do with it - that is <a href="https://github.com/ApiGen/ApiGen/blob/a6f56691d87f74a64b31a15b7866d5a839aecb60/packages/Reflection/src/TransformerCollector.php#L68-L71">the Router part</a>.</p>
+<p>Having this setup ApiGen could:</p>
+<ul>
+<li>
+<ol>
+<li>have old TokenReflection</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>match specific classes and reparse them with BetterReflection</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>output ApiGen Reflection value objects </li>
+</ol>
+</li>
+</ul>
+<p>In time, I've added more and more BetterReflection transformers, like <a href="https://github.com/ApiGen/ApiGen/blob/a6f56691d87f74a64b31a15b7866d5a839aecb60/packages/Reflection/src/Transformer/BetterReflection/Class_/ClassReflectionTransformer.php#L46">ClassReflectionTransformer</a> that handles ClassReflection.</p>
+<p><em><a href="https://github.com/ApiGen/ApiGen/issues/817">10 PRs later...</a></em></p>
+<p>There was light in the of the tunnel.</p>
+<p><strong>Rule of a thumb: when you need to replace something, build a bridge/router and do it gradually. You'll be both safe and in progress.</strong></p>
+<p><strong>Never rewrite running project from scratch</strong>, unless you really have to.</p>
+<h2 id="step-4-is-ship-going-down"><a class="anchor" href="#step-4-is-ship-going-down" aria-hidden="true"><span class="anchor-icon">#</span></a>Step 4: Is Ship Going Down?</h2>
+<p>I had dilemma about global constants that BetterReflection doesn't support, yet TokenReflection does. I didn't know what to do with that and I was stuck.</p>
+<p>Then, Jan Tvrdik and I have a chat at one grill party about this. Jan helped me to realize, <strong>that single issue should not stand in a way of saving the project</strong>. I could drop it and if anyone needs it, he or she might implement it. That was a huge step forward for me and the project.</p>
+<h3 id="drop-everything-you-don-t-need-just-to-breathe"><a class="anchor" href="#drop-everything-you-don-t-need-just-to-breathe" aria-hidden="true"><span class="anchor-icon">#</span></a>Drop Everything You don't Need - Just to Breathe</h3>
+<p>I also came to the state, when there was too much coupling of <strong>features I didn't feel like they were useful anymore</strong>.</p>
+<p>Using Markdown in docblock descriptions to highlight them was one of them. I never saw that in any code except ApiGen and I still don't think using Markdown in PHP code is a good idea.</p>
+<p>I proposed issue <a href="https://github.com/ApiGen/ApiGen/issues/782#issuecomment-285988252">of turning Markdown down</a> and adding event instead, so anyone could implement if really needed and <a href="https://github.com/ApiGen/ApiGen/pull/795">it solved around 10 issues</a>. Just like that.</p>
+<p><strong>Rule of a thumb? When you're stuck in open-source project, drop things that are the least relevant to the project.</strong> It might give you space to breathe and to move forward to next release.</p>
+<h2 id="step-5-reflection-replaced"><a class="anchor" href="#step-5-reflection-replaced" aria-hidden="true"><span class="anchor-icon">#</span></a>Step 5. Reflection Replaced</h2>
+<p><em>10 more PRs later</em></p>
+<p>Reflection works - PHP 7.1 code is perfectly parsed with no issues!</p>
+<img src="/assets/images/posts/2017/apigen-revival/done.png" class="img-thumbnail">
+<p>It didn't have cool features like tree references, but I was able to parse PHP 5.5, PHP 5.6, PHP 7.0 and PHP 7.1 with no problem at all. We could finally close over 30 opened issues that spread for last 4 years.</p>
+<p>This gave me a dopamine shot, yet worsts was about to come. </p>
+<h2 id="step-6-burnout"><a class="anchor" href="#step-6-burnout" aria-hidden="true"><span class="anchor-icon">#</span></a>Step 6. Burnout</h2>
+<p>It was June 2017. The main issue was solved and there was plenty space to improve ApiGen. <strong>But not motivation</strong>. I didn't use it personally and I felt I was there mainly to replace reflection, because I was the one was responsible for its design.</p>
+<p>After I finished that, I was looking for co-maintainer and somebody who's using the project to took over me.</p>
+<p>Personally, I felt <strike>bit</strike> burned out. What now? Give up the project? Go to cinema? Go to a coach? ✓</p>
+<p>What helped me was a <a href="https://github.com/dbrock/semver-howto#release-candidates-100-foo">release-candidate</a>. An illusion of milestone, that closes huge part of dev work.</p>
+<p>I released <a href="https://github.com/ApiGen/ApiGen/releases/tag/v5.0.0-RC1">ApiGen 5.0-RC1</a> on June 3rd 2017. It <strong>actually brought more attention then I expected</strong>. Release Candidates are apparently sign that project is back to life.</p>
+<h2 id="step-7-saved"><a class="anchor" href="#step-7-saved" aria-hidden="true"><span class="anchor-icon">#</span></a>Step 7. Saved!</h2>
+<p>Situation changed with <a href="https://github.com/ApiGen/ApiGen/releases/tag/v5.0.0-RC3">5.0-RC3</a>.</p>
+<img src="/assets/images/posts/2017/apigen-revival/rc3.png" class="img-thumbnail">
+<p>As you can see, <a href="https://github.com/vlastavesely">Vlasta Vesely</a> did almost 90 % of work on the release. I went to Brno to meet Vlasta, we had great chat and wine - thank you for both. </p>
+<p><strong>I asked Vlasta to join ApiGen maintainer team and he agreed</strong>. The future is bright now. </p>
+<p>And that is the whole journey up to present moment.</p>
+<h3 id="what-would-be-the-main-takeway"><a class="anchor" href="#what-would-be-the-main-takeway" aria-hidden="true"><span class="anchor-icon">#</span></a>What would be the main takeway?</h3>
+<p>It's all about team work, priorities, communication of miss-understandings and dealing with your own shit you find on the way home.</p>
+<p>Now to the shorter practical part...</p>
+<h2 id="what-changed-and-what-was-removed"><a class="anchor" href="#what-changed-and-what-was-removed" aria-hidden="true"><span class="anchor-icon">#</span></a>What changed and what was removed?</h2>
+<p>If I should mention 4 most important changes you should know about, it would be: </p>
+<ul>
+<li>Version 4.0 worked fine with PHP 5.4 code - newer usually crashed it. ApiGen <strong>can deal with PHP 5.5, 5.6, 7.0 and 7.1 code</strong> now. </li>
+<li>Min PHP version bumped <strong>from PHP 5.4 to PHP 7.1</strong>. ApiGen is still able to parse older code.</li>
+<li><strong>TokenReflection refactored to BetterReflection</strong> - thanks to James and Marco for fast responses on our issues and pull-requests.</li>
+<li>Switched to <a href="https://github.com/ApiGen/ApiGen/pull/880">Symfony 3.3 Dependecy Injection</a> with <a href="https://www.tomasvotruba.cz/blog/2017/05/07/how-to-refactor-to-new-dependency-injection-features-in-symfony-3-3/">time-saving features</a> - thanks <a href="https://martinhujer.cz">Martin Hujer</a> for the idea.</li>
+</ul>
+<p>Look at particular releases to get complete list of changes. Changelogs are nice and clean: </p>
+<ul>
+<li><a href="https://github.com/ApiGen/ApiGen/releases/tag/v5.0.0-RC1">ApiGen 5.0-RC1</a></li>
+<li><a href="https://github.com/ApiGen/ApiGen/releases/tag/v5.0.0-RC2">ApiGen 5.0-RC2</a></li>
+<li><a href="https://github.com/ApiGen/ApiGen/releases/tag/v5.0.0-RC3">ApiGen 5.0-RC3</a></li>
+<li><a href="https://github.com/ApiGen/ApiGen/releases/tag/v5.0.0-RC4">ApiGen 5.0-RC4</a></li>
+<li><a href="https://github.com/ApiGen/ApiGen/releases/tag/v5.0.0-RC5">ApiGen 5.0-RC5</a></li>
+</ul>
+<h2 id="run-apigen-yourself"><a class="anchor" href="#run-apigen-yourself" aria-hidden="true"><span class="anchor-icon">#</span></a>Run ApiGen Yourself</h2>
+<p>ApiGen uses BetterReflection that is still not tagged, so you need to install it like:</p>
+<pre><code class="language-json">{
+    "require-dev": {
+        "apigen/apigen": "5.0.0-RC5",
+        "roave/better-reflection": "dev-master#7ce58dd"
+    }
+}</code></pre>
+<p>and run with composer:</p>
+<pre><code class="language-bash">composer update</code></pre>
+<p>And you are read to go.</p>
+<p>Happy generating!</p>
+
+        <br>
+
+
+
+<div class="hireMe card border-info">
+    <div class="card-body bg-info text-white text-center">
+        <a href="/contact">
+            Do you like what I write about? <strong>I'll do it for you!</strong>
+        </a>
+    </div>
+</div>
+
+        <br>
+
+        <h3>What do you think?</h3>
+
+<div id="disqus_thread"></div>
+
+<script type="text/javascript">
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+
+        s.src = '//' + "itsworthsharing" + '.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+    </div>
+        </div>
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+<script>
+    ga=function(){ ga.q.push(arguments) };
+    ga.q=[];
+    ga.l=+new Date;
+    ga('create', "UA-46082345-1", 'auto');
+    ga('send','pageview');
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async defer></script>
+<script>
+    !function(f,b,e,v,n,t,s){ if(f.fbq)return;n=f.fbq=function(){ n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', "201338863559186");
+    fbq('track', 'PageView');
+</script>
+    </body>
+</html>
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="How ApiGen Survived its Own Death">
+    <meta property="og:description" content="ApiGen was broken for a long time. It depended on Reflection package, that was not developed since 2013 and was unable to parse newer code. When I say newer, I mean hot PHP features like ::class in 5.5. I don&#039;t even talk about 5.6 or 7.
+
+I got frustrated. I spent a year on a project that is still not working out of the box. So I took spring off to change it. My goal was to replace reflection or let the project die in peace.
+
+This is story about the whole journey of ups and downs.">
+    <meta property="og:url" content="https://www.tomasvotruba.cz/blog/2017/09/04/how-apigen-survived-its-own-death">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@votrubaT">
+    <meta name="twitter:title" content="How ApiGen Survived its Own Death">
+    <meta name="twitter:description" content="ApiGen was broken for a long time. It depended on Reflection package, that was not developed since 2013 and was unable to parse newer code. When I say newer, I mean hot PHP features like ::class in 5.5. I don&#039;t even talk about 5.6 or 7.
+
+I got frustrated. I spent a year on a project that is still not working out of the box. So I took spring off to change it. My goal was to replace reflection or let the project die in peace.
+
+This is story about the whole journey of ups and downs.">
+
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+
+    <link href="/assets/prism/prism.css" rel="stylesheet" type="text/css">

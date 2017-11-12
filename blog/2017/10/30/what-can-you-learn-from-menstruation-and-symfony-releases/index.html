@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>What can You Learn from Menstruation and Symfony Releases | Tomas Votruba</title>
+    <meta charset="utf-8">
+    <meta name="robots" content="index, follow">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+
+    <link rel="alternate" type="application/rss+xml" title="Tomas Votruba Blog RSS" href="/rss.xml">
+
+    <link href="/assets/font-awesome/css/font-awesome.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/bootstrap/bootstrap.min.css?v=1.2" rel="stylesheet" type="text/css">
+
+    <link href="/assets/css/style.css?v=1.2" rel="stylesheet" type="text/css">
+
+</head>
+    <body>
+        <!-- post_id: 61 -->
+
+<div class="hidden-sm-down">
+    <nav class="navbar">
+        <div class="container-fluid">
+            <ul>
+                <li id="logo">
+                    Tomas Votruba
+                </li>
+                <li class="active">
+                    <a href="/">Blog</a>
+                </li>
+                <li>
+                    <a href="/mentoring-and-lectures/">Mentoring & Lectures</a>
+                </li>
+                <li>
+                    <a href="/talks/">Talks</a>
+                </li>
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<div class="hidden-md-up">
+    <nav class="navbar" id="mobile-menu">
+        <div class="container">
+            <a href="/" class="col-3 col-sm-3 active">
+                <em class="fa fa-book"></em>
+                <br>
+                PHP Blog
+            </a>
+            <a href="/mentoring-and-lectures/" class="col-3 col-sm-3">
+                <em class="fa fa-graduation-cap"></em>
+                <br>
+                Lectures
+            </a>
+            <a href="/about/" class="col-3 col-sm-3">
+                <em class="fa fa-id-badge"></em>
+                <br>
+                About
+            </a>
+            <a href="/contact/" class="col-3 col-sm-3">
+                <em class="fa fa-phone"></em>
+                <br>
+                Contact
+            </a>
+        </div>
+    </nav>
+</div>
+
+        <div class="mainContent">
+    <div class="container-fluid" id="post">
+        <h1>What can You Learn from Menstruation and Symfony Releases</h1>
+
+<ul class="list-inline">
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-clock-o fa-fw"></em>
+        <strong>5 min</strong>
+    </li>
+
+    <li class="list-inline-item mr-3">
+        <em class="fa fa-calendar fa-fw"></em>
+        <time datetime="2017-10-Mon">Monday, October 30, 2017</time>
+    </li>
+
+        <li class="list-inline-item mr-3">
+            <em class="fa fa-fw fa-comments"></em>
+            <a href="https://www.tomasvotruba.cz/blog/2017/10/30/what-can-you-learn-from-menstruation-and-symfony-releases/#disqus_thread">X</a> comments
+        </li>
+
+        <li class="list-inline-item">
+            <em class="fa fa-fw fa-pencil"></em>
+                <a href="https://github.com/TomasVotruba/tomasvotruba.cz/edit/master/source/_posts/2017/2017-10-30-what-can-you-learn-from-menstruation-and-symfony-releases.md">
+                Typo? Fix me please
+            </a>
+        </li>
+
+</ul>
+
+
+
+        <div class="card">
+            <div class="card-body">
+                I <a href="/blog/2017/01/31/how-monolithic-repository-in-open-source-saved-my-laziness/">wrote about monorepo and how it turned me into lazy programmer</a> before.
+<br><br>
+As monorepo is use <a href="https://blog.shopsys.com/how-to-maintain-multiple-git-repositories-with-ease-61a5e17152e0">more and more</a>, we should look at it again.
+Today from a bit atypical point of view: <strong>combined with bit of blood and sunshine</strong>.
+<br><br>
+Are you ready?
+            </div>
+        </div>
+
+        
+<p><em>Disclaimer: this post has no intention to put menstruation into any bad light. Exactly the opposite - I admire women and love to learn from them.</em></p>
+<h2 id="strike-technical-strike-natural-releases"><a class="anchor" href="#strike-technical-strike-natural-releases" aria-hidden="true"><span class="anchor-icon">#</span></a><strike>Technical</strike> Natural Releases</h2>
+<p>We will look on release management. Non from traditional technical point of view that is already described in <a href="http://semver.org/">semantic versioning</a>, <a href="https://symfony.com/doc/current/contributing/code/bc.html">Symfony BC Promise</a> etc., but rather from view of <em>nature</em>.</p>
+<p><strong>Why?</strong> When I'm stuck with complicated architectural problem and can't figure it out, I take a break and <strong>go for a walk</strong>. <strong>Just observing world around me</strong>, absorbing inspiration without expectations - <em>serendipity</em>. </p>
+<p>To be honest, <strong>many technologies we use originated from the nature</strong>. Processor and hard drives from brain, camera lenses from eyes and design pattern from pattern of nature. What else are falling leaves of tree in autumn? An <strong>event subscriber</strong>.</p>
+<h3 id="menstruation-cycle-as-inspiration"><a class="anchor" href="#menstruation-cycle-as-inspiration" aria-hidden="true"><span class="anchor-icon">#</span></a>Menstruation Cycle as Inspiration</h3>
+<img src="/assets/images/posts/2017/menstruation/periods.jpg" class="img-thumbnail">
+<p>When we look at our main ability to survive - to reproduce ourselves, we see it's very easy to follow. Menstruation comes in cycles of ~28 days. All 4 parts of period have special meaning for the body of woman and her ability to get pregnant. We <strong>know when it happens, how long it takes and when it ends</strong> (roughly).  </p>
+<p>Now the interesting part: <em>can you imagine software having release cycles in 28 days?</em> </p>
+<p>Just keep reading.</p>
+<h3 id="four-seasons-cycle"><a class="anchor" href="#four-seasons-cycle" aria-hidden="true"><span class="anchor-icon">#</span></a>Four Seasons Cycle</h3>
+<img src="/assets/images/posts/2017/menstruation/seasons.jpg" class="img-thumbnail">
+<p>A bit longer periodical system in nature that works for some time now. Again, each of 4 parts of this cycle has its meaning:</p>
+<ul>
+<li><em>Spring</em> - growing and getting stronger</li>
+<li><em>Summer</em> - reaching the peak and making seeds</li>
+<li><em>Autumn</em> - preparing for rest, cleaning up</li>
+<li><em>Winter</em> - peaceful time of sleep and retrospective</li>
+</ul>
+<p>Every part takes 3 months and restarts every 12 month. <strong>You just know when winter comes</strong>.</p>
+<p>Now back to the interesting part: <em>could you imagine having release plan synced with the year period?</em></p>
+<p><br></p>
+<p>Also, did you know women that spend lot of time together <strong>tend to sync their menstruation cycle with each other</strong>? We will get back to the later software-wise.</p>
+<h2 id="what-is-basic-stone-for-evolution"><a class="anchor" href="#what-is-basic-stone-for-evolution" aria-hidden="true"><span class="anchor-icon">#</span></a>What is Basic Stone for Evolution?</h2>
+<p>When we look at those patterns of nature, they have one important sign in common. A sign that we can see more and more in software development - <strong>predictability</strong>.</p>
+<p>You <strong>know</strong> when the winter comes or when <strong>your spouse needs more attention and care</strong> when her period starts. You can plan, you can prepare and you can learn this by heart. As a result, <strong>you can focus on more dynamic things that are not to predictable</strong> - like your emotions, ideas or <strong>priorities on development of your project</strong>.</p>
+<h3 id="symfony-cycle-meets-nature-cycle"><a class="anchor" href="#symfony-cycle-meets-nature-cycle" aria-hidden="true"><span class="anchor-icon">#</span></a>Symfony Cycle meets Nature Cycle</h3>
+<img src="/assets/images/posts/2017/menstruation/symfony.jpg" class="img-thumbnail">
+<p>I first realized this at Fabien's talk about Symfony new release cycle on <a href="https://pariscon2015.symfony.com/">SymfonyCon Paris 2015</a>:</p>
+<ul>
+<li><strong>Major versions every 2 years, minor every 6 months.</strong></li>
+</ul>
+<p>So simple yet so amazing. I don't think about &quot;when will the new Symfony come?&quot; any more.</p>
+<h3 id="what-about-php"><a class="anchor" href="#what-about-php" aria-hidden="true"><span class="anchor-icon">#</span></a>What about PHP?</h3>
+<img src="/assets/images/posts/2017/menstruation/php.png" class="img-thumbnail">
+<p>I recall wondering when PHP 5.5, 5.6 or 7.0 will be out. No more thanks to <strong><a href="http://php.net/supported-versions.php">yearly period beginning of December</a></strong> since PHP 7.0.</p>
+<h3 id="menstruation-synchronization"><a class="anchor" href="#menstruation-synchronization" aria-hidden="true"><span class="anchor-icon">#</span></a>Menstruation Synchronization</h3>
+<p>As I wrote earlier, women that spend lot of time together tend to sync their menstruation cycle with each other. Have you noticed that <strong>Symfony matches PHP cycle every 2 years</strong>? Coincidence? I&nbsp;don't think so. </p>
+<img src="/assets/images/posts/2017/menstruation/together.png" class="img-thumbnail">
+<p>I think they're doing <strong>the right thing</strong> right. </p>
+<h2 id="why-we-should-menstruate-together"><a class="anchor" href="#why-we-should-menstruate-together" aria-hidden="true"><span class="anchor-icon">#</span></a>Why We Should Menstruate Together?</h2>
+<p>We're getting back to software releases and monorepo. (If you see term <em>monorepo</em> first time, read <a href="http://danluu.com/monorepo/">this legendary post by <em>danluu</em></a>). </p>
+<p>Some people say that big disadvantage of monorepo is that <strong>they have to tag their packages all together</strong> (like Symfony) even if nothing changed in any of them. </p>
+<p>I see it as <strong>advantage</strong>, because that systematically leads to release cycle and open possibility to synchronization with other projects, like PHP + Symfony.  </p>
+<h3 id="see-for-yourself"><a class="anchor" href="#see-for-yourself" aria-hidden="true"><span class="anchor-icon">#</span></a>See for Yourself</h3>
+<p>Which of these 3 applications would you pick to maintain and upgrade based on their <code>composer.json</code>?</p>
+<p><br></p>
+<p><strong>A</strong> with <em>per-package</em> versioning: </p>
+<pre><code class="language-javascript">{
+    "require": {
+        "symfony/http-foundation": "3.3",
+        "symfony/console": "3.1",
+        "symfony/dependency-injection": "2.8",
+        "symfony/event-dispatcher": "3.2",
+        "doctrine/orm": "2.5",
+        "doctrine/dbal": "2.3",
+        "doctrine/annotations": "1.7",
+        "nette/utils": "2.3",
+        "nette/finder": "3.0"
+    }
+}</code></pre>
+<p><br></p>
+<p>or <strong>B</strong> with <a href="https://getcomposer.org/doc/04-schema.md#name"><em>per-vendor-sync</em></a></p>
+<pre><code class="language-javascript">{
+    "require": {
+        "symfony/http-foundation": "3.3",
+        "symfony/console": "3.3",
+        "symfony/dependency-injection": "3.3",
+        "symfony/event-dispatcher": "3.3",
+        "doctrine/orm": "2.5",
+        "doctrine/dbal": "2.5",
+        "doctrine/annotations": "2.5",
+        "nette/utils": "3.0",
+        "nette/finder": "3.0"
+    }
+}</code></pre>
+<p><br></p>
+<p>or <strong>C</strong> that looks like sci-fi: </p>
+<pre><code class="language-javascript">{
+    "require": {
+        "symfony/http-foundation": "3.3",
+        "symfony/console": "3.3",
+        "symfony/dependency-injection": "3.3",
+        "symfony/event-dispatcher": "3.3",
+        "doctrine/orm": "3.3",
+        "doctrine/dbal": "3.3",
+        "doctrine/annotations": "3.3",
+        "nette/utils": "3.3",
+        "nette/finder": "3.3"
+    }
+}</code></pre>
+<p><br></p>
+<h3 id="advantages-of-synced-vendor-project-em-b-em"><a class="anchor" href="#advantages-of-synced-vendor-project-em-b-em" aria-hidden="true"><span class="anchor-icon">#</span></a>Advantages of Synced Vendor - project <em>B</em></h3>
+<p>Single version for every <code>symfony/*</code> package gives me so much freedom:</p>
+<ul>
+<li>to update it, I just change 1 version and run <code>composer update</code></li>
+<li>they work the best together - I don't have to check if <code>symfony/console</code> 3.3 is or isn't compatible with <code>event-dispatcher</code> 4.0</li>
+<li>and <strong>I know when</strong> I can upgrade my application - <strong>the first week in december every 2 years</strong></li>
+</ul>
+<h3 id="disadvantage-of-per-package-versioning-project-em-a-em"><a class="anchor" href="#disadvantage-of-per-package-versioning-project-em-a-em" aria-hidden="true"><span class="anchor-icon">#</span></a>Disadvantage of Per Package Versioning - project <em>A</em></h3>
+<p>And what if every package has it's own destiny? </p>
+<ul>
+<li><strong>I'm stressed when</strong> any of my 20 <code>symfony/*</code> dependencies changes </li>
+<li>I'm afraid that I will have to Google on Github, what version depend on which</li>
+<li><strong>I can't plan any upgrades</strong>, because nobody knows the future</li>
+</ul>
+<h2 id="call-out-to-package-maintainers"><a class="anchor" href="#call-out-to-package-maintainers" aria-hidden="true"><span class="anchor-icon">#</span></a>Call Out to Package Maintainers</h2>
+<p>All this is not related just to Symfony, Doctrine, Nette or any <a href="https://gophp71.org/">other big PHP players</a> like Zend, Laravel, CakePHP or Yii.</p>
+<p><strong>Every package, every dependency that has own versioning system means increased work PHP developers</strong>. That's stands if you agree with cycles or not. <strong>Version C</strong> being the easiest to upgrade and version <strong>A</strong> being the most difficult and also the most expensive. </p>
+<p><strong>Do you want to add extra work</strong> to developer's back to study your vendor release system?</p>
+<h3 id="waiting-for-tagging"><a class="anchor" href="#waiting-for-tagging" aria-hidden="true"><span class="anchor-icon">#</span></a>Waiting for Tagging</h3>
+<p>On the other hand a <em>package user</em>, I bet you recall at least one package you <strong>longed to be tagged, but were frustrated not knowing when</strong>. It's quite common that first 3 versions are tagged in withing 1 year, but then followed by 1+ year long pause.</p>
+<h2 id="syncing-with-symfony-quot-menstruation-quot-cycle"><a class="anchor" href="#syncing-with-symfony-quot-menstruation-quot-cycle" aria-hidden="true"><span class="anchor-icon">#</span></a>Syncing with Symfony &quot;menstruation&quot; cycle</h2>
+<p>I like this synchronization, predictability, stability and maturation in our PHP ecosystem. That's why I'm trying to <strong>synchronize with Symfony release cycles</strong>. As from huge to small, as from seasons of year to menstruation, as from PHP to Symfony,</p>
+<p>I bet you didn't notice, but with <a href="https://github.com/Symplify">Symplify</a> I try to <strong>release major version to minor of Symfony</strong>. Version 2.0 was released on <a href="https://github.com/Symplify/Symplify/releases/tag/v2.0.0">July 6th 2017</a>, right after <a href="https://symfony.com/roadmap?version=3.3#checker">Symfony 3.3 release</a> in May.</p>
+<p>Being predictable with BC breaks, support for older version and consistent with adding new version.</p>
+<h3 id="no-force-just-inspiration"><a class="anchor" href="#no-force-just-inspiration" aria-hidden="true"><span class="anchor-icon">#</span></a>No Force, Just Inspiration</h3>
+<p>Do you maintain a package? What approach do you have on predictability of releases and why? Please, let me know in comments. I always love to hear new ideas.</p>
+<p><br></p>
+<p>Happy syncing!</p>
+
+        <br>
+
+
+<div class="card border-warning" id="relatedPosts">
+    <div class="card-header text-white bg-warning border-warning">
+        <strong>Continue Reading</strong>
+    </div>
+    <div class="card-body">
+        <ul>
+                <li>
+                    <a href="/blog/2017/02/07/how-to-decouple-monolith-like-a-boss-with-composer-local-packages">
+                        How to Decouple Monolith like a Boss with Composer Local Packages
+                    </a>
+                </li>
+                <li>
+                    <a href="/blog/2017/01/31/how-monolithic-repository-in-open-source-saved-my-laziness">
+                        How Monolithic Repository in Open Source saved my Laziness
+                    </a>
+                </li>
+        </ul>
+    </div>
+</div>
+
+<div class="hireMe card border-info">
+    <div class="card-body bg-info text-white text-center">
+        <a href="/contact">
+            Do you like what I write about? <strong>I'll do it for you!</strong>
+        </a>
+    </div>
+</div>
+
+        <br>
+
+        <h3>What do you think?</h3>
+
+<div id="disqus_thread"></div>
+
+<script type="text/javascript">
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+
+        s.src = '//' + "itsworthsharing" + '.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+    </div>
+        </div>
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+<script>
+    ga=function(){ ga.q.push(arguments) };
+    ga.q=[];
+    ga.l=+new Date;
+    ga('create', "UA-46082345-1", 'auto');
+    ga('send','pageview');
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async defer></script>
+<script>
+    !function(f,b,e,v,n,t,s){ if(f.fbq)return;n=f.fbq=function(){ n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', "201338863559186");
+    fbq('track', 'PageView');
+</script>
+    </body>
+</html>
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="What can You Learn from Menstruation and Symfony Releases">
+    <meta property="og:description" content="I wrote about monorepo and how it turned me into lazy programmer before.
+
+As monorepo is use more and more, we should look at it again.
+Today from a bit atypical point of view: combined with bit of blood and sunshine.
+
+Are you ready?">
+    <meta property="og:url" content="https://www.tomasvotruba.cz/blog/2017/10/30/what-can-you-learn-from-menstruation-and-symfony-releases">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@votrubaT">
+    <meta name="twitter:title" content="What can You Learn from Menstruation and Symfony Releases">
+    <meta name="twitter:description" content="I wrote about monorepo and how it turned me into lazy programmer before.
+
+As monorepo is use more and more, we should look at it again.
+Today from a bit atypical point of view: combined with bit of blood and sunshine.
+
+Are you ready?">
+
+
+    <script src="/assets/prism/prism.js"></script>
+    <script id="dsq-count-scr" src="https://itsworthsharing.disqus.com/count.js" async defer></script>
+
+
+    <link href="/assets/prism/prism.css" rel="stylesheet" type="text/css">
